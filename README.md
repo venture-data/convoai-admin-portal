@@ -1,36 +1,100 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# CallsPro - AI-Powered Voice Sales Platform
+
+CallsPro is a Next.js application that enables businesses to create and manage AI-powered voice assistants for sales and customer service.
+
+## Features
+
+- 🔐 Authentication with NextAuth.js (Email/Password & Google)
+- 🎨 Modern UI with Tailwind CSS and shadcn/ui
+- 🌓 Dark/Light mode support
+- 📱 Responsive design
+- 🔄 Multi-step form for agent configuration
+- 🎯 AI model customization
+- 🗣️ Voice configuration
+- 📚 Knowledge base management
+
+## Tech Stack
+
+- **Framework**: Next.js 14 (App Router)
+- **Authentication**: NextAuth.js
+- **State Management**: Zustand
+- **Styling**: Tailwind CSS
+- **UI Components**: shadcn/ui
+- **Animations**: Framer Motion
+- **Form Handling**: React Hook Form & Zod
 
 ## Getting Started
 
-First, run the development server:
-
+1. Clone the repository:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/yourusername/callspro.git
+cd callspro
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Install dependencies:
+```bash
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Set up environment variables:
+```bash
+cp .env.example .env.local
+```
+Fill in your environment variables:
+```env
+NEXTAUTH_SECRET=your-secret-key
+GOOGLE_CLIENT_ID=your-google-client-id
+GOOGLE_CLIENT_SECRET=your-google-client-secret
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+4. Run the development server:
+```bash
+npm run dev
+```
 
-## Learn More
+Open [http://localhost:3000](http://localhost:3000) to see the application.
 
-To learn more about Next.js, take a look at the following resources:
+## Project Structure
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```
+src/
+├── app/                    # Next.js app router pages
+├── components/            
+│   ├── agent-config/      # Agent configuration components
+│   ├── auth/              # Authentication components
+│   └── ui/                # Reusable UI components
+├── hooks/                 # Custom React hooks
+├── store/                 # Zustand state management
+└── types/                 # TypeScript type definitions
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Configuration Steps
 
-## Deploy on Vercel
+1. **Model Configuration**
+   - Set initial message and system prompt
+   - Choose AI provider and model
+   - Configure temperature and token limits
+   - Enable/disable emotion detection
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+2. **Voice Configuration**
+   - Select voice type
+   - Adjust voice parameters
+   - Test voice output
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+3. **Knowledge Base**
+   - Upload training materials
+   - Define custom responses
+   - Set business rules
+
+4. **Review**
+   - Preview configuration
+   - Test agent responses
+   - Deploy agent
+
+## Contributing
+
+Contributions are welcome! Please read our contributing guidelines before submitting a pull request.
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
