@@ -15,7 +15,13 @@ import { toast } from "@/hooks/use-toast";
 const formSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   email: z.string().email("Invalid email address"),
-  password: z.string().min(6, "Password must be at least 6 characters long"),
+  password: z
+    .string()
+    .min(8, "Password must be at least 8 characters long")
+    .regex(
+      /^(?=.*[A-Z])(?=.*\d)(?=.*[a-z])[A-Za-z\d]{8,}$/,
+      "Password must contain at least one uppercase letter, one number, and one lowercase letter"
+    ),
 });
 
 type FormValues = z.infer<typeof formSchema>;
