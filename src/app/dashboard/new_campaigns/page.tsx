@@ -15,13 +15,15 @@ import {
 import { Calendar } from "@/components/ui/calendar";
 import React from "react";
 
+
 export default function Page() {
   const { data } = useSession();
   const [date, setDate] = React.useState<Date | undefined>(new Date());
   
   console.log("data", data);
   return (
-    <div>
+    <div 
+    >
       <div className="flex justify-between items-center p-6 border-b pb-4">
         <h1 className="text-3xl font-semibold">
           Create <span className="text-[#01A0A2]">Campaigns</span>

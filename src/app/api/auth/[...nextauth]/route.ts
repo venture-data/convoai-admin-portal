@@ -68,6 +68,7 @@ export const authOptions: NextAuthOptions = {
           });
           const data = await response.json();
           if (data.token) {
+            console.log("data",data);
             (user as any).token = data.token;
             (user as any).email = data.email;
             (user as any).name = data.name;

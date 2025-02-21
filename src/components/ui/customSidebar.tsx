@@ -20,6 +20,7 @@ import { signOut, useSession } from "next-auth/react";
 import { usePathname } from 'next/navigation';
 import { useIsMobile } from "@/app/hooks/use-mobile";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { cn } from "@/lib/utils";
 
 const items = [
   {
@@ -33,7 +34,7 @@ const items = [
       },
       {
         title: "New Campaigns",
-        url: "/dashboard/new-campaigns",
+        url: "/dashboard/new_campaigns",
       }
     ],
     hasDropdown: true
@@ -262,8 +263,8 @@ export default function CustomSidebar() {
                   await signOut({ callbackUrl: "/" });
                 } : undefined}>
                   <div className="flex items-center gap-3">
-                    <item.icon className="h-5 w-5 stroke-gray-700 dark:stroke-gray-300" />
-                    <span className="font-semibold text-base">{item.title}</span>
+                    <item.icon color={item.title === "Sign Out" ? "red" : "gray"} className="h-5 w-5" />
+                    <span className={cn("font-semibold text-base", item.title === "Sign Out" && "text-red-500")}>{item.title}</span>
                   </div>
                 </Link>
               </SidebarMenuButton>

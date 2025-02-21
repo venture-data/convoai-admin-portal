@@ -1,5 +1,6 @@
 import CustomSidebar from "@/components/ui/customSidebar";
 import { ThemeProvider } from "@/components/providers/theme-provider";
+import TransitionEffect from "@/components/ui/transitioneffect";
 
 export default function DashboardLayout({
   children,
@@ -18,9 +19,9 @@ export default function DashboardLayout({
           <CustomSidebar />
         </aside>
         <main className="flex-1 overflow-y-auto">
-          <div className="h-full">
+          <TransitionEffect>
             {children}
-          </div>
+          </TransitionEffect>
         </main>
       </div>
     </ThemeProvider>

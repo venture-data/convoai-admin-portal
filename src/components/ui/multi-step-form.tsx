@@ -5,8 +5,17 @@ import { Button } from "@/components/ui/button"
 import { useStepStore } from "@/store/use-step-store"
 import { motion } from "framer-motion"
 
-export function MultiStepForm({ children }: { children: React.ReactNode[] }) {
+interface MultiStepFormProps {
+  children: React.ReactNode[]
+}
+
+export function MultiStepForm({ children }: MultiStepFormProps) {
   const { currentStep, steps, setCurrentStep, markStepCompleted } = useStepStore()
+
+  // Validate that children match steps
+  if (children.length !== steps.length) {
+    throw new Error(`Number of children (${children.length}) does not match number of steps (${steps.length})`)
+  }
 
   const next = async () => {
     markStepCompleted(currentStep)
@@ -18,10 +27,10 @@ export function MultiStepForm({ children }: { children: React.ReactNode[] }) {
   }
 
   return (
-    <div className="space-y-6">
-      <Card className="p-6">
-        <div className="mb-8">
-          <div className="flex items-center gap-4">
+    <div className="space-y-6 w-full ">
+      <Card className="p-6 w-full">
+        <div className="mb-8 w-full">
+          <div className="flex items-center gap-4 justify-center w-full">
             {steps.map((step, index) => (
               <div key={step} className="flex items-center">
                 <div
@@ -44,7 +53,7 @@ export function MultiStepForm({ children }: { children: React.ReactNode[] }) {
               </div>
             ))}
           </div>
-          <h2 className="text-2xl font-semibold mt-4">{steps[currentStep]}</h2>
+          <h2 className="text-2xl font-semibold ">{steps[currentStep]}</h2>
         </div>
 
         <motion.div
@@ -52,6 +61,7 @@ export function MultiStepForm({ children }: { children: React.ReactNode[] }) {
           initial={{ x: 20, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           exit={{ x: -20, opacity: 0 }}
+          transition={{ duration: 0.5 }}
         >
           {children[currentStep]}
         </motion.div>

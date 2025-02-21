@@ -1,5 +1,6 @@
 "use client";
 
+import { ModelConfig as ModelConfigType } from "@/app/dashboard/new_agents/types";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -10,11 +11,33 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
-import { Switch } from "@/components/ui/switch";
 
-export function ModelConfig() {
+export function ModelConfig({agentConfig, setAgentConfig}: {agentConfig: ModelConfigType, setAgentConfig: (config: ModelConfigType) => void}) {
+  
+  const onAgentConfigChange = (key: string, value: string | number) => {
+    setAgentConfig({ ...agentConfig, [key]: value });
+  }
   return (
     <div className="space-y-6">
+      <div className="space-y-2">
+        <Label htmlFor="agent-name" className="flex items-center">
+          Agent Name
+          <span
+            className="ml-1 text-muted-foreground hover:cursor-help"
+            title="The name of the agent"
+          >
+            ⓘ
+          </span>
+        </Label>
+        <Input
+          id="agent-name"
+          value={agentConfig.agentName}
+          className="w-full"
+          onChange={(e) => {
+            onAgentConfigChange("agentName", e.target.value);
+          }}
+        />
+      </div>
       <div className="space-y-2">
         <Label htmlFor="first-message" className="flex items-center">
           First Message
@@ -27,8 +50,11 @@ export function ModelConfig() {
         </Label>
         <Input
           id="first-message"
-          defaultValue="Hello, this is Mary from Mary's Dental. How can I assist you today?"
           className="w-full"
+          value={agentConfig.firstMessage}
+          onChange={(e) => {
+            onAgentConfigChange("firstMessage", e.target.value);
+          }}
         />
       </div>
       <div className="space-y-2">
@@ -43,28 +69,19 @@ export function ModelConfig() {
         </Label>
         <textarea
           id="system-prompt"
+          onChange={(e) => {
+            onAgentConfigChange("systemPrompt", e.target.value);
+          }}
           className="w-full min-h-[150px] p-3 rounded-md border"
-          defaultValue={`You are a voice assistant for Mary's Dental, a dental office located at 123 North Face Place, Anaheim, California. The hours are 8 AM to 5PM daily, but they are closed on Sundays.
-
-Mary's dental provides dental services to the local Anaheim community. The practicing dentist is Dr. Mary Smith.
-
-You are tasked with answering questions about the business, and booking appointments. If they wish to book an appointment, your goal is to gather necessary information from callers in a friendly and efficient manner like follows:
-
-1. Ask for their full name.
-2. Ask for the purpose of their appointment.
-3. Request their preferred date and time for the appointment.
-4. Confirm all details with the caller, including the date and time of the appointment.
-
-- Be sure to be kind of funny and witty!
-- Keep all your responses short and simple. Use casual language, phrases like "Umm...", "Well...", and "I mean" are preferred.
-- This is a voice conversation, so keep your responses short, like in a real conversation. Don't ramble for too long.`}
+          value={agentConfig.systemPrompt}
         />
       </div>
 
-      {/* Provider Selection */}
       <div className="space-y-2">
         <Label htmlFor="provider">Provider</Label>
-        <Select defaultValue="openai">
+        <Select value={agentConfig.provider} onValueChange={(value) => {
+          onAgentConfigChange("provider", value);
+        }}>
           <SelectTrigger id="provider">
             <SelectValue placeholder="Select provider" />
           </SelectTrigger>
@@ -75,7 +92,6 @@ You are tasked with answering questions about the business, and booking appointm
         </Select>
       </div>
 
-      {/* Model Selection */}
       <div className="space-y-2">
         <Label htmlFor="model" className="flex items-center">
           Model
@@ -86,7 +102,9 @@ You are tasked with answering questions about the business, and booking appointm
             ⓘ
           </span>
         </Label>
-        <Select defaultValue="gpt-4o-mini">
+        <Select value={agentConfig.model} onValueChange={(value) => {
+          onAgentConfigChange("model", value);
+        }}>
           <SelectTrigger id="model">
             <SelectValue placeholder="Select model" />
           </SelectTrigger>
@@ -107,15 +125,15 @@ You are tasked with answering questions about the business, and booking appointm
             ⓘ
           </span>
         </Label>
-        <Select defaultValue="en">
+        <Select value={agentConfig.language} onValueChange={(value) => {
+          onAgentConfigChange("language", value);
+        }}>
           <SelectTrigger id="language">
             <SelectValue placeholder="Select language" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="en">English</SelectItem>
-            <SelectItem value="es">Spanish</SelectItem>
-            <SelectItem value="fr">French</SelectItem>
-            <SelectItem value="de">German</SelectItem>
+            <SelectItem value="ur">Urdu</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -133,50 +151,18 @@ You are tasked with answering questions about the business, and booking appointm
         <div className="flex items-center gap-4">
           <Slider
             id="temperature"
-            defaultValue={[1]}
-            max={2}
-            step={0.1}
+            value={[agentConfig.temperature]}
+            max={1}
+            step={0.05}
             className="flex-1"
+            onValueChange={(value) => {
+              onAgentConfigChange("temperature", value[0]);
+            }}
           />
-          <span className="w-12 text-center">1</span>
+          <span className="w-12 text-center">{agentConfig.temperature}</span>
         </div>
       </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="max-tokens" className="flex items-center">
-          Max Tokens
-          <span
-            className="ml-1 text-muted-foreground hover:cursor-help"
-            title="Maximum length of the model's response"
-          >
-            ⓘ
-          </span>
-        </Label>
-        <Input
-          id="max-tokens"
-          type="number"
-          defaultValue="250"
-          className="w-full"
-        />
-      </div>
-
-      <div className="flex items-center justify-between">
-        <div className="space-y-0.5">
-          <Label className="flex items-center">
-            Detect Emotion
-            <span
-              className="ml-1 text-muted-foreground hover:cursor-help"
-              title="Enable emotion detection in responses"
-            >
-              ⓘ
-            </span>
-          </Label>
-          <p className="text-sm text-muted-foreground">
-            Detect emotions in customer responses
-          </p>
-        </div>
-        <Switch />
-      </div>
     </div>
   );
 }
