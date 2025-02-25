@@ -11,6 +11,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
+import { ChatLanguages, elevenlabsVoiceLanguages } from "@/constants";
 
 export function ModelConfig({agentConfig, setAgentConfig}: {agentConfig: ModelConfigType, setAgentConfig: (config: ModelConfigType) => void}) {
   
@@ -155,10 +156,21 @@ export function ModelConfig({agentConfig, setAgentConfig}: {agentConfig: ModelCo
           <SelectTrigger id="language">
             <SelectValue placeholder="Select language" />
           </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="en">English</SelectItem>
-            <SelectItem value="ur">Urdu</SelectItem>
-          </SelectContent>
+          {
+            agentConfig.provider === "elevenlabs" ? (
+              <SelectContent>
+                {elevenlabsVoiceLanguages.map((language) => (
+                  <SelectItem key={language} value={language}>{language}</SelectItem>
+                ))}
+              </SelectContent>
+            ) : (
+              <SelectContent>
+                {ChatLanguages.map((language) => (
+                  <SelectItem key={language} value={language}>{language}</SelectItem>
+                ))}
+              </SelectContent>
+            )
+          }
         </Select>
       </div>
 

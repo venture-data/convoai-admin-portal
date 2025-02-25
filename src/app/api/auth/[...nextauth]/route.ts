@@ -17,8 +17,8 @@ export const authOptions: NextAuthOptions = {
         if (account?.provider === "credentials") {
           const mode = (credentials as any)?.mode;
           const endpoint = mode === 'register' 
-            ? "http://localhost:8000/auth/register"
-            : "http://localhost:8000/auth/login";
+            ? "https://rrfgpte7rx.us-east-1.awsapprunner.com/auth/register"
+            : "https://rrfgpte7rx.us-east-1.awsapprunner.com/auth/login";
 
           console.log("Sending request to:", endpoint);
           const response = await fetch(endpoint, {
@@ -53,7 +53,7 @@ export const authOptions: NextAuthOptions = {
           
           throw new Error("Invalid response from authentication server");
         } else if (account?.provider === "google") {
-          const endpoint = "http://localhost:8000/auth/login";
+          const endpoint = "https://rrfgpte7rx.us-east-1.awsapprunner.com/auth/login";
           const response = await fetch(endpoint, {
             method: "POST",
             headers: { 'Content-Type': 'application/json' },

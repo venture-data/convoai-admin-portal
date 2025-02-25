@@ -3,7 +3,7 @@ import ky from 'ky';
 
 
 const api = ky.create({
-    prefixUrl: 'http://localhost:8000/',
+    prefixUrl: 'https://rrfgpte7rx.us-east-1.awsapprunner.com/',
     timeout: 10000, 
     hooks: {
         beforeRequest: [
