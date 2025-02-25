@@ -20,6 +20,7 @@ export const authOptions: NextAuthOptions = {
             ? "http://localhost:8000/auth/register"
             : "http://localhost:8000/auth/login";
 
+          console.log("Sending request to:", endpoint);
           const response = await fetch(endpoint, {
             method: "POST",
             headers: { 'Content-Type': 'application/json' },
@@ -34,7 +35,7 @@ export const authOptions: NextAuthOptions = {
           const data = await response.json();
           console.log("Backend response:", data);
 
-          // Check for error responses first
+          console.log("data",data);
           if (data.detail) {
             throw new Error(data.detail);
           }
@@ -52,10 +53,7 @@ export const authOptions: NextAuthOptions = {
           
           throw new Error("Invalid response from authentication server");
         } else if (account?.provider === "google") {
-          const endpoint = (credentials as any)?.mode === 'register' 
-            ? "http://localhost:8000/auth/register" 
-            : "http://localhost:8000/auth/login";
-
+          const endpoint = "http://localhost:8000/auth/login";
           const response = await fetch(endpoint, {
             method: "POST",
             headers: { 'Content-Type': 'application/json' },
@@ -68,7 +66,6 @@ export const authOptions: NextAuthOptions = {
           });
           const data = await response.json();
           if (data.token) {
-            console.log("data",data);
             (user as any).token = data.token;
             (user as any).email = data.email;
             (user as any).name = data.name;
@@ -82,7 +79,6 @@ export const authOptions: NextAuthOptions = {
       }
     },
     async jwt({ token,user, account }:any) {
-      console.log("jwt",token,user,account);
       if (user) {
         token.id = user.id;
         token.email = user.email;
@@ -90,11 +86,9 @@ export const authOptions: NextAuthOptions = {
         token.provider = account?.provider; 
         token.token=user.token;
       }
-      console.log("token",token);
       return token;
     },
     async session({ session, token }:any) {
-      console.log("session",session,token);
       if (token) {
         session.user.id = token.id;
         session.user.email = token.email;
@@ -123,7 +117,6 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials:any) {
-        console.log("credentials in authorize", credentials);
         try {
           return {
             email: credentials?.email,
@@ -143,6 +136,15 @@ export const authOptions: NextAuthOptions = {
 
   pages: {
     signIn: "/",
+  },
+
+  session: {
+    strategy: "jwt",
+    maxAge: 30 * 60,
+  },
+
+  jwt: {
+    maxAge: 30 * 60,
   },
 };
 

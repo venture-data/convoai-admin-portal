@@ -3,7 +3,7 @@ import ky from 'ky';
 
 
 const api = ky.create({
-    prefixUrl: 'https://localhost:5000',
+    prefixUrl: 'http://localhost:8000/',
     timeout: 10000, 
     hooks: {
         beforeRequest: [

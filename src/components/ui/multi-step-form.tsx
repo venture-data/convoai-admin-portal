@@ -1,9 +1,8 @@
-"use client"
+import { motion } from "framer-motion"
 
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { useStepStore } from "@/store/use-step-store"
-import { motion } from "framer-motion"
 
 interface MultiStepFormProps {
   children: React.ReactNode[]
@@ -12,7 +11,6 @@ interface MultiStepFormProps {
 export function MultiStepForm({ children }: MultiStepFormProps) {
   const { currentStep, steps, setCurrentStep, markStepCompleted } = useStepStore()
 
-  // Validate that children match steps
   if (children.length !== steps.length) {
     throw new Error(`Number of children (${children.length}) does not match number of steps (${steps.length})`)
   }
@@ -76,9 +74,8 @@ export function MultiStepForm({ children }: MultiStepFormProps) {
           </Button>
           <Button
             onClick={next}
-            disabled={currentStep === steps.length - 1}
           >
-            {currentStep === steps.length - 1 ? 'Finish' : 'Next'}
+            {currentStep === steps.length - 1 ? 'Create Agent' : 'Next'}
           </Button>
         </div>
       </Card>

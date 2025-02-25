@@ -3,7 +3,7 @@
 import { signIn } from "next-auth/react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Link, Loader } from "lucide-react";
+import {  Loader } from "lucide-react";
 import { useAuthStore } from "../hooks/useAuth";
 import { useDynamicForm } from "../hooks/use-form";
 import { AuthToggle } from "@/components/auth/navigation/AuthToggle";
@@ -11,7 +11,7 @@ import { GoogleButton } from "@/components/auth/buttons/GoogleButton";
 import { FormField } from "@/components/auth/forms/FormField";
 import { z } from "zod";
 import { FieldValues, UseFormRegister } from "react-hook-form";
-import { toast } from "@/hooks/use-toast"
+import { toast } from "@/app/hooks/use-toast"
 import { useRouter } from "next/navigation";
 const formSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -37,13 +37,11 @@ export default function Page() {
           isAuth: true,
           token: "",
         });
-        console.log(data);
         const res = await signIn("credentials", {
           email: data.email,
           password: data.password,
           redirect: false,
         });
-        console.log(res);
         if (res?.error) {
           toast({
             variant: "destructive",
@@ -111,7 +109,7 @@ export default function Page() {
           error={errors.password}
         />
 
-        <div className="flex justify-between items-center">
+        {/* <div className="flex justify-between items-center">
           <div className="flex items-center">
             <input
               type="checkbox"
@@ -125,7 +123,7 @@ export default function Page() {
           <Link href="/forgot-password" className="text-sm text-teal-500">
             Forgot password
           </Link>
-        </div>
+        </div> */}
 
         <Button
           type="submit"

@@ -15,8 +15,10 @@ import { Slider } from "@/components/ui/slider";
 export function ModelConfig({agentConfig, setAgentConfig}: {agentConfig: ModelConfigType, setAgentConfig: (config: ModelConfigType) => void}) {
   
   const onAgentConfigChange = (key: string, value: string | number) => {
-    setAgentConfig({ ...agentConfig, [key]: value });
+    const newConfig = { ...agentConfig, [key]: value };
+    setAgentConfig(newConfig);
   }
+  
   return (
     <div className="space-y-6">
       <div className="space-y-2">
@@ -79,15 +81,18 @@ export function ModelConfig({agentConfig, setAgentConfig}: {agentConfig: ModelCo
 
       <div className="space-y-2">
         <Label htmlFor="provider">Provider</Label>
-        <Select value={agentConfig.provider} onValueChange={(value) => {
-          onAgentConfigChange("provider", value);
-        }}>
+        <Select 
+          value={agentConfig.provider} 
+          onValueChange={(value: "elevenlabs" | "openai") => {
+            onAgentConfigChange("provider", value);
+          }}
+        >
           <SelectTrigger id="provider">
             <SelectValue placeholder="Select provider" />
           </SelectTrigger>
           <SelectContent>
+            <SelectItem value="elevenlabs">ElevenLabs</SelectItem>
             <SelectItem value="openai">OpenAI</SelectItem>
-            <SelectItem value="anthropic">Anthropic</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -102,15 +107,34 @@ export function ModelConfig({agentConfig, setAgentConfig}: {agentConfig: ModelCo
             ⓘ
           </span>
         </Label>
-        <Select value={agentConfig.model} onValueChange={(value) => {
-          onAgentConfigChange("model", value);
-        }}>
+        <Select 
+          defaultValue={agentConfig.model}
+          onValueChange={(value) => onAgentConfigChange("model", value)}
+        >
           <SelectTrigger id="model">
             <SelectValue placeholder="Select model" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="gpt-4o-mini">GPT-4o-mini</SelectItem>
-            <SelectItem value="gpt-3.5-turbo">GPT-3.5 Turbo</SelectItem>
+            {agentConfig.provider === "elevenlabs" ? (
+              <>
+                <SelectItem value="gemini-1.5-flash">Gemini 1.5 Flash (Fastest)</SelectItem>
+                <SelectItem value="gpt-4o-mini">GPT-4o Mini</SelectItem>
+                <SelectItem value="gpt-4o">GPT-4o</SelectItem>
+                <SelectItem value="gpt-4">GPT-4</SelectItem>
+                <SelectItem value="gpt-4-turbo">GPT-4 Turbo</SelectItem>
+                <SelectItem value="gpt-3.5-turbo">GPT-3.5 Turbo</SelectItem>
+                <SelectItem value="gemini-1.5-pro">Gemini 1.5 Pro</SelectItem>
+                <SelectItem value="gemini-1.0-pro">Gemini 1.0 Pro</SelectItem>
+                <SelectItem value="claude-3-5-sonnet">Claude 3.5 Sonnet</SelectItem>
+                <SelectItem value="claude-3-haiku">Claude 3 Haiku</SelectItem>
+                <SelectItem value="grok-beta">Grok Beta</SelectItem>
+              </>
+            ) : (
+              <>
+                <SelectItem value="gpt-4o-mini-realtime">GPT-4o Mini Realtime</SelectItem>
+                <SelectItem value="gpt-4o-realtime">GPT-4o Realtime</SelectItem>
+              </>
+            )}
           </SelectContent>
         </Select>
       </div>

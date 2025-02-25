@@ -10,7 +10,8 @@ import { useDynamicForm } from "../../hooks/use-form";
 import { AuthToggle } from "@/components/auth/navigation/AuthToggle";
 import { GoogleButton } from "@/components/auth/buttons/GoogleButton";
 import { FormField } from "@/components/auth/forms/FormField";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "@/app/hooks/use-toast";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -30,6 +31,7 @@ export default function SignUpPage() {
   const authStore = useAuthStore();
   const [isLoading, setIsLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
+  const router = useRouter();
 
   const { register, errors, onSubmitHandler } = useDynamicForm<FormValues>(
     formSchema,
@@ -46,6 +48,7 @@ export default function SignUpPage() {
         const res = await signIn("credentials", {
           email: data.email,
           password: data.password,
+          name: data.name,
           redirect: false,
           mode:'register',
         });
@@ -56,12 +59,17 @@ export default function SignUpPage() {
             description: res.error,
           });
         }
+        else{
+          router.push("/dashboard");
+        } 
       } catch  {
         toast({
           variant: "destructive",
           title: "Error",
           description: "An unexpected error occurred",
         });
+
+        
       } finally {
         setIsLoading(false);
       }
@@ -71,11 +79,22 @@ export default function SignUpPage() {
   const handleSignIn = async (provider: string, mode: string) => {
     setGoogleLoading(true);
     try {
-      await signIn(provider, { 
-        redirect: true,
+      const res = await signIn(provider, { 
+        redirect: false,
         callbackUrl: "/dashboard",
         mode:mode,
       });
+      if(res?.error){
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: res.error,
+        });
+      }
+      else{
+        router.push("/dashboard");
+      }
+      
     } catch (error) {
       console.error(`Error during ${provider} sign-in:`, error);
     } finally {

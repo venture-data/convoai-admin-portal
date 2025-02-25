@@ -43,7 +43,7 @@ const items = [
     title: "Analytics",
     url: "/dashboard/analytics",
     icon: BarChart,
-    hasDropdown: true
+    hasDropdown: false
   },
   {
     title: "Agents",
