@@ -3,7 +3,7 @@ import ky from 'ky';
 
 
 const api = ky.create({
-    prefixUrl: 'https://rrfgpte7rx.us-east-1.awsapprunner.com/',
+    prefixUrl: `${process.env.BASE_URL}`,
     timeout: 10000, 
     hooks: {
         beforeRequest: [
