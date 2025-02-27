@@ -1,9 +1,18 @@
 import { useAuthStore } from '@/app/hooks/useAuth';
 import ky from 'ky';
 
+// Update the environment variable name to match .env file
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || process.env.BASE_URL;
+
+if (!baseUrl) {
+    throw new Error('BASE_URL environment variable is not defined');
+}
+
+console.log("BASE URL")
+console.log(baseUrl)
 
 const api = ky.create({
-    prefixUrl: `${process.env.BASE_URL}`,
+    prefixUrl: baseUrl,
     timeout: 10000, 
     hooks: {
         beforeRequest: [
