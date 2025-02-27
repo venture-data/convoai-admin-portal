@@ -2,10 +2,12 @@ import { useAuthStore } from '@/app/hooks/useAuth';
 import ky from 'ky';
 
 // Update the environment variable name to match .env file
-const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || process.env.BASE_URL;
+const baseUrl = typeof window !== 'undefined' 
+    ? window.location.origin 
+    : process.env.NEXT_PUBLIC_BASE_URL || process.env.BASE_URL;
 
 if (!baseUrl) {
-    throw new Error('BASE_URL environment variable is not defined');
+    throw new Error('Unable to determine base URL');
 }
 
 console.log("BASE URL")
