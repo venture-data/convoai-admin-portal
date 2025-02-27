@@ -2,22 +2,21 @@ import { create } from 'zustand'
 
 interface StepState {
   currentStep: number
-  setCurrentStep: (step: number) => void
   steps: string[]
-  completedSteps: Set<number>
+  completedSteps: number[]
+  setCurrentStep: (step: number) => void
   markStepCompleted: (step: number) => void
-  isStepCompleted: (step: number) => boolean
+  reset: () => void
 }
 
-export const useStepStore = create<StepState>((set, get) => ({
+export const useStepStore = create<StepState>((set) => ({
   currentStep: 0,
-  steps: ['Model','Voice','Knowledge', 'Review'],
-  completedSteps: new Set(),
+  steps: ['Model', 'Voice', 'Knowledge', 'Review'],
+  completedSteps: [],
   setCurrentStep: (step) => set({ currentStep: step }),
-  markStepCompleted: (step) => {
-    const { completedSteps } = get()
-    completedSteps.add(step)
-    set({ completedSteps: new Set(completedSteps) })
-  },
-  isStepCompleted: (step) => get().completedSteps.has(step)
+  markStepCompleted: (step) =>
+    set((state) => ({
+      completedSteps: [...new Set([...state.completedSteps, step])],
+    })),
+  reset: () => set({ currentStep: 0, completedSteps: [] }),
 })) 

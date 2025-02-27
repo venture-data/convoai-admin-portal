@@ -6,9 +6,12 @@ import { useStepStore } from "@/store/use-step-store"
 
 interface MultiStepFormProps {
   children: React.ReactNode[]
+  isCurrentStepValid?: boolean
+  onSubmit?: () => void
+  isLoading?: boolean
 }
 
-export function MultiStepForm({ children }: MultiStepFormProps) {
+export function MultiStepForm({ children, isCurrentStepValid = true, onSubmit, isLoading = false }: MultiStepFormProps) {
   const { currentStep, steps, setCurrentStep, markStepCompleted } = useStepStore()
 
   if (children.length !== steps.length) {
@@ -16,8 +19,12 @@ export function MultiStepForm({ children }: MultiStepFormProps) {
   }
 
   const next = async () => {
-    markStepCompleted(currentStep)
-    setCurrentStep(Math.min(currentStep + 1, steps.length - 1))
+    if (currentStep === steps.length - 1) {
+      onSubmit?.();
+    } else {
+      markStepCompleted(currentStep);
+      setCurrentStep(Math.min(currentStep + 1, steps.length - 1));
+    }
   }
 
   const prev = () => {
@@ -68,14 +75,22 @@ export function MultiStepForm({ children }: MultiStepFormProps) {
           <Button
             variant="outline"
             onClick={prev}
-            disabled={currentStep === 0}
+            disabled={currentStep === 0 || isLoading}
           >
             Previous
           </Button>
           <Button
             onClick={next}
+            disabled={(currentStep===steps.length-1) && !isCurrentStepValid || isLoading}
           >
-            {currentStep === steps.length - 1 ? 'Create Agent' : 'Next'}
+            {isLoading ? (
+              <>
+                <span className="mr-2">Creating...</span>
+                <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+              </>
+            ) : (
+              currentStep === steps.length - 1 ? 'Create Agent' : 'Next'
+            )}
           </Button>
         </div>
       </Card>

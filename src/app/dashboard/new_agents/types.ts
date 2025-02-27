@@ -4,16 +4,17 @@ export const modelConfigSchema = z.object({
     agentName: z.string().min(1, "Agent name is required"),
     firstMessage: z.string().min(1, "First message is required"),
     systemPrompt: z.string().min(1, "System prompt is required"),
-    provider: z.enum(["elevenlabs", "openai"]).default("elevenlabs"),
+    type: z.enum(["inbound", "outbound"]),
+    provider: z.enum(["elevenlabs", "openai"]),
     model: z.string().min(1, "Model is required"),
-    language: z.enum(["en", "ur"]).default("en"),
-    temperature: z.number().min(0).max(1).default(0.7),
+    language: z.enum(["en", "ur"]),
+    temperature: z.number().min(0).max(1),
   });
 
 export const voiceConfigSchema = z.object({
   id: z.string().min(1, "Voice ID is required"),
   name: z.string().min(1, "Voice name is required"),
-  provider: z.enum(["elevenlabs", "openai"]).default("elevenlabs"),
+  provider: z.enum(["elevenlabs", "openai"]),
   details: z.object({
     name: z.string().min(1, "Voice name is required"),
     high_quality_base_model_ids: z.array(z.string()).min(1, "High quality base model IDs are required"),

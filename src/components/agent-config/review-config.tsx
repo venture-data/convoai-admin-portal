@@ -17,27 +17,31 @@ export function ReviewConfig({ agentConfig }: ReviewConfigProps) {
           <dl className="space-y-2">
             <div>
               <dt className="text-sm text-gray-500">Agent Name</dt>
-              <dd>{agentConfig.model.agentName}</dd>
+              <dd className={agentConfig.model.agentName ? '' : 'text-red-500'}>{agentConfig.model.agentName || 'Missing'}</dd>
             </div>
             <div>
               <dt className="text-sm text-gray-500">First Message</dt>
-              <dd>{agentConfig.model.firstMessage}</dd>
+              <dd className={agentConfig.model.firstMessage ? '' : 'text-red-500'}>{agentConfig.model.firstMessage || 'Missing'}</dd>
             </div>
             <div>
               <dt className="text-sm text-gray-500">System Prompt</dt>
-              <dd>{agentConfig.model.systemPrompt}</dd>
+              <dd className={agentConfig.model.systemPrompt ? '' : 'text-red-500'}>{agentConfig.model.systemPrompt || 'Missing'}</dd>
             </div>
             <div>
               <dt className="text-sm text-gray-500">Model</dt>
-              <dd>{agentConfig.model.provider} / {agentConfig.model.model}</dd>
+              <dd className={agentConfig.model.provider && agentConfig.model.model ? '' : 'text-red-500'}>{agentConfig.model.provider} / {agentConfig.model.model || 'Missing'}</dd>
             </div>
             <div>
               <dt className="text-sm text-gray-500">Language</dt>
-              <dd>{agentConfig.model.language}</dd>
+              <dd className={agentConfig.model.language ? '' : 'text-red-500'}>{agentConfig.model.language || 'Missing'}</dd>
             </div>
             <div>
               <dt className="text-sm text-gray-500">Temperature</dt>
-              <dd>{agentConfig.model.temperature}</dd>
+              <dd className={agentConfig.model.temperature ? '' : 'text-red-500'}>{agentConfig.model.temperature || 'Missing'}</dd>
+            </div>
+            <div>
+              <dt className="text-sm text-gray-500">Type</dt>
+              <dd className={agentConfig.model.type ? '' : 'text-red-500'}>{agentConfig.model.type || 'Missing'}</dd>
             </div>
           </dl>
         </div>
@@ -47,9 +51,9 @@ export function ReviewConfig({ agentConfig }: ReviewConfigProps) {
           <dl className="space-y-2">
             <div>
               <dt className="text-sm text-gray-500">Voice</dt>
-              <dd>{agentConfig.voice.name || "No voice selected"}</dd>
+              <dd className={agentConfig.voice.name ? '' : 'text-red-500'}>{agentConfig.voice.name || 'No voice selected'}</dd>
               <p className="text-sm text-gray-500">Provider</p>
-              <dd>{agentConfig.voice.provider || "No provider selected"}</dd>
+              <dd className={agentConfig.voice.provider ? '' : 'text-red-500'}>{agentConfig.voice.provider || 'No provider selected'}</dd>
             </div>
           </dl>
         </div>
@@ -59,7 +63,7 @@ export function ReviewConfig({ agentConfig }: ReviewConfigProps) {
           <div>
             <dt className="text-sm text-gray-500">Files</dt>
             <p className="text-sm text-black font-semibold">{agentConfig.knowledge.files.map((file) => file.name).join(", ")}</p>
-            <dd>{agentConfig.knowledge.files.length} files uploaded</dd>
+            <dd className={agentConfig.knowledge.files.length > 0 ? '' : 'text-red-500'}>{agentConfig.knowledge.files.length} files uploaded</dd>
           </div>
         </div>
       </div>

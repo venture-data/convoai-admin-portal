@@ -12,17 +12,18 @@ import {
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { ChatLanguages, elevenlabsVoiceLanguages } from "@/constants";
+import { useState } from "react";
 
 export function ModelConfig({agentConfig, setAgentConfig}: {agentConfig: ModelConfigType, setAgentConfig: (config: ModelConfigType) => void}) {
-  
+  const [errors] = useState<{ [key: string]: boolean }>({});
+
   const onAgentConfigChange = (key: string, value: string | number) => {
     const newConfig = { ...agentConfig, [key]: value };
     setAgentConfig(newConfig);
   }
-  
   return (
     <div className="space-y-6">
-      <div className="space-y-2">
+      <div className={`space-y-2 ${errors.agentName ? 'text-red-500' : ''}`}>
         <Label htmlFor="agent-name" className="flex items-center">
           Agent Name
           <span
@@ -41,7 +42,7 @@ export function ModelConfig({agentConfig, setAgentConfig}: {agentConfig: ModelCo
           }}
         />
       </div>
-      <div className="space-y-2">
+      <div className={`space-y-2 ${errors.firstMessage ? 'text-red-500' : ''}`}>
         <Label htmlFor="first-message" className="flex items-center">
           First Message
           <span
@@ -60,7 +61,7 @@ export function ModelConfig({agentConfig, setAgentConfig}: {agentConfig: ModelCo
           }}
         />
       </div>
-      <div className="space-y-2">
+      <div className={`space-y-2 ${errors.systemPrompt ? 'text-red-500' : ''}`}>
         <Label htmlFor="system-prompt" className="flex items-center">
           System Prompt
           <span
@@ -98,7 +99,7 @@ export function ModelConfig({agentConfig, setAgentConfig}: {agentConfig: ModelCo
         </Select>
       </div>
 
-      <div className="space-y-2">
+      <div className={`space-y-2 ${errors.model ? 'text-red-500' : ''}`}>
         <Label htmlFor="model" className="flex items-center">
           Model
           <span
@@ -140,7 +141,7 @@ export function ModelConfig({agentConfig, setAgentConfig}: {agentConfig: ModelCo
         </Select>
       </div>
 
-      <div className="space-y-2">
+      <div className={`space-y-2 ${errors.language ? 'text-red-500' : ''}`}>
         <Label htmlFor="language" className="flex items-center">
           Language
           <span
@@ -174,7 +175,7 @@ export function ModelConfig({agentConfig, setAgentConfig}: {agentConfig: ModelCo
         </Select>
       </div>
 
-      <div className="space-y-4">
+      <div className={`space-y-4 ${errors.temperature ? 'text-red-500' : ''}`}>
         <Label htmlFor="temperature" className="flex items-center">
           Temperature
           <span
@@ -197,6 +198,30 @@ export function ModelConfig({agentConfig, setAgentConfig}: {agentConfig: ModelCo
           />
           <span className="w-12 text-center">{agentConfig.temperature}</span>
         </div>
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="type" className="flex items-center">
+          Type
+          <span
+            className="ml-1 text-muted-foreground hover:cursor-help"
+            title="Select the type of messages this agent can handle"
+          >
+            ⓘ
+          </span>
+        </Label>
+        <Select 
+          value={agentConfig.type} 
+          onValueChange={(value) => onAgentConfigChange("type", value)}
+        >
+          <SelectTrigger id="type">
+            <SelectValue placeholder="Select type" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="outbound">Outbound</SelectItem>
+            <SelectItem value="inbound">Inbound</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
     </div>
