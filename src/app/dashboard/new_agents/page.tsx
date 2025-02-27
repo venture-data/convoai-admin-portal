@@ -86,7 +86,7 @@ export default function NewAgentPage() {
         title: "Success",
         description: "Agent created successfully",
       });
-      // resetForm();
+      resetForm();
     } catch (error) {
       console.error('Creation error:', error);
       toast({
