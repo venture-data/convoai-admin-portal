@@ -5,7 +5,6 @@ export async function POST(request: Request) {
   console.log('Starting agent creation...');
 
   try {
-    // Get authorization header
     const headersList = await headers();
     const authHeader = headersList.get('Authorization');
 
@@ -96,7 +95,7 @@ export async function POST(request: Request) {
 
 
 
-export async function GET(request: Request) {
+export async function GET() {
   console.log("hit agent")
   try {
     const headersList = await headers();
