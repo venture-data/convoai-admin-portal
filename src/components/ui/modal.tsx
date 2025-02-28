@@ -1,7 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
+import {useState } from "react";
 import { Document, Page, pdfjs } from 'react-pdf';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
@@ -16,9 +15,7 @@ export function PdfModal({ isOpen, onClose, pdfUrl }: ModalProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [numPages, setNumPages] = useState<number | null>(null);
   const [pageNumber, setPageNumber] = useState(1);
-  const session = useSession();
 
-  
   pdfjs.GlobalWorkerOptions.workerSrc = "/pdf-worker/pdf.worker.min.js";
 
   function onDocumentLoadSuccess({ numPages }: { numPages: number }) {
