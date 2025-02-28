@@ -24,6 +24,22 @@ import { cn } from "@/lib/utils";
 
 const items = [
   {
+    title: "Agents",
+    url: "/dashboard/agents",
+    icon: Users,
+    hasDropdown: true,
+    children: [
+      {
+        title: "My Agents",
+        url: "/dashboard/agents",
+      },
+      {
+        title: "New Agents",
+        url: "/dashboard/new_agents",
+      }
+    ]
+  },
+  {
     title: "Schedule Calls",
     url: "/dashboard/schedule",
     icon: Calendar,
@@ -44,22 +60,6 @@ const items = [
     url: "/dashboard/analytics",
     icon: BarChart,
     hasDropdown: false
-  },
-  {
-    title: "Agents",
-    url: "/dashboard/agents",
-    icon: Users,
-    hasDropdown: true,
-    children: [
-      {
-        title: "My Agents",
-        url: "/dashboard/agents",
-      },
-      {
-        title: "New Agents",
-        url: "/dashboard/new_agents",
-      }
-    ]
   },
   {
     title: "Call Log",

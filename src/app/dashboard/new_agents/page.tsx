@@ -10,6 +10,7 @@ import { VoiceConfig } from "@/components/agent-config/voice-config"
 import { useAgent } from "@/app/hooks/use-agent"
 import { useToast } from "@/app/hooks/use-toast"
 import { useStepStore } from "@/store/use-step-store"
+import { useRouter } from "next/navigation"
 
 
 
@@ -17,6 +18,7 @@ export default function NewAgentPage() {
   const { createAgent } = useAgent()
   const { toast } = useToast()
   const { reset: resetSteps } = useStepStore()
+  const router=useRouter()
 
   const initialConfig: AgentConfig = {
     model: {
@@ -71,13 +73,9 @@ export default function NewAgentPage() {
     return !!(config.id && config.name && config.provider);
   };
 
-  const validateKnowledgeConfig = (config: KnowledgeConfigType) => {
-    return config.files?.length>0;
-  };
 
   const isModelValid = validateModelConfig(agentConfig.model);
   const isVoiceValid = validateVoiceConfig(agentConfig.voice);
-  const isKnowledgeValid = validateKnowledgeConfig(agentConfig.knowledge);
 
   const handleCreateAgent = async () => {
     try {
@@ -86,6 +84,9 @@ export default function NewAgentPage() {
         title: "Success",
         description: "Agent created successfully",
       });
+
+      router.push("/dashboard/agents")
+      
       resetForm();
     } catch (error) {
       console.error('Creation error:', error);
@@ -101,12 +102,12 @@ export default function NewAgentPage() {
     <div className="container mx-auto p-6 min-h-screen flex gap-8">
       <div className="flex-1 w-full ">
         <MultiStepForm 
-          isCurrentStepValid={isModelValid && isVoiceValid && isKnowledgeValid}
+          isCurrentStepValid={isModelValid && isVoiceValid}
           onSubmit={handleCreateAgent}
           isLoading={createAgent.isPending}
         >
           <ModelConfig agentConfig={agentConfig.model} setAgentConfig={(config) => handleAgentConfigChange("model", config)} />
-          <VoiceConfig agentConfig={agentConfig.voice} setAgentConfig={(config) => handleAgentConfigChange("voice", config)} />
+          <VoiceConfig provider={agentConfig?.model.provider} agentConfig={agentConfig.voice} setAgentConfig={(config) => handleAgentConfigChange("voice", config)} />
           <KnowledgeConfig agentConfig={agentConfig.knowledge} setAgentConfig={(config) => handleAgentConfigChange("knowledge", config)} />
           <ReviewConfig agentConfig={agentConfig} />
         </MultiStepForm>

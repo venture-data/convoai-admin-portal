@@ -13,11 +13,12 @@ import { useState } from "react";
 
 
 interface VoiceConfigProps {
+  provider:string,
   agentConfig: VoiceConfigType
   setAgentConfig: (config: VoiceConfigType) => void
 }
 
-export function VoiceConfig({ agentConfig, setAgentConfig }: VoiceConfigProps) {
+export function VoiceConfig({provider, agentConfig, setAgentConfig }: VoiceConfigProps) {
   const [errors] = useState<{ [key: string]: boolean }>({});
 
   const handleVoiceChange = (voiceId: string) => {
@@ -50,9 +51,9 @@ export function VoiceConfig({ agentConfig, setAgentConfig }: VoiceConfigProps) {
             </SelectTrigger>
             <SelectContent>
               {Array.isArray(voices) && voices.map((voice) => (
-                <SelectItem key={voice.details.id} value={voice.details.id}>
-                  {voice.details.name}
-                </SelectItem>
+                voice.provider === provider && <SelectItem key={voice.details.id} value={voice.details.id}>
+                {voice.details.name}
+              </SelectItem>
               ))}
             </SelectContent>
           </Select>
