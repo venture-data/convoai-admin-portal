@@ -1,6 +1,6 @@
 "use client"
 
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { AgentConfig } from "@/app/dashboard/new_agents/types";
 import { useSession } from "next-auth/react";
 
@@ -61,7 +61,27 @@ export function useAgent() {
     },
   });
 
+  const { data: agents = [] as AgentConfig[], isLoading, error } = useQuery({
+    queryKey: ['agents'],
+    queryFn: async () => {
+      const response = await fetch('/api/agents', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${session.data?.token}`,
+        },
+      });
+      if (!response.ok) {
+        throw new Error('Failed to fetch agents');
+      }
+      return response.json();
+    },
+  });
+  
+
   return {
     createAgent,
+    agents,
+    isLoading,
+    error
   };
 } 

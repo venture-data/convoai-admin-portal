@@ -40,6 +40,7 @@
     "react-day-picker": "^8.10.1",
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.54.2",
+    "react-pdf": "^9.2.1",
     "react-wordcloud": "^1.2.7",
     "recharts": "^2.15.1",
     "tailwind-merge": "^2.6.0",
