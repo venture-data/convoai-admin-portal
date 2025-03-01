@@ -143,6 +143,7 @@ export function AgentDetailsModal({
     const provider = Object.keys(details)[0];
     if (!provider) return undefined;
     
+    console.log(details[provider]?.documents)
     return details[provider]?.documents.find(doc => doc.file_name === fileName)?.file_name
   };
 

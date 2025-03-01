@@ -98,11 +98,13 @@ export default function AgentsPage() {
     }
   }
 
+  console.log(agents)
+
   return (
     <div className="container mx-auto p-6">
       <h1 className="text-2xl font-bold mb-6">My Agents</h1>
 
-      {agents.length === 0 ? (
+      {agents?.length === 0 || agents?.detail ? (
         <div className="text-center py-10">
           <p className="text-muted-foreground">No agents found</p>
         </div>
@@ -121,7 +123,7 @@ export default function AgentsPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {agents.map((agent: Agent) => (
+              {!agents?.detail && (agents ?? [])?.map((agent: Agent) => (
                 <TableRow key={agent.id}>
                   <TableCell className="font-medium">{agent.name}</TableCell>
                   <TableCell>{agent.type}</TableCell>
@@ -129,7 +131,7 @@ export default function AgentsPage() {
                   <TableCell>{agent.language}</TableCell>
                   <TableCell>{agent.llm_model}</TableCell>
                   <TableCell>
-                    {agent.knowledge_bases[0]?.name || 'None'}
+                    {agent?.knowledge_bases[0]?.name || 'None'}
                   </TableCell>
                   <TableCell className="text-right space-x-2">
                     <Button
