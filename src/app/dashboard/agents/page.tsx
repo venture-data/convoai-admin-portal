@@ -25,28 +25,38 @@ interface VoiceDetails {
     preview_url: string;
     high_quality_base_model_ids: string[];
   };
-  provider: string;
+  provider: "elevenlabs" | "openai";
 }
 
 interface Agent {
-  id: string | number;
+  id: number;
   name: string;
   type: string;
-  provider: string;
+  provider: "elevenlabs" | "openai";
   language: string;
   llm_model: string;
   temperature: number;
   voice_details: VoiceDetails;
   first_message: string;
   system_prompt: string;
+  details: {
+    [key: string]: {
+      agent_id: string;
+      documents: Array<{
+        id: string;
+        file_name: string;
+      }>;
+    };
+  };
   knowledge_bases: Array<{ name: string; type: string; location: string }>;
 }
 
 export default function AgentsPage() {
-  const { agents, isLoading, error } = useAgent()
+  const { agents, isLoading, error, updateAgent } = useAgent()
   const router = useRouter()
   const [selectedAgent, setSelectedAgent] = useState<Agent | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isEditMode, setIsEditMode] = useState(false)
 
   if (isLoading) {
     return (
@@ -67,7 +77,26 @@ export default function AgentsPage() {
 
   const handleViewDetails = (agent: Agent) => {
     setSelectedAgent(agent)
+    setIsEditMode(false)
     setIsModalOpen(true)
+  }
+
+  const handleEditAgent = (agent: Agent) => {
+    setSelectedAgent(agent)
+    setIsEditMode(true)
+    setIsModalOpen(true)
+  }
+
+  const handleUpdate = async (formData: FormData) => {
+    try {
+      await updateAgent.mutateAsync(formData)
+      setIsModalOpen(false)
+      setSelectedAgent(null)
+      // Optionally refresh the agents list
+      router.refresh()
+    } catch (error) {
+      console.error('Failed to update agent:', error)
+    }
   }
 
   return (
@@ -103,13 +132,20 @@ export default function AgentsPage() {
                   <TableCell>
                     {agent.knowledge_bases[0]?.name || 'None'}
                   </TableCell>
-                  <TableCell className="text-right">
+                  <TableCell className="text-right space-x-2">
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={() => handleViewDetails(agent)}
                     >
                       View Details
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleEditAgent(agent)}
+                    >
+                      Update
                     </Button>
                   </TableCell>
                 </TableRow>
@@ -125,8 +161,11 @@ export default function AgentsPage() {
           onClose={() => {
             setIsModalOpen(false)
             setSelectedAgent(null)
+            setIsEditMode(false)
           }}
           agent={selectedAgent}
+          readonly={!isEditMode}
+          onUpdate={handleUpdate}
         />
       )}
     </div>

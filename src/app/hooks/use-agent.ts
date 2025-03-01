@@ -1,11 +1,12 @@
 "use client"
 
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AgentConfig } from "@/app/dashboard/new_agents/types";
 import { useSession } from "next-auth/react";
 
 export function useAgent() {
   const session = useSession()
+  const queryClient = useQueryClient()
   console.log(session)
   const createAgent = useMutation({
     mutationFn: async (agentConfig: AgentConfig) => {
@@ -61,6 +62,29 @@ export function useAgent() {
     },
   });
 
+  const updateAgent = useMutation({
+    mutationFn: async (formData: FormData) => {
+      const response = await fetch('/api/agents', {
+        method: 'PUT',
+        body: formData,
+        headers: {
+          'Authorization': `Bearer ${session.data?.token}`,
+        }
+      });
+
+      const responseData = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(responseData.error || 'Failed to update agent');
+      }
+
+      return responseData;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['agents'] });
+    },
+  });
+
   const { data: agents = [] as AgentConfig[], isLoading, error } = useQuery({
     queryKey: ['agents'],
     queryFn: async () => {
@@ -80,6 +104,7 @@ export function useAgent() {
 
   return {
     createAgent,
+    updateAgent,
     agents,
     isLoading,
     error

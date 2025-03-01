@@ -143,4 +143,69 @@ export async function GET() {
   }
 }
 
+export async function PUT(request: Request) {
+  console.log('Starting agent update...');
+
+  try {
+    const headersList = await headers();
+    const authHeader = headersList.get('Authorization');
+
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return NextResponse.json(
+        { error: 'Unauthorized - No valid token provided' },
+        { status: 401 }
+      );
+    }
+
+    const token = authHeader.split(' ')[1];
+    if (!process.env.BASE_URL) {
+      return NextResponse.json(
+        { error: 'Server configuration error' },
+        { status: 500 }
+      );
+    }
+
+    const formData = await request.formData();
+    console.log('Update form data contents:');
+    for (const [key, value] of formData.entries()) {
+      if (value instanceof File) {
+        console.log(`${key}: File - ${value.name} (${value.size} bytes)`);
+      } else {
+        console.log(`${key}: ${value}`);
+      }
+    }
+
+    const url = `${process.env.BASE_URL}/agent/update-agent`;
+    const response = await fetch(url, {
+      method: 'PUT',
+      body: formData,
+      headers: {
+        'Accept': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Error response:', errorText);
+      throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+    }
+
+    const data = await response.json();
+    console.log('Success response:', data);
+    return NextResponse.json(data);
+
+  } catch (error) {
+    console.error('Update error:', {
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined
+    });
+
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : 'Failed to update agent' },
+      { status: 500 }
+    );
+  }
+}
+
 

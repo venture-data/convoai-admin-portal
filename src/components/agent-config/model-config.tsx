@@ -167,7 +167,7 @@ export function ModelConfig({agentConfig, setAgentConfig}: {agentConfig: ModelCo
             ) : (
               <SelectContent>
                 {ChatLanguages.map((language) => (
-                  <SelectItem key={language} value={language}>{language}</SelectItem>
+                  <SelectItem key={language} value={language?.toLowerCase()}>{language}</SelectItem>
                 ))}
               </SelectContent>
             )
