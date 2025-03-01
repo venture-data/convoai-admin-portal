@@ -21,13 +21,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 
 interface AgentDetails {
-  elevenlabs?: {
-    agent_id: string;
-    documents: Array<{
-      id: string;
-      file_name: string;
-    }>;
-  };
+  [key:string]: {
+   agent_id: string;
+   documents: Array<{
+     id: string;
+     file_name: string;
+   }>;
+ };
 }
 
 interface Agent {
@@ -125,18 +125,13 @@ export function AgentDetailsModal({
     }
     if (filesToDelete.length > 0) {
       filesToDelete.forEach((fileName) => {
-        formData.append("files_to_delete[]", fileName);
+        formData.append("files_to_delete", fileName);
       });
-    }
-
-    console.log("FormData contents:");
-    for (const [key, value] of formData.entries()) {
-      console.log(`${key}:`, value);
     }
 
     try {
       await onUpdate(formData);
-      // onClose();
+      onClose();
     } catch (error) {
       console.error("Failed to update agent:", error);
     } finally {
@@ -144,10 +139,20 @@ export function AgentDetailsModal({
     }
   };
 
+  const findDocumentId = (fileName: string, details: AgentDetails): string | undefined => {
+    const provider = Object.keys(details)[0];
+    if (!provider) return undefined;
+    
+    return details[provider]?.documents.find(doc => doc.file_name === fileName)?.file_name
+  };
+
   const handleDeleteFile = (fileName: string) => {
-    setFilesToDelete((prev) => [...prev, fileName]);
-    setRemainingKnowledgeBases((prev) =>
-      prev.filter((kb) => kb.name !== fileName)
+    const documentId = findDocumentId(fileName, agent.details);
+    if (documentId) {
+      setFilesToDelete(prev => [...prev, documentId]);
+    }
+    setRemainingKnowledgeBases(prev => 
+      prev.filter(kb => kb.name !== fileName)
     );
   };
 

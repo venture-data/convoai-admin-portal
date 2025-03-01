@@ -6,12 +6,6 @@ import CredentialsProvider from "next-auth/providers/credentials";
 const authOptions: NextAuthOptions = {
   callbacks: {
     async signIn({ user, account, credentials }) {
-      console.log("Sign-in callback called with:", { 
-        email: user?.email, 
-        provider: account?.provider, 
-        mode: (credentials as any)?.mode 
-      });
-      
       try {
         if (account?.provider === "credentials") {
           const mode = (credentials as any)?.mode;
@@ -19,7 +13,6 @@ const authOptions: NextAuthOptions = {
             ? `${process.env.BASE_URL}/auth/register`
             : `${process.env.BASE_URL}/auth/login`;
 
-          console.log("Sending request to:", endpoint);
           const response = await fetch(endpoint, {
             method: "POST",
             headers: { 'Content-Type': 'application/json' },
@@ -32,9 +25,6 @@ const authOptions: NextAuthOptions = {
           });
 
           const data = await response.json();
-          console.log("Backend response:", data);
-
-          console.log("data",data);
           if (data.detail) {
             throw new Error(data.detail);
           }
@@ -52,7 +42,6 @@ const authOptions: NextAuthOptions = {
           
           throw new Error("Invalid response from authentication server");
         } else if (account?.provider === "google") {
-          console.log(process.env.BASE_URL)
           const endpoint = `${process.env.BASE_URL}/auth/login`;
           const response = await fetch(endpoint, {
             method: "POST",
@@ -74,7 +63,6 @@ const authOptions: NextAuthOptions = {
         }
         return false;
       } catch (error: any) {
-        console.log("Sign-in error details:", error);
         throw new Error(error.message || "Authentication failed");
       }
     },

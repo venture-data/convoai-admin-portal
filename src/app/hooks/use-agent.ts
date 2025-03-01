@@ -7,21 +7,9 @@ import { useSession } from "next-auth/react";
 export function useAgent() {
   const session = useSession()
   const queryClient = useQueryClient()
-  console.log(session)
   const createAgent = useMutation({
     mutationFn: async (agentConfig: AgentConfig) => {
       const formData = new FormData()
-      
-
-      console.log('Sending agent config:', {
-        name: agentConfig.model.agentName,
-        provider: agentConfig.model.provider,
-        type: agentConfig.model.type,
-        language: agentConfig.model.language,
-        llm_model: agentConfig.model.model,
-        files: agentConfig.knowledge.files?.length
-      });
-
       formData.append('name', agentConfig.model.agentName);
       formData.append('provider', agentConfig.model.provider);
       formData.append('type', agentConfig.model.type);

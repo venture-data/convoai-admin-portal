@@ -10,9 +10,6 @@ if (!baseUrl) {
     throw new Error('Unable to determine base URL');
 }
 
-console.log("BASE URL")
-console.log(baseUrl)
-
 const api = ky.create({
     prefixUrl: baseUrl,
     timeout: 10000, 

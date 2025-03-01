@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server'
 
 export async function GET() {
-    console.log("here")
   try {
     if (!process.env.BASE_URL) {
       console.error('BASE_URL environment variable is not defined');
@@ -12,7 +11,6 @@ export async function GET() {
     }
 
     const url = `${process.env.BASE_URL}/elevenlabs/voices`;
-    console.log('Fetching voices from:', url);
     
     const response = await fetch(url);
     

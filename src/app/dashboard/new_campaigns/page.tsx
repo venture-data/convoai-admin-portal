@@ -1,7 +1,6 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { useSession } from "next-auth/react";
 import { X, Check, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -17,10 +16,7 @@ import React from "react";
 
 
 export default function Page() {
-  const { data } = useSession();
   const [date, setDate] = React.useState<Date | undefined>(new Date());
-  
-  console.log("data", data);
   return (
     <div 
     >

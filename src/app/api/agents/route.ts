@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server';
 import { headers } from 'next/headers';
 
 export async function POST(request: Request) {
-  console.log('Starting agent creation...');
 
   try {
     const headersList = await headers();
@@ -34,31 +33,8 @@ export async function POST(request: Request) {
 
     const formData = await request.formData();
 
-    console.log('Form data contents:');
-    for (const [key, value] of formData.entries()) {
-      if (value instanceof File) {
-        console.log(`${key}: File - ${value.name} (${value.size} bytes)`);
-      } else {
-        console.log(`${key}: ${value}`);
-      }
-    }
-
-    const files = formData.getAll('files[]');
-    if (files.length > 0) {
-      console.log(`Processing ${files.length} files:`);
-      files.forEach((file, index) => {
-        if (file instanceof File) {
-          console.log(`File ${index + 1}: ${file.name}, size: ${file.size} bytes`);
-        }
-      });
-    } else {
-      console.log('No files included in request');
-    }
-
     const url = `${process.env.BASE_URL}/elevenlabs/create-agent`;
-    console.log('Sending request to:', url);
     
-
     const response = await fetch(url, {
       method: 'POST',
       body: formData,
@@ -68,23 +44,19 @@ export async function POST(request: Request) {
       },
     });
 
-    console.log('Response status:', response.status);
-
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('Error response:', errorText);
       throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
     }
 
     const data = await response.json();
-    console.log('Success response:', data);
     return NextResponse.json(data);
 
   } catch (error) {
-    console.error('Detailed error:', {
-      message: error instanceof Error ? error.message : 'Unknown error',
-      stack: error instanceof Error ? error.stack : undefined
-    });
+    // console.error('Detailed error:', {
+    //   message: error instanceof Error ? error.message : 'Unknown error',
+    //   stack: error instanceof Error ? error.stack : undefined
+    // });
 
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Failed to create agent' },
@@ -96,7 +68,6 @@ export async function POST(request: Request) {
 
 
 export async function GET() {
-  console.log("hit agent")
   try {
     const headersList = await headers();
     const authHeader = headersList.get('Authorization');
@@ -111,7 +82,6 @@ export async function GET() {
     }
   
     if (!process.env.BASE_URL) {
-      console.error('BASE_URL environment variable is not defined');
       return NextResponse.json(
         { error: 'Server configuration error' },
         { status: 500 }
@@ -127,7 +97,6 @@ export async function GET() {
     });
 
     const data = await response.json();
-    console.log('Success response:', data);
     return NextResponse.json(data);
 
   }catch (error) {
@@ -144,8 +113,6 @@ export async function GET() {
 }
 
 export async function PUT(request: Request) {
-  console.log('Starting agent update...');
-
   try {
     const headersList = await headers();
     const authHeader = headersList.get('Authorization');
@@ -166,14 +133,6 @@ export async function PUT(request: Request) {
     }
 
     const formData = await request.formData();
-    console.log('Update form data contents:');
-    for (const [key, value] of formData.entries()) {
-      if (value instanceof File) {
-        console.log(`${key}: File - ${value.name} (${value.size} bytes)`);
-      } else {
-        console.log(`${key}: ${value}`);
-      }
-    }
 
     const url = `${process.env.BASE_URL}/agent/update-agent`;
     const response = await fetch(url, {
@@ -192,7 +151,6 @@ export async function PUT(request: Request) {
     }
 
     const data = await response.json();
-    console.log('Success response:', data);
     return NextResponse.json(data);
 
   } catch (error) {

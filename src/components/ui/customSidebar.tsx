@@ -120,19 +120,9 @@ export default function CustomSidebar() {
     });
     return initialState;
   });
-
-  console.log(openMenus);
-  console.log("Current pathname:", pathname);
-  console.log("All item pathnames:", items.map(item => ({
-    main: item.url,
-    children: item.children?.map(child => child.url === pathname)
-  })));
   const { data: session } = useSession();
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const isMobile = useIsMobile();
-
-  console.log(JSON.stringify(openMenus));
-
   return (
     <SidebarProvider>
       {isMobile && isMobileOpen && (

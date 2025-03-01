@@ -22,6 +22,7 @@ export const ResponsiveNavbar: React.FC = () => {
               await signOut({ callbackUrl: "/" });
             } catch (e) {
               console.log(e);
+              setIsLoading(false);
             } finally {
               setIsLoading(false);
             }

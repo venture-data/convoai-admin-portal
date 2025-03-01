@@ -92,7 +92,6 @@ export default function AgentsPage() {
       await updateAgent.mutateAsync(formData)
       setIsModalOpen(false)
       setSelectedAgent(null)
-      // Optionally refresh the agents list
       router.refresh()
     } catch (error) {
       console.error('Failed to update agent:', error)
