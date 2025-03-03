@@ -154,10 +154,10 @@ export async function PUT(request: Request) {
     return NextResponse.json(data);
 
   } catch (error) {
-    console.error('Update error:', {
-      message: error instanceof Error ? error.message : 'Unknown error',
-      stack: error instanceof Error ? error.stack : undefined
-    });
+    // console.error('Update error:', {
+    //   message: error instanceof Error ? error.message : 'Unknown error',
+    //   stack: error instanceof Error ? error.stack : undefined
+    // });
 
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Failed to update agent' },
