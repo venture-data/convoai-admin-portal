@@ -76,7 +76,7 @@ const items = [
     title: "My Plan",
     url: "/dashboard/plan",
     icon: LayoutDashboard,
-    hasDropdown: true
+    hasDropdown: false
   },
   {
     title: "Admin Portal",
