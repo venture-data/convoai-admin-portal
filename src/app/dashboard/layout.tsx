@@ -4,12 +4,26 @@ import CustomSidebar from "@/components/ui/customSidebar";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import TransitionEffect from "@/components/ui/transitioneffect";
 import QueryProvider from "@/components/providers/query-provider";
+import { useEffect } from "react";
+import { useSession } from "next-auth/react";
+import { useAuthStore } from "../hooks/useAuth";
 
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const session = useSession()
+  const authStore = useAuthStore()
+  
+  useEffect(()=>{
+    if(session.data){
+      authStore.setCreds({
+        token:session.data.token
+      })
+    }
+  },[session?.data])
+  
   return (
     <ThemeProvider
       attribute="class"

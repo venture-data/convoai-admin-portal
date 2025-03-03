@@ -2,11 +2,11 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AgentConfig } from "@/app/dashboard/new_agents/types";
-import { useSession } from "next-auth/react";
+import { useAuthStore } from "./useAuth";
 
 export function useAgent() {
-  const session = useSession()
   const queryClient = useQueryClient()
+  const token = useAuthStore.getState().token;
   const createAgent = useMutation({
     mutationFn: async (agentConfig: AgentConfig) => {
       const formData = new FormData()
@@ -36,7 +36,7 @@ export function useAgent() {
         method: 'POST',
         body: formData,
         headers: {
-          'Authorization': `Bearer ${session.data?.token}`,
+          'Authorization': `Bearer ${token}`,
         }
       });
 
@@ -56,9 +56,10 @@ export function useAgent() {
         method: 'PUT',
         body: formData,
         headers: {
-          'Authorization': `Bearer ${session.data?.token}`,
+          'Authorization': `Bearer ${token}`,
         }
       });
+      
 
       const responseData = await response.json();
       
@@ -79,7 +80,7 @@ export function useAgent() {
       const response = await fetch('/api/agents', {
         method: 'GET',
         headers: {
-          'Authorization': `Bearer ${session.data?.token}`,
+          'Authorization': `Bearer ${token}`,
         },
       });
       if (!response.ok) {
