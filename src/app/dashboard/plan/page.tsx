@@ -7,8 +7,9 @@ import { useAuthStore } from "@/app/hooks/useAuth";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements} from "@stripe/react-stripe-js";
 
-import { Clock, CreditCard, Settings, Star } from "lucide-react";
+import { Clock, CreditCard, Star } from "lucide-react";
 import PaymentForm from "@/components/ui/paymentform";
+import { useSubscription } from "@/app/hooks/use-subscription";
 
 interface SubscriptionStatus {
   status: 'active' | 'inactive' | 'loading';
@@ -28,6 +29,7 @@ export default function Page() {
   const [subscription, setSubscription] = useState<SubscriptionStatus>({
     status: 'loading'
   });
+  const {createSubscriptionIntent} = useSubscription()
 
   useEffect(() => {
     if (token) {
@@ -41,8 +43,16 @@ export default function Page() {
   }, [token, email]);
 
   const handleSubscribe = (planType: 'monthly' | 'yearly') => {
-    setSelectedPlan(planType);
-    setShowPayment(true);
+    if(planType === 'monthly'){
+        try{
+            const response =createSubscriptionIntent.mutate("hello")
+            console.log(response)
+            setSelectedPlan(planType);
+            setShowPayment(true);
+        }catch(e){
+            console.error(e)
+        }
+    }
   };
 
   return (
@@ -53,7 +63,7 @@ export default function Page() {
       </div>
 
       {showPayment && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 min-h-screen flex items-center justify-center z-50 bg-black/50">
           <div className="bg-white p-6 rounded-lg w-full max-w-md">
             <h2 className="text-xl font-bold mb-4">
               Complete Your {selectedPlan === 'monthly' ? 'Monthly' : 'Yearly'} Subscription
@@ -104,7 +114,6 @@ export default function Page() {
           </CardContent>
         </Card>
 
-        {/* Yearly Plan Card */}
         <Card className="border-2 border-blue-100 hover:border-blue-500 transition-all">
           <CardHeader>
             <CardTitle className="text-2xl font-bold">
@@ -145,22 +154,17 @@ export default function Page() {
       </div>
 
       <Card className="border-2 border-blue-100">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1">
           <CardTitle className="text-2xl font-bold">Current Plan</CardTitle>
           <div className={subscription.status === 'active' ? 'bg-green-500 rounded-full w-4 h-4' : 'bg-yellow-500'}></div>
-          {/* <Badge
-            className={subscription.status === 'active' ? 'bg-green-500' : 'bg-yellow-500'}
-          >
-            {subscription.status === 'active' ? 'Active' : 'Inactive'}
-          </Badge> */}
         </CardHeader>
         <CardContent>
-          <div className="grid gap-8 md:grid-cols-4">
+          <div className="flex justify-between">
             <div className="flex flex-col space-y-2">
               <span className="text-sm text-gray-500">Plan</span>
               <div className="flex items-center space-x-2">
                 <Star className="h-5 w-5 text-blue-500" />
-                <span className="font-medium">{subscription.planName || 'No active plan'}</span>
+                <span className="font-medium">{subscription?.planName || 'No active plan'}</span>
               </div>
             </div>
 
@@ -168,7 +172,7 @@ export default function Page() {
               <span className="text-sm text-gray-500">Price</span>
               <div className="flex items-center space-x-2">
                 <CreditCard className="h-5 w-5 text-blue-500" />
-                <span className="font-medium">{subscription.price || '-'}</span>
+                <span className="font-medium">{subscription?.price || '-'}</span>
               </div>
             </div>
 
@@ -178,17 +182,6 @@ export default function Page() {
                 <Clock className="h-5 w-5 text-blue-500" />
                 <span className="font-medium">{subscription.nextBilling || '-'}</span>
               </div>
-            </div>
-
-            <div className="flex flex-col space-y-2">
-              <span className="text-sm text-gray-500">Actions</span>
-              <Button
-                onClick={() => handleSubscribe('monthly')}
-                className="flex items-center space-x-2 w-full justify-center"
-              >
-                <Settings className="h-4 w-4" />
-                <span>Manage Monthly Plan</span>
-              </Button>
             </div>
           </div>
         </CardContent>
