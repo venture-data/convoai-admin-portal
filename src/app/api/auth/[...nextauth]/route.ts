@@ -46,7 +46,7 @@ const authOptions: NextAuthOptions = {
           if (!response.ok) {
             throw new Error("Authentication failed");
           }
-
+          
           if (data.token) {
             (user as any).token = data.token;
             (user as any).email = data.email;

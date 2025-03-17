@@ -14,7 +14,7 @@ import { toast } from "@/app/hooks/use-toast";
 import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters"),
+  name: z.string().min(2, "Name must be at least 2 characters").max(20, "Name must be less than 50 characters"),
   email: z.string().email("Invalid email address"),
   password: z
     .string()
