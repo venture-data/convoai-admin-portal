@@ -19,10 +19,18 @@ export default function DashboardLayout({
   useEffect(()=>{
     if(session.data){
       authStore.setCreds({
-        token:session.data.token
+        token:session.data.token,
+        subscription:{
+          status: "inactive",
+          subscriptionId: "",
+          customerId: "",
+          planName: "Free Trial",
+          price: `free`,
+          nextBilling: "None",
+        }
       })
     }
-  },[session?.data])
+  },[])
   
   return (
     <ThemeProvider

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuthStore } from "@/app/hooks/useAuth";
@@ -9,51 +9,28 @@ import { Elements} from "@stripe/react-stripe-js";
 
 import { Clock, CreditCard, Star } from "lucide-react";
 import PaymentForm from "@/components/ui/paymentform";
-import { useSubscription } from "@/app/hooks/use-subscription";
 
-interface SubscriptionStatus {
-  status: 'active' | 'inactive' | 'loading';
-  planName?: string;
-  nextBilling?: string;
-  price?: string;
-}
-
-
-const stripePromise = loadStripe(String(process.env.PAYMENT_FORM));
+const stripePromise = loadStripe(String(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY));
 
 
 export default function Page() {
-  const { token, email } = useAuthStore();
   const [showPayment, setShowPayment] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<'monthly' | 'yearly' | null>(null);
-  const [subscription, setSubscription] = useState<SubscriptionStatus>({
-    status: 'loading'
-  });
-  const {createSubscriptionIntent} = useSubscription()
+  const { subscription } = useAuthStore();
 
-  useEffect(() => {
-    if (token) {
-      setSubscription({
-        status: 'active',
-        planName: 'Professional Plan',
-        nextBilling: '2024-04-01',
-        price: '$19.99'
-      });
-    }
-  }, [token, email]);
-
-  const handleSubscribe = (planType: 'monthly' | 'yearly') => {
-    if(planType === 'monthly'){
-        try{
-            const response =createSubscriptionIntent.mutate("hello")
-            console.log(response)
-            setSelectedPlan(planType);
-            setShowPayment(true);
-        }catch(e){
-            console.error(e)
-        }
-    }
+  const handleSubscribe = async (planType: 'monthly' | 'yearly') => {
+    setShowPayment(true);
+    setSelectedPlan(planType);
   };
+
+
+  const isCurrentPlan = (planType: 'monthly' | 'yearly') => {
+    if (!subscription.planName) return false;
+    console.log(subscription.planName)
+    return (planType === 'monthly' && subscription.planName.includes('monthly')) ||
+           (planType === 'yearly' && subscription.planName.includes('yearly'));
+  };
+  
 
   return (
     <div className="max-w-7xl mx-auto p-6 space-y-8">
@@ -68,7 +45,12 @@ export default function Page() {
             <h2 className="text-xl font-bold mb-4">
               Complete Your {selectedPlan === 'monthly' ? 'Monthly' : 'Yearly'} Subscription
             </h2>
-            <Elements stripe={stripePromise}>
+            <Elements 
+              stripe={stripePromise}
+              options={{
+                appearance: { theme: 'stripe' }
+              }}
+            >
               <PaymentForm
                 planType={selectedPlan!} 
                 onClose={() => {
@@ -83,8 +65,7 @@ export default function Page() {
 
 
       <div className="grid gap-8 md:grid-cols-2">
- 
-        <Card className="border-2 border-blue-100 hover:border-blue-500 transition-all">
+        <Card className={`border-2 ${isCurrentPlan('monthly') ? 'border-green-500' : 'border-blue-100'} hover:border-blue-500 transition-all`}>
           <CardHeader>
             <CardTitle className="text-2xl font-bold">Monthly Plan</CardTitle>
             <p className="text-gray-500">Perfect for short-term needs</p>
@@ -108,13 +89,14 @@ export default function Page() {
             <Button 
               onClick={() => handleSubscribe('monthly')}
               className="w-full bg-blue-600 hover:bg-blue-700"
+              disabled={isCurrentPlan('monthly')}
             >
-              Subscribe Monthly
+              {isCurrentPlan('monthly') ? 'Current Plan' : 'Subscribe Monthly'}
             </Button>
           </CardContent>
         </Card>
 
-        <Card className="border-2 border-blue-100 hover:border-blue-500 transition-all">
+        <Card className={`border-2 ${isCurrentPlan('yearly') ? 'border-green-500' : 'border-blue-100'} hover:border-blue-500 transition-all`}>
           <CardHeader>
             <CardTitle className="text-2xl font-bold">
               Yearly Plan
@@ -146,8 +128,9 @@ export default function Page() {
             <Button 
               onClick={() => handleSubscribe('yearly')}
               className="w-full bg-blue-600 hover:bg-blue-700"
+              disabled={isCurrentPlan('yearly')}
             >
-              Subscribe Yearly
+              {isCurrentPlan('yearly') ? 'Current Plan' : 'Subscribe Yearly'}
             </Button>
           </CardContent>
         </Card>
@@ -164,7 +147,7 @@ export default function Page() {
               <span className="text-sm text-gray-500">Plan</span>
               <div className="flex items-center space-x-2">
                 <Star className="h-5 w-5 text-blue-500" />
-                <span className="font-medium">{subscription?.planName || 'No active plan'}</span>
+                <span className="font-medium">{subscription.planName || 'No active plan'}</span>
               </div>
             </div>
 
@@ -172,7 +155,7 @@ export default function Page() {
               <span className="text-sm text-gray-500">Price</span>
               <div className="flex items-center space-x-2">
                 <CreditCard className="h-5 w-5 text-blue-500" />
-                <span className="font-medium">{subscription?.price || '-'}</span>
+                <span className="font-medium">{subscription.price || '-'}</span>
               </div>
             </div>
 
@@ -184,6 +167,17 @@ export default function Page() {
               </div>
             </div>
           </div>
+          {/* {subscription.status === 'active' && (
+            <div className="mt-4">
+              <Button 
+                onClick={handleCancelSubscription}
+                variant="destructive"
+                className="w-full"
+              >
+                Cancel Subscription
+              </Button>
+            </div>
+          )} */}
         </CardContent>
       </Card>
 

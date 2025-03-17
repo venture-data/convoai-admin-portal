@@ -7,11 +7,20 @@ interface States {
   password: string;
   token: string;
   isAuth: boolean;
+  subscription: {
+    planName: string;
+    status: 'active' | 'inactive' | 'loading';
+    subscriptionId?: string;
+    customerId?: string;
+    nextBilling?: string;
+    price?: string;
+  };
 }
 
 interface Actions {
   setCreds: (creds: Partial<States>) => void;
   getCreds: () => States;
+  setSubscription: (subscription: Partial<States['subscription']>) => void;
 }
 
 export const useAuthStore = create<States & Actions>()(
@@ -22,10 +31,32 @@ export const useAuthStore = create<States & Actions>()(
       password: '',
       isAuth: false,
       token: '',
+      subscription: {
+        planName: '',
+        status: 'loading',
+        subscriptionId: '',
+        customerId: '',
+        nextBilling: '',
+        price: '',
+        newPlanStarts:''
+      },
       setCreds: (creds) => {
         set((state) => ({
           ...state,
-          ...creds, 
+          ...creds,
+          subscription: {
+            ...state.subscription,
+            ...creds.subscription
+          }
+        }));
+      },
+      setSubscription: (subscription) => {
+        set((state) => ({
+          ...state,
+          subscription: {
+            ...state.subscription,
+            ...subscription
+          }
         }));
       },
       getCreds: () => {
@@ -40,6 +71,7 @@ export const useAuthStore = create<States & Actions>()(
         email: state.email,
         token: state.token,
         isAuth: state.isAuth,
+        subscription: state.subscription
       }),
     }
   )

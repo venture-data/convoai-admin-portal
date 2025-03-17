@@ -10,22 +10,36 @@ const authOptions: NextAuthOptions = {
         if (account?.provider === "credentials") {
           const mode = (credentials as any)?.mode;
           const endpoint = mode === 'register' 
-            ? `${process.env.BASE_URL}/auth/register`
-            : `${process.env.BASE_URL}/auth/login`;
+            ? `${process.env.BASE_URL}/api/v1/register`
+            : `${process.env.BASE_URL}/api/v1/login`;
+
+          console.log("credentials", credentials)
+
+          console.log("user", user)
+
+          const requestBody = mode === 'register' 
+            ? {
+                email: user?.email,
+                password: credentials?.password,
+                full_name: credentials?.name
+              }
+            : {
+                username: user?.email,
+                password: credentials?.password
+              };
+
+          console.log("requestBody", requestBody)
 
           const response = await fetch(endpoint, {
             method: "POST",
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              email: user?.email,
-              password: credentials?.password,
-              name: credentials?.name || 'User',
-              provider: 'manual',
-            }),
+            body: JSON.stringify(requestBody),
           });
 
           const data = await response.json();
+          console.log("data", JSON.stringify(data, null, 2));
           if (data.detail) {
+            console.error("Full error details:", JSON.stringify(data.detail, null, 2));
             throw new Error(data.detail);
           }
 
@@ -58,6 +72,7 @@ const authOptions: NextAuthOptions = {
             (user as any).token = data.token;
             (user as any).email = data.email;
             (user as any).name = data.name;
+            (user as any).subscription = data.subscription;
             return true;
           }
         }
@@ -83,6 +98,7 @@ const authOptions: NextAuthOptions = {
         session.user.name = token.name;
         session.user.provider = token.provider;
         session.token=token.token;
+        session.subscription=token.subscription
       }
       return session;
     },
