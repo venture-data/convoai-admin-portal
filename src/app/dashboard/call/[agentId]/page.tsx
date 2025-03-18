@@ -50,7 +50,6 @@ export default function CallPage() {
             <p className="text-center text-gray-700">
               Call is active with Agent ID: {agentId}
             </p>
-            {/* You can add call controls, transcript, etc. here */}
           </div>
         )}
       </div>
