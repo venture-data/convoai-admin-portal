@@ -82,7 +82,7 @@ export function MultiStepForm({ children, isCurrentStepValid = true, onSubmit, i
           </Button>
           <Button
             onClick={next}
-            disabled={(currentStep===steps.length-1) && !isCurrentStepValid || isLoading}
+            disabled={(currentStep === steps.length - 1 ? !isCurrentStepValid : false) || isLoading}
           >
             {isLoading ? (
               <>

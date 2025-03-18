@@ -11,7 +11,7 @@ interface StepState {
 
 export const useStepStore = create<StepState>((set) => ({
   currentStep: 0,
-  steps: ['Model', 'Voice', 'Knowledge', 'Review'],
+  steps: ['Basic Info', 'Model Settings', 'Interaction Settings', 'Voice', 'Knowledge', 'Review'],
   completedSteps: [],
   setCurrentStep: (step) => set({ currentStep: step }),
   markStepCompleted: (step) =>

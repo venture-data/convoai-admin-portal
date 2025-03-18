@@ -402,7 +402,7 @@ export function AgentDetailsModal({
                   <div className="grid grid-cols-3 gap-4">
                     <span className="font-medium">Labels:</span>
                     <span className="col-span-2">
-                      {agent.voice_details.details.labels.join(", ")}
+                      {agent.voice_details.details?.labels?.join(", ")}
                     </span>
                   </div>
                   <div className="mt-2">
@@ -411,7 +411,7 @@ export function AgentDetailsModal({
                     </span>
                     <audio controls className="w-full">
                       <source
-                        src={agent.voice_details.details.preview_url}
+                        src={agent.voice_details.details?.preview_url}
                         type="audio/mp3"
                       />
                       Your browser does not support the audio element.
