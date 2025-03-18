@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useParams } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -11,7 +11,6 @@ export default function CallPage() {
   const agentId = params.agentId;
   const router = useRouter();
 
-  // You can add more state and logic here as needed
   const [isCallActive, setIsCallActive] = useState(false);
 
   const handleGoBack = () => {
@@ -20,7 +19,6 @@ export default function CallPage() {
 
   const handleToggleCall = () => {
     setIsCallActive(!isCallActive);
-    // Add actual call logic here
   };
 
   return (
