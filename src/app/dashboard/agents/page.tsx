@@ -15,40 +15,38 @@ import {
 } from "@/components/ui/table"
 import { AgentDetailsModal } from "@/components/ui/agent-details-modal"
 
-interface VoiceDetails {
-  id: string;
-  name: string;
-  details: {
-    id: string;
-    name: string;
-    labels: string[];
-    preview_url: string;
-    high_quality_base_model_ids: string[];
-  };
-  provider: "elevenlabs" | "openai";
-}
+// interface VoiceDetails {
+//   id: string;
+//   name: string;
+//   details: {
+//     id: string;
+//     name: string;
+//     labels: string[];
+//     preview_url: string;
+//     high_quality_base_model_ids: string[];
+//   };
+//   provider: "elevenlabs" | "openai";
+// }
 
 interface Agent {
   id: number;
   name: string;
-  type: string;
-  provider: "elevenlabs" | "openai";
-  language: string;
-  llm_model: string;
-  temperature: number;
-  voice_details: VoiceDetails;
-  first_message: string;
+  description: string;
   system_prompt: string;
-  details: {
-    [key: string]: {
-      agent_id: string;
-      documents: Array<{
-        id: string;
-        file_name: string;
-      }>;
-    };
-  };
-  knowledge_bases: Array<{ name: string; type: string; location: string }>;
+  greeting: string;
+  voice: string;
+  llm_model: string;
+  stt_model: string;
+  stt_model_telephony: string;
+  allow_interruptions: boolean;
+  interrupt_speech_duration: number;
+  interrupt_min_words: number;
+  min_endpointing_delay: number;
+  max_endpointing_delay: number;
+  active: boolean;
+  is_default: boolean;
+  max_nested_function_calls: number;
+  owner_id: number;
 }
 
 export default function AgentsPage() {
@@ -98,7 +96,12 @@ export default function AgentsPage() {
     }
   }
 
-  console.log(agents)
+  const handleCallAgent = (agentId: number) => {
+    console.log(`Initiating call with agent ID: ${agentId}`);
+    router.push(`/dashboard/call/${agentId}`);
+  }
+
+  console.log(agents.items)
 
   return (
     <div className="container mx-auto p-6">
@@ -114,25 +117,23 @@ export default function AgentsPage() {
             <TableHeader>
               <TableRow>
                 <TableHead>Name</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Provider</TableHead>
-                <TableHead>Language</TableHead>
+                <TableHead>Description</TableHead>
+                <TableHead>Voice</TableHead>
                 <TableHead>Model</TableHead>
-                <TableHead>Knowledge Base</TableHead>
+                <TableHead>Active</TableHead>
+                <TableHead>Is Default</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {!agents?.detail && (agents ?? [])?.map((agent: Agent) => (
+              {agents?.items?.map((agent: Agent) => (
                 <TableRow key={agent.id}>
                   <TableCell className="font-medium">{agent.name}</TableCell>
-                  <TableCell>{agent.type}</TableCell>
-                  <TableCell>{agent.provider}</TableCell>
-                  <TableCell>{agent.language}</TableCell>
+                  <TableCell>{agent.description || 'None'}</TableCell>
+                  <TableCell>{agent.voice}</TableCell>
                   <TableCell>{agent.llm_model}</TableCell>
-                  <TableCell>
-                    {agent?.knowledge_bases[0]?.name || 'None'}
-                  </TableCell>
+                  <TableCell>{agent.active ? 'Yes' : 'No'}</TableCell>
+                  <TableCell>{agent.is_default ? 'Yes' : 'No'}</TableCell>
                   <TableCell className="text-right space-x-2">
                     <Button
                       variant="outline"
@@ -148,6 +149,13 @@ export default function AgentsPage() {
                     >
                       Update
                     </Button>
+                    <Button
+                      variant="default"
+                      size="sm"
+                      onClick={() => handleCallAgent(agent.id)}
+                    >
+                      Call
+                    </Button>
                   </TableCell>
                 </TableRow>
               ))}
@@ -156,7 +164,7 @@ export default function AgentsPage() {
         </div>
       )}
 
-      {selectedAgent && (
+      {/* {selectedAgent && (
         <AgentDetailsModal
           isOpen={isModalOpen}
           onClose={() => {
@@ -164,11 +172,11 @@ export default function AgentsPage() {
             setSelectedAgent(null)
             setIsEditMode(false)
           }}
-          agent={selectedAgent}
+          agent={selectedAgent as Agent}
           readonly={!isEditMode}
           onUpdate={handleUpdate}
         />
-      )}
+      )} */}
     </div>
   )
 }
