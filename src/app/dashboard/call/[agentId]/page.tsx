@@ -1,26 +1,23 @@
 "use client";
 
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback} from "react";
 import { useParams, useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLiveKit } from "@/app/hooks/use-livekit";
 import {
   AgentState,
-  BarVisualizer,
-  DisconnectButton,
   LiveKitRoom,
   RoomAudioRenderer,
-  VoiceAssistantControlBar,
-  useVoiceAssistant,
 } from "@livekit/components-react";
 import "@livekit/components-styles";
-import { AnimatePresence, motion } from "framer-motion";
+
 import { MediaDeviceFailure } from "livekit-client";
 import { NoAgentNotification } from "@/components/NoAgentNotification";
-import { CloseIcon } from "@/components/CloseIcon";
 
 import "./calls.css"
+import ControlBar from "@/components/livekit/ControlBar";
+import SimpleVoiceAssistant from "@/components/livekit/SimpleVoiceAssistant";
 
 export default function CallPage() {
   const params = useParams();
@@ -96,7 +93,7 @@ export default function CallPage() {
           <div className="mt-6 p-4 bg-gray-100 rounded-md h-[500px] overflow-hidden" data-lk-theme="default">
             <LiveKitRoom
               token={connectionDetails.accessToken}
-              serverUrl={process.env.NEXT_PUBLIC_LIVEKIT_URL || "wss://your-livekit-server.com"}
+              serverUrl={process.env.NEXT_PUBLIC_LIVEKIT_URL}
               connect={true}
               audio={true}
               video={false}
@@ -108,7 +105,7 @@ export default function CallPage() {
               className="grid grid-rows-[2fr_1fr] items-center h-full"
             >
               <SimpleVoiceAssistant onStateChange={setAgentState} />
-              <ControlBar 
+              <ControlBar
                 onConnectButtonClicked={() => {}} 
                 agentState={agentState} 
               />
@@ -122,96 +119,3 @@ export default function CallPage() {
   );
 }
 
-function SimpleVoiceAssistant(props: { onStateChange: (state: AgentState) => void }) {
-  const { state, audioTrack } = useVoiceAssistant();
-
-  useEffect(() => {
-    if (audioTrack?.publication) {
-      const track = audioTrack.publication;
-      console.log("Track publication details:", {
-        trackSid: track.trackSid,
-        trackName: track.trackName,
-        source: track.source,
-        isMuted: track.isMuted,
-        isSubscribed: track.isSubscribed,
-        isEnabled: track.isEnabled,
-      });
-    }
-  }, [audioTrack]);
-
-  useEffect(() => {
-    props.onStateChange(state);
-    console.log("Voice assistant state:", state);
-    console.log("Audio track available:", !!audioTrack);
-    
-    if (audioTrack) {
-      console.log("Audio track details:", {
-        trackSid: audioTrack.publication?.trackSid,
-        trackName: audioTrack.publication?.trackName,
-        source: audioTrack.source,
-        isMuted: audioTrack.publication?.isMuted
-      });
-    }
-  }, [props, state, audioTrack]);
-  
-  return (
-    <div className="h-[300px] max-w-[90vw] mx-auto flex flex-col items-center justify-center rounded-md">
-      {!audioTrack && <div className="text-red-500 mb-4">Audio track not available</div>}
-      
-      <div className="w-full h-[200px] flex items-center justify-center rounded-md ">
-        <BarVisualizer
-          state={state}
-          barCount={20}
-          trackRef={audioTrack}
-          className="w-full h-full rounded-md"
-          options={{ 
-            minHeight: 5, 
-            maxHeight: 90
-          }}
-        />
-    
-      </div>
-      
-      <div className="mt-4 text-sm">
-        State: <span className="font-bold">{state}</span>
-      </div>
-    </div>
-  );
-}
-
-function ControlBar(props: { onConnectButtonClicked: () => void; agentState: AgentState }) {
-  return (
-    <div className="relative h-[100px]">
-      <AnimatePresence>
-        {props.agentState === "disconnected" && (
-          <motion.button
-            initial={{ opacity: 0, top: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0, top: "-10px" }}
-            transition={{ duration: 1, ease: [0.09, 1.04, 0.245, 1.055] }}
-            className="uppercase absolute left-1/2 -translate-x-1/2 px-4 py-2 bg-white text-black rounded-md"
-            onClick={() => props.onConnectButtonClicked()}
-          >
-            Start a conversation
-          </motion.button>
-        )}
-      </AnimatePresence>
-      <AnimatePresence>
-        {props.agentState !== "disconnected" && props.agentState !== "connecting" && (
-          <motion.div
-            initial={{ opacity: 0, top: "10px" }}
-            animate={{ opacity: 1, top: 0 }}
-            exit={{ opacity: 0, top: "-10px" }}
-            transition={{ duration: 0.4, ease: [0.09, 1.04, 0.245, 1.055] }}
-            className="flex h-8 absolute left-1/2 -translate-x-1/2  justify-center"
-          >
-            <VoiceAssistantControlBar controls={{ leave: false }} />
-            <DisconnectButton>
-              <CloseIcon />
-            </DisconnectButton>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
-} 

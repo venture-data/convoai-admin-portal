@@ -5,16 +5,11 @@ interface NoAgentNotificationProps extends React.PropsWithChildren<object> {
   state: AgentState;
 }
 
-/**
- * Renders some user info when no agent connects to the room after a certain time.
- */
 export function NoAgentNotification(props: NoAgentNotificationProps) {
   const timeToWaitMs = 10_000;
   const timeoutRef = useRef<number | null>(null);
   const [showNotification, setShowNotification] = useState(false);
   const agentHasConnected = useRef(false);
-
-  // If the agent has connected, we don't need to show the notification.
   if (
     ["listening", "thinking", "speaking"].includes(props.state) &&
     agentHasConnected.current == false
@@ -48,7 +43,6 @@ export function NoAgentNotification(props: NoAgentNotificationProps) {
       {showNotification ? (
         <div className="fixed text-sm left-1/2 max-w-[90vw] -translate-x-1/2 flex top-6 items-center gap-4 bg-[#1F1F1F] px-4 py-3 rounded-lg">
           <div>
-            {/* Warning Icon */}
             <svg
               width="24"
               height="24"
@@ -76,7 +70,6 @@ export function NoAgentNotification(props: NoAgentNotificationProps) {
             View guide
           </a>
           <button onClick={() => setShowNotification(false)}>
-            {/* Close Icon */}
             <svg
               width="16"
               height="16"
