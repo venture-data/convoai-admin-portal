@@ -1,0 +1,50 @@
+:root {
+    --lk-bar-visualizer-color: black;
+    --lk-bar-visualizer-background-color: transparent;
+  }
+  
+  .agent-visualizer {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .lk-bar-visualizer svg rect {
+    fill: black !important;
+  }
+
+  /* These styles help with the visualization */
+  .lk-bar-visualizer {
+    width: 100%;
+    min-height: 100px;
+  }
+
+  .lk-bar-visualizer-bar {
+    background-color: #0055ff; /* Or your preferred color */
+    border-radius: 2px;
+  }
+
+  /* Add these styles to make the visualizer visible */
+  .lk-audio-bar-visualizer {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    gap: 5px;
+  }
+
+  .lk-audio-bar {
+    flex: 1;
+    background-color: #0055ff;
+    border-radius: 4px;
+    max-width: 10px;
+    transition: height 0.1s ease-in-out;
+  }
+
+  /* For highlighted bars */
+  .lk-audio-bar[data-lk-highlighted="true"],
+  .lk-audio-bar.lk-highlighted {
+    background-color: #00aaff;
+  }
