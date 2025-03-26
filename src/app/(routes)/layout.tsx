@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { ReactNode } from "react";
 
 interface AuthLayoutProps {
@@ -7,25 +6,17 @@ interface AuthLayoutProps {
 
 export default function AuthLayout({ children }: AuthLayoutProps) {
   return (
-    <div className="flex justify-between bg-white w-full min-h-screen overflow-hidden p-0">
-      <div className="flex flex-col items-center justify-center flex-1 p-8 overflow-y-auto relative">
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#E5E7EB_1px,transparent_1px),linear-gradient(to_bottom,#E5E7EB_1px,transparent_1px)] bg-[size:40px_40px] opacity-50" style={{ maskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 80%)' }}></div>
-        <div className="w-full max-w-md relative z-10">
-          <div className="flex justify-center">
-            <Image src="/callspro.png" alt="ConvoiAI" width={198} height={44} className="mb-6" />
-          </div>
+    <div className="min-h-screen bg-[#0F1117] flex items-center justify-center relative overflow-hidden">
+      <div className="absolute inset-0">
+        <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-gradient-to-r from-orange-500/20 to-red-500/20 blur-[120px] rounded-full"></div>
+        <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-gradient-to-r from-orange-600/20 to-red-600/20 blur-[120px] rounded-full"></div>
+      </div>
+
+      <div className="w-full max-w-[420px] mx-4 backdrop-blur-xl bg-[#1A1D25]/70 rounded-2xl p-8 shadow-2xl border border-white/10">
+        <div className="flex flex-col items-center justify-center">
+          <h1 className="text-2xl font-bold text-white mb-2">ConvoiAI</h1>
           {children}
         </div>
-      </div>
-      
-      <div className="flex-1 hidden sm:block w-full h-screen overflow-hidden">
-        <Image 
-          src="/Section.png" 
-          alt="Dubbing Studio" 
-          className="object-cover w-full h-full" 
-          width={1000} 
-          height={1000} 
-        />
       </div>
     </div>
   );

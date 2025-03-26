@@ -7,11 +7,11 @@ import { Button } from "@/components/ui/button";
 import { Loader } from "lucide-react";
 import { useAuthStore } from "../../hooks/useAuth";
 import { useDynamicForm } from "../../hooks/use-form";
-import { AuthToggle } from "@/components/auth/navigation/AuthToggle";
 import { GoogleButton } from "@/components/auth/buttons/GoogleButton";
 import { FormField } from "@/components/auth/forms/FormField";
 import { toast } from "@/app/hooks/use-toast";
 import { useRouter } from "next/navigation";
+import Link from 'next/link';
 
 const formSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters").max(20, "Name must be less than 50 characters"),
@@ -104,62 +104,68 @@ export default function SignUpPage() {
   };
 
   return (
-    <>
-      <h1 className="text-2xl text-center font-[600] text-[30px] mb-2">
-        Hello World!
-      </h1>
-      <p className="text-[#6B7280] text-center mb-6 font-inter">
-        Please enter your details to begin
-      </p>
+    <div>
+      <div className='w-[400px] p-8 space-y-6'>
+        <div className="text-center space-y-1">
+          <h1 className="text-2xl font-semibold text-white">Create an account</h1>
+          <p className="text-gray-400">Sign up to get started</p>
+        </div>
 
-      <AuthToggle mode="signup" />
+        <form onSubmit={onSubmitHandler} className='space-y-2'>
+          <FormField
+            id="name"
+            label="Full name"
+            type="text"
+            placeholder="John Doe"
+            register={register}
+            error={errors.name}
+          />
 
-      <GoogleButton
-        onClick={() => handleSignIn("google","signup")}
-        isLoading={googleLoading}
-        mode="signup"
-      />
+          <FormField
+            id="email"
+            label="Email address"
+            type="email"
+            placeholder="name@company.com"
+            register={register}
+            error={errors.email}
+          />
 
-      <form onSubmit={onSubmitHandler} className="space-y-4">
-        <FormField<FormValues>
-          id="name"
-          label="Name"
-          type="text"
-          placeholder="Enter your full name"
-          register={register}
-          error={errors.name}
+          <FormField
+            id="password"
+            label="Password"
+            type="password"
+            placeholder="••••••••"
+            register={register}
+            error={errors.password}
+          />
+
+          <Button
+            type="submit"
+            className='w-full bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-lg font-medium hover:from-orange-600 hover:to-red-600 transition-all transform hover:scale-[1.02]'
+            disabled={isLoading}
+          >
+            {isLoading ? <Loader className='mr-2 h-4 w-4 animate-spin' /> : 'Sign up'}
+          </Button>
+        </form>
+
+        <div className='flex items-center justify-center w-full gap-2'>
+          <div className='w-full h-[1px] bg-gray-700'></div>
+          <div className="text-center text-sm text-gray-400 whitespace-nowrap">
+            continue with
+          </div>
+          <div className='w-full h-[1px] bg-gray-700'></div>  
+        </div>
+
+        <GoogleButton
+          onClick={() => handleSignIn("google", "signup")}
+          isLoading={googleLoading}
+          mode="signup"
         />
 
-        <FormField<FormValues>
-          id="email"
-          label="Email"
-          type="email"
-          placeholder="Enter your email"
-          register={register}
-          error={errors.email}
-        />
-
-        <FormField<FormValues>
-          id="password"
-          label="Password"
-          type="password"
-          placeholder="••••••••"
-          register={register}
-          error={errors.password}
-        />
-
-        <Button
-          type="submit"
-          className="w-full bg-teal-500 hover:bg-teal-600 text-white py-2.5 rounded-lg"
-          disabled={isLoading}
-        >
-          {isLoading ? (
-            <Loader className="mr-2 h-4 w-4 animate-spin" />
-          ) : (
-            "Sign up"
-          )}
-        </Button>
-      </form>
-    </>
+        <div className='text-center text-sm text-gray-400'>
+          Already have an account? <Link href='/' className='text-[#FF5C00] hover:text-[#FF7A33]'>Sign in</Link>
+        </div>
+      </div>
+    </div>
   );
 }

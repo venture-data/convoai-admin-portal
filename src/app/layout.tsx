@@ -1,23 +1,24 @@
 import type { Metadata } from "next";
+import { Inter } from "next/font/google";
 import "./globals.css";
-import SessionProviderWrapper from "@/components/ui/sessionProviderWrapper";
+
 import { Toaster } from "@/components/ui/toaster"
 
+const inter = Inter({ subsets: ["latin"] });
+
 export const metadata: Metadata = {
-  title: "CallsPro",
+  title: "Calls Pro",
   icons:{
     icon:"https://i.ibb.co/02BCrLx/HDkxcf1.png",
   },
-  description: "AI-Powered Voice Sales Platform",
+  description: "Voice assistant configuration",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body>
-        <SessionProviderWrapper>
+      <body className={inter.className}>
           {children}
-        </SessionProviderWrapper>
         <Toaster />
       </body>
     </html>

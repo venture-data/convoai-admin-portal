@@ -14,13 +14,13 @@ export function ModelConfig({agentConfig, setAgentConfig}: {agentConfig: ModelCo
     setAgentConfig(newConfig);
   }
   return (
-    <div className="space-y-6">
-      <h3 className="text-xl font-bold mb-4">Basic Information</h3>
+    <div className="space-y-6 text-white/90">
+      <h3 className="text-xl font-bold mb-4 text-white">Basic Information</h3>
       <div className={`space-y-2 ${errors.agentName ? 'text-red-500' : ''}`}>
-        <Label htmlFor="agent-name" className="flex items-center">
+        <Label htmlFor="agent-name" className="flex items-center text-white/90">
           Agent Name
           <span
-            className="ml-1 text-muted-foreground hover:cursor-help"
+            className="ml-1 text-white/60 hover:cursor-help"
             title="The name of the agent"
           >
             ⓘ
@@ -29,7 +29,7 @@ export function ModelConfig({agentConfig, setAgentConfig}: {agentConfig: ModelCo
         <Input
           id="agent-name"
           value={agentConfig.agentName}
-          className="w-full"
+          className="w-full bg-[#1A1D25]/70 border-white/10 text-white placeholder:text-white/60"
           onChange={(e) => {
             onAgentConfigChange("agentName", e.target.value);
           }}
@@ -37,10 +37,10 @@ export function ModelConfig({agentConfig, setAgentConfig}: {agentConfig: ModelCo
       </div>
 
       <div className={`space-y-2 ${errors.description ? 'text-red-500' : ''}`}>
-        <Label htmlFor="description" className="flex items-center">
+        <Label htmlFor="description" className="flex items-center text-white/90 text-xs">
           Description
           <span
-            className="ml-1 text-muted-foreground hover:cursor-help"
+            className="ml-1 text-white/60 hover:cursor-help"
             title="A brief description of the agent"
           >
             ⓘ
@@ -51,16 +51,16 @@ export function ModelConfig({agentConfig, setAgentConfig}: {agentConfig: ModelCo
           onChange={(e) => {
             onAgentConfigChange("description", e.target.value);
           }}
-          className="w-full min-h-[80px] p-3 rounded-md border"
+          className="w-full min-h-[80px] p-3 rounded-md border bg-[#1A1D25]/70 border-white/10 text-white placeholder:text-white/60 text-sm"
           value={agentConfig.description || ""}
         />
       </div>
 
       <div className={`space-y-2 ${errors.firstMessage ? 'text-red-500' : ''}`}>
-        <Label htmlFor="first-message" className="flex items-center">
+        <Label htmlFor="first-message" className="flex items-center text-white/90 text-xs">
           Greeting
           <span
-            className="ml-1 text-muted-foreground hover:cursor-help"
+            className="ml-1 text-white/60 hover:cursor-help"
             title="The initial message your assistant will send"
           >
             ⓘ
@@ -68,7 +68,7 @@ export function ModelConfig({agentConfig, setAgentConfig}: {agentConfig: ModelCo
         </Label>
         <Input
           id="first-message"
-          className="w-full"
+          className="w-full bg-[#1A1D25]/70 border-white/10 text-white placeholder:text-white/60 text-sm"
           value={agentConfig.firstMessage}
           onChange={(e) => {
             onAgentConfigChange("firstMessage", e.target.value);
@@ -76,10 +76,10 @@ export function ModelConfig({agentConfig, setAgentConfig}: {agentConfig: ModelCo
         />
       </div>
       <div className={`space-y-2 ${errors.systemPrompt ? 'text-red-500' : ''}`}>
-        <Label htmlFor="system-prompt" className="flex items-center">
+        <Label htmlFor="system-prompt" className="flex items-center text-white/90 text-xs">
           System Prompt
           <span
-            className="ml-1 text-muted-foreground hover:cursor-help"
+            className="ml-1 text-white/60 hover:cursor-help"
             title="Instructions for the AI assistant"
           >
             ⓘ
@@ -90,19 +90,19 @@ export function ModelConfig({agentConfig, setAgentConfig}: {agentConfig: ModelCo
           onChange={(e) => {
             onAgentConfigChange("systemPrompt", e.target.value);
           }}
-          className="w-full min-h-[150px] p-3 rounded-md border"
+          className="w-full min-h-[150px] p-3 rounded-md border bg-[#1A1D25]/70 border-white/10 text-white placeholder:text-white/60 text-sm"
           value={agentConfig.systemPrompt}
         />
       </div>
 
-      <div className="space-y-4 border-t pt-4">
-        <h3 className="text-lg font-medium">Status</h3>
+      <div className="space-y-4 border-t border-white/10 pt-4">
+        <h3 className="font-medium text-white text-sm">Status</h3>
         
         <div className="flex items-center justify-between">
-          <Label htmlFor="active" className="flex items-center cursor-pointer">
+          <Label htmlFor="active" className="flex items-center cursor-pointer text-white/90 text-xs">
             Active
             <span
-              className="ml-1 text-muted-foreground hover:cursor-help"
+              className="ml-1 text-white/60 hover:cursor-help"
               title="Whether this agent is active and can be used"
             >
               ⓘ
@@ -118,10 +118,10 @@ export function ModelConfig({agentConfig, setAgentConfig}: {agentConfig: ModelCo
         </div>
 
         <div className="flex items-center justify-between">
-          <Label htmlFor="is_default" className="flex items-center cursor-pointer">
+          <Label htmlFor="is_default" className="flex items-center cursor-pointer text-white/90">
             Set as Default Agent
             <span
-              className="ml-1 text-muted-foreground hover:cursor-help"
+              className="ml-1 text-white/60 hover:cursor-help"
               title="Set this agent as the default one"
             >
               ⓘ

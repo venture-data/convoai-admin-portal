@@ -1,56 +1,16 @@
 "use client"
 
-import CustomSidebar from "@/components/ui/customSidebar";
-import { ThemeProvider } from "@/components/providers/theme-provider";
-import TransitionEffect from "@/components/ui/transitioneffect";
-import QueryProvider from "@/components/providers/query-provider";
-import { useEffect } from "react";
-import { useSession } from "next-auth/react";
-import { useAuthStore } from "../hooks/useAuth";
+import DashboardLayout from "@/components/layout/DashboardLayout";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { SessionProvider } from "next-auth/react";
 
-export default function DashboardLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  const session = useSession()
-  const authStore = useAuthStore()
-  
-  useEffect(()=>{
-    if(session.data){
-      authStore.setCreds({
-        token:session.data.token,
-        subscription:{
-          status: "inactive",
-          subscriptionId: "",
-          customerId: "",
-          planName: "Free Trial",
-          price: `free`,
-          nextBilling: "None",
-        }
-      })
-    }
-  },[])
-  
+export default function Layout({ children }: { children: React.ReactNode }) {
+  const queryClient = new QueryClient();
   return (
-    <ThemeProvider
-      attribute="class"
-      defaultTheme="light"
-      enableSystem
-      disableTransitionOnChange
-    >
-      <QueryProvider>
-        <div className="flex h-screen overflow-hidden">
-          <aside className="h-full flex-shrink-0">
-            <CustomSidebar />
-          </aside>
-          <main className="flex-1 overflow-y-auto">
-            <TransitionEffect>
-              {children}
-            </TransitionEffect>
-          </main>
-        </div>
-      </QueryProvider>
-    </ThemeProvider>
+    <SessionProvider>
+      <QueryClientProvider client={queryClient}>
+        <DashboardLayout>{children}</DashboardLayout>
+      </QueryClientProvider>
+    </SessionProvider>
   );
 }

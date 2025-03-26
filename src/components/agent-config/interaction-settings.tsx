@@ -13,11 +13,11 @@ export function InteractionSettings({agentConfig, setAgentConfig}: {agentConfig:
   
   return (
     <div className="space-y-6">
-      <h3 className="text-xl font-bold mb-4">Interaction Settings</h3>
+      <h3 className="font-medium text-sm">Interaction Settings</h3>
       
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <Label htmlFor="allow_interruptions" className="flex items-center cursor-pointer">
+          <Label htmlFor="allow_interruptions" className="flex items-center text-xs cursor-pointer">
             Allow Interruptions
             <span
               className="ml-1 text-muted-foreground hover:cursor-help"
@@ -39,7 +39,7 @@ export function InteractionSettings({agentConfig, setAgentConfig}: {agentConfig:
           <>
             <div className="space-y-2">
               <div className="flex justify-between">
-                <Label htmlFor="interrupt_speech_duration" className="flex items-center">
+                <Label htmlFor="interrupt_speech_duration" className="flex items-center text-xs">
                   Interrupt Speech Duration (seconds)
                   <span
                     className="ml-1 text-muted-foreground hover:cursor-help"
@@ -48,7 +48,7 @@ export function InteractionSettings({agentConfig, setAgentConfig}: {agentConfig:
                     ⓘ
                   </span>
                 </Label>
-                <span>{agentConfig.interrupt_speech_duration || 0.5}</span>
+                <span className="text-sm">{agentConfig.interrupt_speech_duration || 0.5}</span>
               </div>
               <Slider
                 id="interrupt_speech_duration"
@@ -64,7 +64,7 @@ export function InteractionSettings({agentConfig, setAgentConfig}: {agentConfig:
 
             <div className="space-y-2">
               <div className="flex justify-between">
-                <Label htmlFor="interrupt_min_words" className="flex items-center">
+                <Label htmlFor="interrupt_min_words" className="flex items-center text-xs">
                   Interrupt Minimum Words
                   <span
                     className="ml-1 text-muted-foreground hover:cursor-help"
@@ -91,7 +91,7 @@ export function InteractionSettings({agentConfig, setAgentConfig}: {agentConfig:
 
         <div className="space-y-2">
           <div className="flex justify-between">
-            <Label htmlFor="min_endpointing_delay" className="flex items-center">
+            <Label htmlFor="min_endpointing_delay" className="flex items-center text-xs">
               Minimum Endpointing Delay (seconds)
               <span
                 className="ml-1 text-muted-foreground hover:cursor-help"
@@ -116,7 +116,7 @@ export function InteractionSettings({agentConfig, setAgentConfig}: {agentConfig:
 
         <div className="space-y-2">
           <div className="flex justify-between">
-            <Label htmlFor="max_endpointing_delay" className="flex items-center">
+            <Label htmlFor="max_endpointing_delay" className="flex items-center text-xs">
               Maximum Endpointing Delay (seconds)
               <span
                 className="ml-1 text-muted-foreground hover:cursor-help"
@@ -141,7 +141,7 @@ export function InteractionSettings({agentConfig, setAgentConfig}: {agentConfig:
 
         <div className="space-y-2">
           <div className="flex justify-between">
-            <Label htmlFor="max_nested_function_calls" className="flex items-center">
+            <Label htmlFor="max_nested_function_calls" className="flex items-center text-xs">
               Maximum Nested Function Calls
               <span
                 className="ml-1 text-muted-foreground hover:cursor-help"

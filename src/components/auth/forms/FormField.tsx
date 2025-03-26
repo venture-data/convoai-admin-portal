@@ -20,13 +20,13 @@ export function FormField<TFieldValues extends FieldValues>({
 }: FormFieldProps<TFieldValues>) {
   return (
     <div>
-      <label className="block text-sm mb-2">{label}</label>
+      <label className="block text-sm mb-2 text-gray-200">{label}</label>
       <Input
         id={id}
         placeholder={placeholder}
         type={type}
         {...register(id)}
-        className="w-full rounded-lg border-gray-200"
+        className="w-full px-4 py-3 bg-[#2A2D36] rounded-lg border border-gray-700 text-white focus:outline-none focus:border-[#FF5C00] [&:-webkit-autofill]:bg-[#2A2D36] [&:-webkit-autofill]:!text-white [&:-webkit-autofill_selected]:bg-[#2A2D36] [&:-webkit-autofill]:!appearance-none [&:-webkit-autofill]:![background-color:#2A2D36] [&:-webkit-autofill]:!box-shadow-[0_0_0_30px_#2A2D36_inset]"
       />
       {error && (
         <p className="mt-1 text-sm text-red-600">

@@ -7,9 +7,9 @@ import { Button } from "./button";
 
 export default function UploadFile({files, setFiles}: {files: File[], setFiles: (files: File[]) => void}) {
   return (
-    <Card>
-      <CardContent className="p-6 space-y-4">
-        <div className="border-2 border-dashed border-gray-200 rounded-lg flex flex-col gap-1 p-6 items-center relative">
+    <Card className="bg-inherit text-white">
+      <CardContent className="p-6 space-y-4 bg-inherit">
+        <div className="border-2  bg-inherit border-dashed border-gray-200 rounded-lg flex flex-col gap-1 p-6 items-center relative">
           {files.length > 0 ? (
             <>
                {
@@ -23,7 +23,7 @@ export default function UploadFile({files, setFiles}: {files: File[], setFiles: 
                     <FileIcon className="w-12 h-12" />
                 )   
                }
-              <span className="text-sm font-medium text-gray-500">
+              <span className="text-sm font-medium text-white">
                 {files[0].name}
               </span>
               <Button className="absolute top-2 right-2" variant="outline" size="icon" onClick={() => setFiles([])}>
@@ -33,10 +33,10 @@ export default function UploadFile({files, setFiles}: {files: File[], setFiles: 
           ) : (
             <>
               <FileIcon className="w-12 h-12" />
-              <span className="text-sm font-medium text-gray-500">
+              <span className="text-sm font-medium text-white">
                 Drag and drop a file or click to browse
               </span>
-              <span className="text-xs text-gray-500">
+              <span className="text-xs text-white">
                 PDF, image, video, or audio
               </span>
               <Input

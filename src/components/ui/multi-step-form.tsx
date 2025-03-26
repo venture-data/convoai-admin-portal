@@ -33,23 +33,23 @@ export function MultiStepForm({ children, isCurrentStepValid = true, onSubmit, i
   }
 
   return (
-    <div className="space-y-6 w-full ">
-      <Card className="p-6 w-full">
+    <div className="space-y-6 w-full">
+      <div className="p-6 w-full rounded-lg border border-white/10 bg-transparent">
         <div className="mb-8 w-full">
           <div className="flex items-center gap-4 justify-center w-full">
             {steps.map((step, index) => (
               <div key={step} className="flex items-center">
                 <div
                   className={`rounded-full h-8 w-8 flex items-center justify-center border ${
-                    index <= currentStep ? 'bg-teal-500 text-white border-teal-500' : 'border-gray-300'
+                    index <= currentStep ? 'bg-orange-500 text-white border-orange-500' : 'border-white/20 text-white/60'
                   }`}
                 >
                   {index + 1}
                 </div>
                 {index < steps.length - 1 && (
-                  <div className="h-[2px] w-16 bg-gray-200">
+                  <div className="h-[2px] w-16 bg-white/10">
                     <div
-                      className="h-full bg-teal-500 transition-all"
+                      className="h-full bg-orange-500 transition-all"
                       style={{
                         width: index < currentStep ? '100%' : '0%',
                       }}
@@ -59,7 +59,7 @@ export function MultiStepForm({ children, isCurrentStepValid = true, onSubmit, i
               </div>
             ))}
           </div>
-          <h2 className="text-2xl font-semibold ">{steps[currentStep]}</h2>
+          <h2 className="text-2xl font-semibold text-white mt-6">{steps[currentStep]}</h2>
         </div>
 
         <motion.div
@@ -68,6 +68,7 @@ export function MultiStepForm({ children, isCurrentStepValid = true, onSubmit, i
           animate={{ x: 0, opacity: 1 }}
           exit={{ x: -20, opacity: 0 }}
           transition={{ duration: 0.5 }}
+          className="text-white"
         >
           {children[currentStep]}
         </motion.div>
@@ -77,12 +78,14 @@ export function MultiStepForm({ children, isCurrentStepValid = true, onSubmit, i
             variant="outline"
             onClick={prev}
             disabled={currentStep === 0 || isLoading}
+            className="border-white/10 text-white hover:bg-white/5"
           >
             Previous
           </Button>
           <Button
             onClick={next}
             disabled={(currentStep === steps.length - 1 ? !isCurrentStepValid : false) || isLoading}
+            className="bg-orange-500 text-white hover:bg-orange-600"
           >
             {isLoading ? (
               <>
@@ -94,7 +97,7 @@ export function MultiStepForm({ children, isCurrentStepValid = true, onSubmit, i
             )}
           </Button>
         </div>
-      </Card>
+      </div>
     </div>
   )
 } 

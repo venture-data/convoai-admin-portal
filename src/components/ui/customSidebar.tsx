@@ -127,7 +127,7 @@ export default function CustomSidebar() {
     <SidebarProvider>
       {isMobile && isMobileOpen && (
         <div 
-          className="fixed inset-0 bg-black/50 z-40 md:hidden"
+          className="fixed inset-0 !bg-black/50 z-40 md:hidden"
           onClick={() => setIsMobileOpen(false)}
         />
       )}
@@ -141,12 +141,7 @@ export default function CustomSidebar() {
       </button>
       
       <Sidebar 
-        collapsible="none" 
-        className={`bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100 sm:w-[296px] h-screen border-r dark:border-gray-800 transition-transform duration-300 z-50 ${
-          isMobile ? (
-            !isMobileOpen ? 'w-0 -translate-x-full fixed' : 'translate-x-0 fixed'
-          ) : ''
-        }`}
+        className="!bg-gray-900/40 backdrop-blur-xl text-gray-400 w-[240px] h-screen border-r border-white/10"
         variant="floating"
       >
         <SidebarContent className="py-2">

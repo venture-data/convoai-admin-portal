@@ -13,7 +13,7 @@ export function GoogleButton({ onClick, isLoading, mode }: GoogleButtonProps) {
     <Button
       type="button"
       onClick={onClick}
-      className="flex items-center justify-center w-full border border-gray-200 rounded-lg py-2.5 mb-6"
+      className="flex items-center justify-center w-full bg-[#2D2D2D] hover:bg-[#3D3D3D] text-white rounded-lg py-2.5"
       variant="outline"
       disabled={isLoading}
     >
