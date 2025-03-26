@@ -1,4 +1,4 @@
-import { LayoutDashboard, Users, FileText, Phone, Wrench, FolderOpen, Headphones, CreditCard, BarChart } from "lucide-react";
+import { LayoutDashboard, FileText, Phone, Wrench, FolderOpen, Headphones, CreditCard, BarChart, BotIcon } from "lucide-react";
 
 export const navigationItems = [
   {
@@ -12,7 +12,7 @@ export const navigationItems = [
       {
         title: "Assistants",
         url: "/dashboard/new_agents",
-        icon: Users,
+        icon: BotIcon,
       },
       {
         title: "Workflows",

@@ -109,35 +109,6 @@ export default function NewAgentPage() {
 
   const handleAgentConfigChange = (key: string, config:ModelConfigType | KnowledgeConfigType | VoiceConfigType) => {
     setAgentConfig({ ...agentConfig,[key]: config });
-    
-    if (selectedAgentId) {
-      const now = new Date().toISOString();
-      setAgents(agents.map(agent => {
-        if (agent.id === selectedAgentId) {
-          return {
-            ...agent,
-            name: key === 'model' ? (config as ModelConfigType).agentName || agent.name : agent.name,
-            description: key === 'model' ? (config as ModelConfigType).description || agent.description : agent.description,
-            system_prompt: key === 'model' ? (config as ModelConfigType).systemPrompt || agent.system_prompt : agent.system_prompt,
-            greeting: key === 'model' ? (config as ModelConfigType).firstMessage || agent.greeting : agent.greeting,
-            voice: key === 'voice' ? (config as VoiceConfigType).name || agent.voice : agent.voice,
-            llm_model: key === 'model' ? (config as ModelConfigType).model || agent.llm_model : agent.llm_model,
-            stt_model: key === 'model' ? (config as ModelConfigType).stt_model || agent.stt_model : agent.stt_model,
-            stt_model_telephony: key === 'model' ? (config as ModelConfigType).stt_model_telephony || agent.stt_model_telephony : agent.stt_model_telephony,
-            allow_interruptions: key === 'model' ? (config as ModelConfigType).allow_interruptions || agent.allow_interruptions : agent.allow_interruptions,
-            interrupt_speech_duration: key === 'model' ? (config as ModelConfigType).interrupt_speech_duration || agent.interrupt_speech_duration : agent.interrupt_speech_duration,
-            interrupt_min_words: key === 'model' ? (config as ModelConfigType).interrupt_min_words || agent.interrupt_min_words : agent.interrupt_min_words,
-            min_endpointing_delay: key === 'model' ? (config as ModelConfigType).min_endpointing_delay || agent.min_endpointing_delay : agent.min_endpointing_delay,
-            max_endpointing_delay: key === 'model' ? (config as ModelConfigType).max_endpointing_delay || agent.max_endpointing_delay : agent.max_endpointing_delay,
-            active: key === 'model' ? (config as ModelConfigType).active || agent.active : agent.active,
-            is_default: key === 'model' ? (config as ModelConfigType).is_default || agent.is_default : agent.is_default,
-            max_nested_function_calls: key === 'model' ? (config as ModelConfigType).max_nested_function_calls || agent.max_nested_function_calls : agent.max_nested_function_calls,
-            updated_at: now,
-          }
-        }
-        return agent;
-      }));
-    }
   }
 
   const validateModelConfig = (config: ModelConfigType) => {
