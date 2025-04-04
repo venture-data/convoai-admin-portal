@@ -102,6 +102,8 @@ export async function PUT(request: Request) {
   try {
     const headersList = await headers();
     const authHeader = headersList.get('Authorization');
+    const { searchParams } = new URL(request.url);
+    const agent_id = searchParams.get('agent_id');
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return NextResponse.json(
@@ -119,7 +121,7 @@ export async function PUT(request: Request) {
     }
 
     const data = await request.json();
-    const url = `${process.env.BASE_URL}/api/v1/agent-profile`;
+    const url = `${process.env.BASE_URL}/api/v1/agent-profile/${agent_id}`;
     
     const response = await fetch(url, {
       method: 'PUT',
@@ -167,16 +169,16 @@ export async function DELETE(request: Request) {
     }
 
     const { searchParams } = new URL(request.url);
-    const id = searchParams.get('id');
+    const agent_id = searchParams.get('agent_id');
     
-    if (!id) {
+    if (!agent_id) {
       return NextResponse.json(
         { error: 'Agent profile ID is required' },
         { status: 400 }
       );
     }
 
-    const url = `${process.env.BASE_URL}/api/v1/agent-profile?id=${id}`;
+    const url = `${process.env.BASE_URL}/api/v1/agent-profile/${agent_id}`;
     
     const response = await fetch(url, {
       method: 'DELETE',

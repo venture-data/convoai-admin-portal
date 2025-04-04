@@ -82,15 +82,17 @@ export async function GET(request: Request) {
 
     const { searchParams } = new URL(request.url);
     const agent_id = searchParams.get('agent_id');
+    const identity = searchParams.get('identity');
+    const name = searchParams.get('name');
     
-    if (!agent_id) {
+    if (!agent_id || !identity || !name) {
       return NextResponse.json(
-        { error: 'Agent ID is required' },
+        { error: 'Missing required parameters: agent_id, identity, and name are required' },
         { status: 400 }
       );
     }
     
-    const url = `${process.env.BASE_URL}/api/v1/api/token?agent_id=${agent_id}`;
+    const url = `${process.env.BASE_URL}/api/v1/api/token?${searchParams.toString()}`;
 
     const response = await fetch(url, {
       method: 'GET',
@@ -99,11 +101,17 @@ export async function GET(request: Request) {
       },
     });
 
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+    }
+
     const data = await response.json();
     return NextResponse.json(data);
   } catch (error) {
+    console.error('LiveKit token error:', error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Failed to fetch agent profiles' },
+      { error: error instanceof Error ? error.message : 'Failed to create LiveKit token' },
       { status: 500 }
     );
   }

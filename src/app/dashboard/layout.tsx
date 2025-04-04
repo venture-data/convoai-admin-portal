@@ -2,15 +2,33 @@
 
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { SessionProvider } from "next-auth/react";
+import { useSession } from "next-auth/react";
+import { useAuthStore } from "@/app/hooks/useAuth";
+import { useEffect } from "react";
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 0,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  const queryClient = new QueryClient();
+  const session = useSession();
+
+  useEffect(() => {
+    if (session.data?.user) {
+      useAuthStore.getState().setCreds({
+        token: session.data.token || "",
+      });
+    }
+  }, [session.data]);
+
   return (
-    <SessionProvider>
-      <QueryClientProvider client={queryClient}>
-        <DashboardLayout>{children}</DashboardLayout>
-      </QueryClientProvider>
-    </SessionProvider>
+    <QueryClientProvider client={queryClient}>
+      <DashboardLayout>{children}</DashboardLayout>
+    </QueryClientProvider>
   );
 }

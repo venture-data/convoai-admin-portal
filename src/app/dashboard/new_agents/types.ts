@@ -1,11 +1,12 @@
 import { z } from "zod";
 
 export const modelConfigSchema = z.object({
+    id:z.string().optional(),
     agentName: z.string().min(1, "Agent name is required"),
     firstMessage: z.string().min(1, "First message is required"),
     systemPrompt: z.string().default("").optional(),
     type: z.enum(["inbound", "outbound"]).default("inbound").optional(),
-    provider: z.enum(["elevenlabs", "openai"]),
+    provider: z.enum(["elevenlabs", "openai","google"]).default("openai"),
     model: z.string().default("gpt-3.5-turbo").optional(),
     language: z.enum(["en", "ur"]).default("en").optional(),
     temperature: z.number().min(0).max(1).default(0.7).optional(),
@@ -25,7 +26,7 @@ export const modelConfigSchema = z.object({
 export const voiceConfigSchema = z.object({
   id: z.string().min(1, "Voice ID is required").optional(),
   name: z.string().min(1, "Voice name is required").optional(),
-  provider: z.enum(["elevenlabs", "openai"]).optional(),
+  provider: z.enum(["elevenlabs", "openai","google"]).default("openai").optional(),
   details: z.object({
     name: z.string().min(1, "Voice name is required").optional(),
     high_quality_base_model_ids: z.array(z.string()).min(1, "High quality base model IDs are required").optional(),
@@ -47,7 +48,7 @@ export const agentConfigSchema = z.object({
   voice: data.voice || {
     id: "",
     name: "alloy",
-    provider: "elevenlabs",
+    provider: "openai",
     details: {
       name: "",
       high_quality_base_model_ids: [],

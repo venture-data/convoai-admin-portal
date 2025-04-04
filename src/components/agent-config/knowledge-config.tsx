@@ -9,7 +9,7 @@ export function KnowledgeConfig({agentConfig, setAgentConfig}: {agentConfig: Kno
   return (
     <div className="space-y-6 bg-inherit">
       <h3 className={`text-lg ${errors.files ? 'text-red-500' : ''}`}>Knowledge Base Configuration</h3>
-      <UploadFile files={agentConfig.files} setFiles={(files: File[]) => setAgentConfig({ ...agentConfig, files: files })} />
+      <UploadFile files={agentConfig.files || []} setFiles={(files: File[]) => setAgentConfig({ ...agentConfig, files: files })} />
       {errors.files && <p className="text-red-500">Please upload at least one file.</p>}
     </div>
   );

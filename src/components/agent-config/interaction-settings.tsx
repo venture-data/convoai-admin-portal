@@ -55,6 +55,7 @@ export function InteractionSettings({agentConfig, setAgentConfig}: {agentConfig:
                 min={0}
                 max={2}
                 step={0.1}
+                inverted={true}
                 value={[agentConfig.interrupt_speech_duration || 0.5]}
                 onValueChange={(value) => {
                   onAgentConfigChange("interrupt_speech_duration", value[0]);
@@ -80,6 +81,7 @@ export function InteractionSettings({agentConfig, setAgentConfig}: {agentConfig:
                 min={0}
                 max={10}
                 step={1}
+                inverted={true}
                 value={[agentConfig.interrupt_min_words || 0]}
                 onValueChange={(value) => {
                   onAgentConfigChange("interrupt_min_words", value[0]);
@@ -107,6 +109,7 @@ export function InteractionSettings({agentConfig, setAgentConfig}: {agentConfig:
             min={0}
             max={2}
             step={0.1}
+            inverted={true}
             value={[agentConfig.min_endpointing_delay || 0.5]}
             onValueChange={(value) => {
               onAgentConfigChange("min_endpointing_delay", value[0]);
@@ -132,6 +135,7 @@ export function InteractionSettings({agentConfig, setAgentConfig}: {agentConfig:
             min={1}
             max={10}
             step={0.5}
+            inverted={true}
             value={[agentConfig.max_endpointing_delay || 6]}
             onValueChange={(value) => {
               onAgentConfigChange("max_endpointing_delay", value[0]);
@@ -157,6 +161,7 @@ export function InteractionSettings({agentConfig, setAgentConfig}: {agentConfig:
             min={0}
             max={5}
             step={1}
+            inverted={true}
             value={[agentConfig.max_nested_function_calls || 1]}
             onValueChange={(value) => {
               onAgentConfigChange("max_nested_function_calls", value[0]);

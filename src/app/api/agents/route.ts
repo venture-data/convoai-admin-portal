@@ -166,4 +166,59 @@ export async function PUT(request: Request) {
   }
 }
 
+export async function DELETE(request: Request) {
+  try {
+    const headersList = await headers();
+    const authHeader = headersList.get('Authorization');
+
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return NextResponse.json(
+        { error: 'Unauthorized - No valid token provided' },
+        { status: 401 }
+      );
+    }
+
+    const token = authHeader.split(' ')[1];
+
+    if (!token) {
+      return NextResponse.json(
+        { error: 'Unauthorized - Token is required' },
+        { status: 401 }
+      );
+    }
+
+    const formData = await request.formData();
+    const agentId = formData.get('agent_id');
+
+    if (!agentId) {
+      return NextResponse.json(
+        { error: 'Agent ID is required' },
+        { status: 400 }
+      );
+    }   
+
+    const url = `${process.env.BASE_URL}/agent/delete-agent`; 
+    const response = await fetch(url, {
+      method: 'DELETE',
+      body: formData,
+      headers: {
+        'Authorization': `Bearer ${token}`
+      },
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+    }
+
+    const data = await response.json();
+    return NextResponse.json(data);
+
+  } catch (error) {
+    console.error('Detailed error:', {
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined
+    });
+  } 
+}
 

@@ -3,27 +3,69 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AgentConfig } from "@/app/dashboard/new_agents/types";
 import { useAuthStore } from "./useAuth";
+import api from "@/lib/api-instance";
+
+interface UpdateAgentPayload {
+  name: string;
+  description: string;
+  system_prompt: string;
+  greeting: string;
+  llm_provider: string;
+  tts_provider: string;
+  llm_options: {
+    model: string;
+    temperature: number;
+  };
+  tts_options: {
+    voice: string;
+    speed: number;
+  };
+  allow_interruptions: boolean;
+  interrupt_speech_duration: number;
+  interrupt_min_words: number;
+  min_endpointing_delay: number;
+  max_endpointing_delay: number;
+  active: boolean;
+  is_default: boolean;
+  max_nested_function_calls: number;
+}
+
+interface AgentsResponse {
+  items: Array<{
+    id: number;
+    name: string;
+    description: string;
+  }>;
+}
 
 export function useAgent() {
   const queryClient = useQueryClient()
   const token = useAuthStore.getState().token;
+  
   const createAgent = useMutation({
     mutationFn: async (agentConfig: AgentConfig) => {
-      // Create a payload object with the correct field names
       const payload = {
-        name: agentConfig.model.agentName || '',
-        description: agentConfig.model.description || '',
-        system_prompt: agentConfig.model.systemPrompt || '',
-        greeting: agentConfig.model.firstMessage || '',
-        voice: agentConfig.voice?.name || 'alloy',
-        llm_model: agentConfig.model.model || 'gpt-4o',
-        stt_model: agentConfig.model.stt_model || 'nova-3-general',
-        stt_model_telephony: agentConfig.model.stt_model_telephony || 'nova-2-phonecall',
+        id: agentConfig?.model?.id,
+        name: agentConfig.model.agentName,
+        description: agentConfig.model.description || null,
+        system_prompt: agentConfig.model.systemPrompt,
+        greeting: agentConfig.model.firstMessage,
+        llm_provider: agentConfig.model.provider || "openai",
+        tts_provider: agentConfig.voice?.provider || "openai",
+        stt_provider: "deepgram",  
+        llm_options: {
+          model: agentConfig.model.model || "gpt-4o",
+          temperature: agentConfig.model.temperature || 0.7
+        },
+        tts_options: {
+          voice: agentConfig.voice?.name || "alloy",
+          speed: 1.0
+        },
         allow_interruptions: agentConfig.model.allow_interruptions !== false,
         interrupt_speech_duration: Number(agentConfig.model.interrupt_speech_duration || 0.5),
         interrupt_min_words: Number(agentConfig.model.interrupt_min_words || 0),
         min_endpointing_delay: Number(agentConfig.model.min_endpointing_delay || 0.5),
-        max_endpointing_delay: Number(agentConfig.model.max_endpointing_delay || 6),
+        max_endpointing_delay: Number(agentConfig.model.max_endpointing_delay || 6.0),
         active: agentConfig.model.active !== false,
         is_default: agentConfig.model.is_default === true,
         max_nested_function_calls: Number(agentConfig.model.max_nested_function_calls || 1)
@@ -60,6 +102,8 @@ export function useAgent() {
 
         return responseData;
       } else {
+        console.log(payload)
+        console.log(token)
         const response = await fetch('/api/v1/agent-profile', {
           method: 'POST',
           body: JSON.stringify(payload),
@@ -78,18 +122,64 @@ export function useAgent() {
         return responseData;
       }
     },
+    onMutate: async (newAgent: AgentConfig) => {
+      await queryClient.cancelQueries({ queryKey: ['agents'] });
+      const previousAgents = queryClient.getQueryData<AgentsResponse>(['agents']);
+
+      // Create an optimistic agent entry
+      const optimisticAgent = {
+        id: Date.now(), // Temporary ID
+        name: newAgent.model.agentName,
+        description: newAgent.model.description || "",
+        system_prompt: newAgent.model.systemPrompt,
+        greeting: newAgent.model.firstMessage,
+        voice: newAgent.voice?.name || "alloy",
+        llm_model: newAgent.model.model,
+        stt_model: newAgent.model.stt_model,
+        stt_model_telephony: newAgent.model.stt_model_telephony,
+        allow_interruptions: newAgent.model.allow_interruptions,
+        interrupt_speech_duration: newAgent.model.interrupt_speech_duration,
+        interrupt_min_words: newAgent.model.interrupt_min_words,
+        min_endpointing_delay: newAgent.model.min_endpointing_delay,
+        max_endpointing_delay: newAgent.model.max_endpointing_delay,
+        active: newAgent.model.active,
+        is_default: newAgent.model.is_default,
+        max_nested_function_calls: newAgent.model.max_nested_function_calls,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+
+      queryClient.setQueryData<AgentsResponse>(['agents'], (old) => {
+        if (!old) return { items: [optimisticAgent] };
+        return {
+          ...old,
+          items: [...old.items, optimisticAgent]
+        };
+      });
+
+      return { previousAgents };
+    },
+    onError: (err, newAgent, context?: { previousAgents: AgentsResponse | undefined }) => {
+      if (context?.previousAgents) {
+        queryClient.setQueryData(['agents'], context.previousAgents);
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['agents'] });
+    },
   });
 
   const updateAgent = useMutation({
-    mutationFn: async (formData: FormData) => {
-      const response = await fetch('/api/v1/agent-profile', {
+    mutationFn: async ({ agent_id, ...data }: UpdateAgentPayload & { agent_id: string }) => {
+      const response = await fetch(`/api/v1/agent-profile?agent_id=${agent_id}`, {
         method: 'PUT',
-        body: formData,
+        body: JSON.stringify(data),
         headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
           'Authorization': `Bearer ${token}`,
         }
       });
-      
 
       const responseData = await response.json();
       
@@ -97,9 +187,87 @@ export function useAgent() {
         throw new Error(responseData.error || 'Failed to update agent');
       }
 
-      return responseData;
+      return { agent_id, ...data };
     },
-    onSuccess: () => {
+    onMutate: async (updatedAgent: UpdateAgentPayload & { agent_id: string }) => {
+      await queryClient.cancelQueries({ queryKey: ['agents'] });
+      const previousAgents = queryClient.getQueryData<AgentsResponse>(['agents']);
+
+      queryClient.setQueryData<AgentsResponse>(['agents'], (old) => {
+        if (!old) return { items: [] };
+        return {
+          ...old,
+          items: old.items.map(agent => 
+            agent.id.toString() === updatedAgent.agent_id
+              ? {
+                  ...agent,
+                  name: updatedAgent.name,
+                  description: updatedAgent.description,
+                  system_prompt: updatedAgent.system_prompt,
+                  greeting: updatedAgent.greeting,
+                  voice: updatedAgent.tts_options.voice,
+                  llm_model: updatedAgent.llm_options.model,
+                  allow_interruptions: updatedAgent.allow_interruptions,
+                  interrupt_speech_duration: updatedAgent.interrupt_speech_duration,
+                  interrupt_min_words: updatedAgent.interrupt_min_words,
+                  min_endpointing_delay: updatedAgent.min_endpointing_delay,
+                  max_endpointing_delay: updatedAgent.max_endpointing_delay,
+                  active: updatedAgent.active,
+                  is_default: updatedAgent.is_default,
+                  max_nested_function_calls: updatedAgent.max_nested_function_calls,
+                  updated_at: new Date().toISOString(),
+                }
+              : agent
+          )
+        };
+      });
+
+      return { previousAgents };
+    },
+    onError: (err, updatedAgent, context?: { previousAgents: AgentsResponse | undefined }) => {
+      if (context?.previousAgents) {
+        queryClient.setQueryData(['agents'], context.previousAgents);
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['agents'] });
+    },
+  });
+
+  const deleteAgent = useMutation({
+    mutationFn: async (agent_id: string) => {
+      const response = await fetch(`/api/v1/agent-profile?agent_id=${agent_id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete agent');
+      }
+      return agent_id;
+    },
+    onMutate: async (agent_id) => {
+      await queryClient.cancelQueries({ queryKey: ['agents'] });
+      const previousAgents = queryClient.getQueryData<AgentsResponse>(['agents']);
+
+      queryClient.setQueryData<AgentsResponse>(['agents'], (old) => {
+        if (!old) return { items: [] };
+        return {
+          ...old,
+          items: old.items.filter((agent) => agent.id.toString() !== agent_id)
+        };
+      });
+
+      return { previousAgents };
+    },
+    onError: (err, agent_id, context?: { previousAgents: AgentsResponse | undefined }) => {
+      if (context?.previousAgents) {
+        queryClient.setQueryData(['agents'], context.previousAgents);
+      }
+    },
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['agents'] });
     },
   });
@@ -113,12 +281,22 @@ export function useAgent() {
           'Authorization': `Bearer ${token}`,
         },
       });
+
+      // const response = await api.get('/api/v1/agent-profile',{
+      //   method: 'GET',
+      //   headers: {
+      //     'Authorization': `Bearer ${token}`,
+      //   },
+      // });
+
       if (!response.ok) {
         throw new Error('Failed to fetch agents');
       }
       return response.json();
     },
   });
+
+  
   
 
   return {
@@ -126,6 +304,7 @@ export function useAgent() {
     updateAgent,
     agents,
     isLoading,
-    error
+    error,
+    deleteAgent
   };
 } 
