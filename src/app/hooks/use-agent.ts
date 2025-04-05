@@ -45,7 +45,6 @@ export function useAgent() {
   const createAgent = useMutation({
     mutationFn: async (agentConfig: AgentConfig) => {
       const payload = {
-        id: agentConfig?.model?.id,
         name: agentConfig.model.agentName,
         description: agentConfig.model.description || null,
         system_prompt: agentConfig.model.systemPrompt,
@@ -86,7 +85,7 @@ export function useAgent() {
           }
         });
         
-        const response = await api.post('api/v1/agent-profile', {
+        const response = await api.post('agent-profile', {
           body: formData,
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -104,7 +103,7 @@ export function useAgent() {
       } else {
         console.log(payload)
         console.log(token)
-        const response = await api.post('api/v1/agent-profile', {
+        const response = await api.post('agent-profile', {
           body: JSON.stringify(payload),
           headers: {
             'Content-Type': 'application/json',
