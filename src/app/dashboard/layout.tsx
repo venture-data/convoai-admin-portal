@@ -17,14 +17,15 @@ const queryClient = new QueryClient({
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const session = useSession();
-
   useEffect(() => {
-    if (session.data?.user) {
-      useAuthStore.getState().setCreds({
-        token: session.data.token || "",
-      });
+    if(useAuthStore.getState().token === ""){
+      if (session.data?.user) {
+        useAuthStore.getState().setCreds({
+          token: session.data.token || "",
+        });
+      }
     }
-  }, [session.data]);
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>

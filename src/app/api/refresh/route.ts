@@ -1,17 +1,25 @@
 import { setCookies } from '@/lib/set-cookies';
 import { NextResponse } from 'next/server';
+import { cookies } from 'next/headers';
 
 export async function POST(request: Request) {
   try {
     const authHeader = request.headers.get('authorization');
-    const authCookies = request.headers.get('cookie');
+    const cookieStore = await cookies();
+    const refreshToken = cookieStore.get('refresh_token');
 
-    console.log("header token")
-    console.log(authHeader)
+    console.log("Refresh token from cookies:", refreshToken?.value);
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return NextResponse.json(
         { error: 'Unauthorized - No valid token provided' },
+        { status: 401 }
+      );
+    }
+
+    if (!refreshToken?.value) {
+      return NextResponse.json(
+        { error: 'Refresh token missing in cookies' },
         { status: 401 }
       );
     }
@@ -23,31 +31,41 @@ export async function POST(request: Request) {
         { status: 500 }
       );
     }
-    console.log("final token")
-    console.log(token)
+
+    console.log("Sending refresh request with token:", token);
     const response = await fetch(`${process.env.BASE_URL}/api/v1/refresh`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
-        'Cookie': authCookies || '',
+        'Cookie': `refresh_token=${refreshToken.value}`,
         'Content-Type': 'application/json'
       },
       credentials: 'include'
     });
 
+    console.log("Refresh response status:", response.status);
+    
     if (!response.ok) {
       const errorText = await response.text();
+      console.error("Refresh error response:", errorText);
       throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
     }
 
     const data = await response.json();
+    console.log("Refresh successful, got new tokens");
+
+    // Get the new refresh token from response headers
     const setCookieHeader = response.headers.get('set-cookie');
-    const nextResponse = NextResponse.json(data);
     if (setCookieHeader) {
-      await setCookies(setCookieHeader?[setCookieHeader]:undefined)
+      await setCookies([setCookieHeader]);
     }
 
-    return nextResponse;
+    // Return both access token and session token
+    return NextResponse.json({
+      access_token: data.access_token,
+      token: data.access_token, // For Next.js session
+      isAuth: true
+    });
   } catch (error) {
     console.error('Refresh error:', error);
     return NextResponse.json(

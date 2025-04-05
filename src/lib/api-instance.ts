@@ -24,16 +24,13 @@ const processQueue = (error: Error | null) => {
 
 async function fetchWithAuth(url: string, options: RequestInit = {}) {
   const token = useAuthStore.getState().token;
-  console.log(token)
+  console.log("Current token:", token);
   const headers = new Headers(options.headers || {});
   
   if (token) {
     headers.set('Authorization', `Bearer ${token}`);
   }
-
-  console.log('Making request to:', `${BASE_URL}/${url}`);
-  
-  const response = await fetch(`/api/v1/${url}`, {
+  const response = await fetch(`${BASE_URL}/api/v1/${url}`, {
     ...options,
     headers,
     credentials: 'include'
@@ -46,7 +43,6 @@ async function fetchWithAuth(url: string, options: RequestInit = {}) {
           failedQueue.push({ resolve, reject });
         });
         const newToken = useAuthStore.getState().token;
-        console.log("Using refreshed token:", newToken);
         headers.set('Authorization', `Bearer ${newToken}`);
         return fetch(`/api/v1/${url}`, {
           ...options,
@@ -84,11 +80,6 @@ async function fetchWithAuth(url: string, options: RequestInit = {}) {
       if (!data.access_token) {
         throw new Error('No access token in refresh response');
       }
-
-      useAuthStore.getState().setCreds({ 
-        token: data.access_token,
-        isAuth: true
-      });
       
       processQueue(null);
       headers.set('Authorization', `Bearer ${data.access_token}`);
@@ -101,8 +92,6 @@ async function fetchWithAuth(url: string, options: RequestInit = {}) {
     } catch (error) {
       console.error("Refresh error:", error);
       processQueue(error instanceof Error ? error : new Error('Token refresh failed'));
-      // useAuthStore.getState().setCreds({ token: '', isAuth: false });
-      // await signOut({ callbackUrl: '/' });
       throw error;
     } finally {
       isRefreshing = false;
@@ -126,6 +115,7 @@ const api = {
   },
 
   async delete(url: string, options: RequestInit = {}) {
+    console.log("Making DELETE request for:", url);
     return fetchWithAuth(url, { ...options, method: 'DELETE' });
   }
 };

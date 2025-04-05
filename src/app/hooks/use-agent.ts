@@ -41,6 +41,9 @@ interface AgentsResponse {
 export function useAgent() {
   const queryClient = useQueryClient()
   const token = useAuthStore.getState().token;
+
+  console.log("token")
+  console.log(token)
   
   const createAgent = useMutation({
     mutationFn: async (agentConfig: AgentConfig) => {
@@ -166,6 +169,9 @@ export function useAgent() {
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['agents'] });
     },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['agents'] });
+    }
   });
 
   const updateAgent = useMutation({
@@ -233,6 +239,9 @@ export function useAgent() {
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['agents'] });
     },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['agents'] });
+    }
   });
 
   const deleteAgent = useMutation({
@@ -271,9 +280,12 @@ export function useAgent() {
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['agents'] });
     },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['agents'] });
+    }
   });
 
-  const { data: agents = [] as AgentConfig[], isLoading, error } = useQuery({
+  const { data: agents, isLoading, error } = useQuery({
     queryKey: ['agents'],
     queryFn: async () => {
       const response = await api.get('agent-profile',{
@@ -287,8 +299,16 @@ export function useAgent() {
       if (!response.ok) {
         throw new Error('Failed to fetch agents');
       }
-      return response.json();
+      const data = await response.json();
+      return {
+        items: Array.isArray(data) ? data : data.items || []
+      };
     },
+    staleTime: 0,
+    gcTime: 1000 * 60 * 5,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    refetchOnReconnect: true
   });
 
   

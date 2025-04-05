@@ -57,18 +57,19 @@ export default function NewAgentPage() {
   const [isCallModalOpen, setIsCallModalOpen] = useState(false);
 
   useEffect(() => {
-    if (!selectedAgentId && backendAgents?.items?.length > 0) {
+    if (!selectedAgentId && backendAgents && backendAgents.items?.length > 0) {
       const firstAgent = backendAgents.items[0];
       handleSelectAgent(firstAgent);
     }
-  }, [backendAgents?.items, selectedAgentId]);
+  }, [backendAgents, selectedAgentId]);
 
-  const filteredAgents = backendAgents?.items?.filter((agent: Agent) => 
+  const filteredAgents = backendAgents?.items ?? [];
+  const displayedAgents = filteredAgents.filter((agent: Agent) => 
     agent.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     agent.description.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const selectedAgent = backendAgents?.items?.find((agent: Agent) => agent.id.toString() === selectedAgentId);
+  const selectedAgent = filteredAgents.find((agent: Agent) => agent.id.toString() === selectedAgentId);
 
   const initialConfig: AgentConfig = {
     model: {
@@ -320,7 +321,7 @@ export default function NewAgentPage() {
                 ))
               ) : (
                 <AnimatePresence mode="popLayout">
-                  {filteredAgents?.map((agent: Agent) => (
+                  {displayedAgents?.map((agent: Agent) => (
                     <motion.div
                       key={agent.id}
                       initial={{ opacity: 0, y: 20 }}
