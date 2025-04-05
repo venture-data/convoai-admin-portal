@@ -1,8 +1,9 @@
 "use client"
 
 import { useAuthStore } from '@/app/hooks/useAuth';
+import { signOut } from 'next-auth/react';
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
 
 let isRefreshing = false;
 let failedQueue: Array<{
@@ -23,22 +24,20 @@ const processQueue = (error: Error | null) => {
 
 async function fetchWithAuth(url: string, options: RequestInit = {}) {
   const token = useAuthStore.getState().token;
-  console.log("Token:", token);
+  console.log(token)
   const headers = new Headers(options.headers || {});
   
   if (token) {
     headers.set('Authorization', `Bearer ${token}`);
   }
 
-  console.log("Request token:", token);
-  console.log("Request URL:", `${BASE_URL}${url}`);
-
-  const response = await fetch(`${BASE_URL}/${url}`, {
+  console.log('Making request to:', `${BASE_URL}/${url}`);
+  
+  const response = await fetch(`/api/v1/${url}`, {
     ...options,
-    headers
+    headers,
+    credentials: 'include'
   });
-
-  console.log("Response status:", response.status);
 
   if (response.status === 401) {
     if (isRefreshing) {
@@ -49,12 +48,14 @@ async function fetchWithAuth(url: string, options: RequestInit = {}) {
         const newToken = useAuthStore.getState().token;
         console.log("Using refreshed token:", newToken);
         headers.set('Authorization', `Bearer ${newToken}`);
-        return fetch(`${BASE_URL}/${url}`, {
+        return fetch(`/api/v1/${url}`, {
           ...options,
-          headers
+          headers,
+          credentials: 'include'
         });
       } catch (error) {
         console.error("Queue error:", error);
+        await signOut({ callbackUrl: '/' });
         throw error;
       }
     }
@@ -62,38 +63,46 @@ async function fetchWithAuth(url: string, options: RequestInit = {}) {
     isRefreshing = true;
 
     try {
-      const currentToken = useAuthStore.getState().token;
-      console.log("Attempting refresh with token:", currentToken);
-      
-      const refreshResponse = await fetch(`${BASE_URL}/api/v1/auth/refresh-token`, {
+      console.log("Attempting to refresh token");
+      const refreshResponse = await fetch('/api/refresh', {
         method: 'POST',
+        credentials: 'include',
         headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ token: currentToken })
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
       });
 
       if (!refreshResponse.ok) {
+        console.error("Refresh failed:", await refreshResponse.text());
         throw new Error('Token refresh failed');
       }
 
       const data = await refreshResponse.json();
       console.log("Refresh response:", data);
       
-      const { access_token } = data;
-      useAuthStore.getState().setCreds({ token: access_token });
+      if (!data.access_token) {
+        throw new Error('No access token in refresh response');
+      }
+
+      useAuthStore.getState().setCreds({ 
+        token: data.access_token,
+        isAuth: true
+      });
       
       processQueue(null);
-      headers.set('Authorization', `Bearer ${access_token}`);
+      headers.set('Authorization', `Bearer ${data.access_token}`);
       
-      return fetch(`${BASE_URL}/${url}`, {
+      return fetch(`/api/v1/${url}`, {
         ...options,
-        headers
+        headers,
+        credentials: 'include'
       });
     } catch (error) {
       console.error("Refresh error:", error);
       processQueue(error instanceof Error ? error : new Error('Token refresh failed'));
-      useAuthStore.getState().setCreds({ token: '', isAuth: false });
+      // useAuthStore.getState().setCreds({ token: '', isAuth: false });
+      // await signOut({ callbackUrl: '/' });
       throw error;
     } finally {
       isRefreshing = false;

@@ -86,12 +86,12 @@ export function useAgent() {
           }
         });
         
-        const response = await fetch('/api/v1/agent-profile', {
-          method: 'POST',
+        const response = await api.post('api/v1/agent-profile', {
           body: formData,
           headers: {
             'Authorization': `Bearer ${token}`,
-          }
+          },
+          credentials: 'include'
         });
 
         const responseData = await response.json();
@@ -104,13 +104,13 @@ export function useAgent() {
       } else {
         console.log(payload)
         console.log(token)
-        const response = await fetch('/api/v1/agent-profile', {
-          method: 'POST',
+        const response = await api.post('api/v1/agent-profile', {
           body: JSON.stringify(payload),
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`,
-          }
+          },
+          credentials: 'include'
         });
 
         const responseData = await response.json();
@@ -171,15 +171,17 @@ export function useAgent() {
 
   const updateAgent = useMutation({
     mutationFn: async ({ agent_id, ...data }: UpdateAgentPayload & { agent_id: string }) => {
-      const response = await fetch(`/api/v1/agent-profile?agent_id=${agent_id}`, {
-        method: 'PUT',
+      const response = await api.put(`agent-profile?agent_id=${agent_id}`, {
         body: JSON.stringify(data),
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
           'Authorization': `Bearer ${token}`,
-        }
+        },
+        credentials: 'include'
       });
+
+      console.log("response")
 
       const responseData = await response.json();
       
@@ -236,11 +238,11 @@ export function useAgent() {
 
   const deleteAgent = useMutation({
     mutationFn: async (agent_id: string) => {
-      const response = await fetch(`/api/v1/agent-profile?agent_id=${agent_id}`, {
-        method: 'DELETE',
+      const response = await api.delete(`agent-profile?agent_id=${agent_id}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
+        credentials: 'include'
       });
 
       if (!response.ok) {
@@ -275,19 +277,13 @@ export function useAgent() {
   const { data: agents = [] as AgentConfig[], isLoading, error } = useQuery({
     queryKey: ['agents'],
     queryFn: async () => {
-      const response = await fetch('/api/v1/agent-profile', {
+      const response = await api.get('agent-profile',{
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
         },
+        credentials: 'include'
       });
-
-      // const response = await api.get('/api/v1/agent-profile',{
-      //   method: 'GET',
-      //   headers: {
-      //     'Authorization': `Bearer ${token}`,
-      //   },
-      // });
 
       if (!response.ok) {
         throw new Error('Failed to fetch agents');

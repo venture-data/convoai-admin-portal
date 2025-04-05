@@ -57,6 +57,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@types/axios": "^0.9.36",
+    "@types/cookie": "^0.6.0",
     "@types/next-auth": "^3.13.0",
     "@types/node": "^20",
     "@types/react": "^19",

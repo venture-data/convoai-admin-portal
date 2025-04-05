@@ -2,6 +2,8 @@
 import NextAuth, { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
+import { NextResponse } from 'next/server';
+import { setCookies } from "@/lib/set-cookies";
 
 const authOptions: NextAuthOptions = {
   callbacks: {
@@ -12,10 +14,6 @@ const authOptions: NextAuthOptions = {
           const endpoint = mode === 'register' 
             ? `${process.env.BASE_URL}/api/v1/register`
             : `${process.env.BASE_URL}/api/v1/login`;
-
-          console.log("credentials", credentials)
-
-          console.log("user", user)
 
           const requestBody = mode === 'register' 
             ? {
@@ -28,25 +26,32 @@ const authOptions: NextAuthOptions = {
                 password: credentials?.password
               };
 
-          console.log("requestBody", requestBody)
-
           const response = await fetch(endpoint, {
             method: "POST",
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+              'Content-Type': 'application/json',
+              'Accept': 'application/json'
+            },
             body: JSON.stringify(requestBody),
+            credentials: 'include'
           });
 
           const data = await response.json();
-          console.log("data", JSON.stringify(data, null, 2));
+          
           if (data.detail) {
-            console.error("Full error details:", JSON.stringify(data.detail, null, 2));
             throw new Error(data.detail);
           }
 
           if (!response.ok) {
             throw new Error("Authentication failed");
           }
-          
+
+          const setCookieHeader = response.headers.get('set-cookie');
+          await setCookies(setCookieHeader ? [setCookieHeader] : undefined);
+          if (setCookieHeader) {
+            (user as any).authCookies = setCookieHeader;
+          }
+
           if (data.token) {
             (user as any).token = data.token;
             (user as any).email = data.email;
@@ -59,15 +64,25 @@ const authOptions: NextAuthOptions = {
           const endpoint = `${process.env.BASE_URL}/auth/login`;
           const response = await fetch(endpoint, {
             method: "POST",
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+              'Content-Type': 'application/json',
+              'Accept': 'application/json'
+            },
             body: JSON.stringify({
               email: user?.email,
               name: user?.name,
               provider: 'google',
               profile_id: account?.providerAccountId,
             }),
+            credentials: 'include'
           });
+
           const data = await response.json();
+          const setCookieHeader = response.headers.get('set-cookie');
+          if (setCookieHeader) {
+            (user as any).authCookies = setCookieHeader;
+          }
+
           if (data.token) {
             (user as any).token = data.token;
             (user as any).email = data.email;
@@ -81,13 +96,16 @@ const authOptions: NextAuthOptions = {
         throw new Error(error.message || "Authentication failed");
       }
     },
-    async jwt({ token,user, account }:any) {
+    async jwt({ token, user, account }:any) {
       if (user) {
         token.id = user.id;
         token.email = user.email;
         token.name = user.name;
         token.provider = account?.provider; 
-        token.token=user.token;
+        token.token = user.token;
+        if (user.authCookies) {
+          token.authCookies = user.authCookies;
+        }
       }
       return token;
     },
@@ -97,8 +115,13 @@ const authOptions: NextAuthOptions = {
         session.user.email = token.email;
         session.user.name = token.name;
         session.user.provider = token.provider;
-        session.token=token.token;
-        session.subscription=token.subscription
+        session.token = token.token;
+        session.subscription = token.subscription;
+        if (token.authCookies) {
+          const response = NextResponse.next();
+          response.headers.set('Set-Cookie', token.authCookies);
+          return { ...session, response };
+        }
       }
       return session;
     },
@@ -127,8 +150,7 @@ const authOptions: NextAuthOptions = {
             password: credentials?.password,
             id: credentials?.email,
           };
-        } catch (error) {
-          console.error("Auth error:", error);
+        } catch {
           return null;
         }
       },

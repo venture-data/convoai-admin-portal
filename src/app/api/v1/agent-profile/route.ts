@@ -44,8 +44,11 @@ export async function POST(request: Request) {
     });
 
     if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+      const errorData = await response.json();
+      return NextResponse.json(
+        { error: errorData.detail || 'Request failed' },
+        { status: response.status }
+      );
     }
 
     const responseData = await response.json();
@@ -65,7 +68,6 @@ export async function GET() {
     const authHeader = headersList.get('Authorization');
   
     const token = authHeader?.split(' ')[1];
-  
     if (!token) {
       return NextResponse.json(
         { error: 'Unauthorized - Token is required' },
@@ -88,6 +90,14 @@ export async function GET() {
       },
     });
 
+    if (!response.ok) {
+      const errorData = await response.json();
+      return NextResponse.json(
+        { error: errorData.detail || 'Request failed' },
+        { status: response.status }
+      );
+    }
+    
     const data = await response.json();
     return NextResponse.json(data);
   } catch (error) {
@@ -132,10 +142,13 @@ export async function PUT(request: Request) {
         'Authorization': `Bearer ${token}`
       },
     });
-
+    
     if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+      const errorData = await response.json();
+      return NextResponse.json(
+        { error: errorData.detail || 'Request failed' },
+        { status: response.status }
+      );
     }
 
     const responseData = await response.json();
@@ -189,8 +202,11 @@ export async function DELETE(request: Request) {
     });
 
     if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+      const errorData = await response.json();
+      return NextResponse.json(
+        { error: errorData.detail || 'Request failed' },
+        { status: response.status }
+      );
     }
 
     const responseData = await response.json();
