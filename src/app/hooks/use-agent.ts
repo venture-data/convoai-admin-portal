@@ -88,11 +88,8 @@ export function useAgent() {
           }
         });
         
-        const response = await api.post('agent-profile', {
+        const response = await api.post('api/v1/agent-profile', {
           body: formData,
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
           credentials: 'include'
         });
 
@@ -106,11 +103,10 @@ export function useAgent() {
       } else {
         console.log(payload)
         console.log(token)
-        const response = await api.post('agent-profile', {
+        const response = await api.post('api/v1/agent-profile', {
           body: JSON.stringify(payload),
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
           },
           credentials: 'include'
         });
@@ -176,12 +172,11 @@ export function useAgent() {
 
   const updateAgent = useMutation({
     mutationFn: async ({ agent_id, ...data }: UpdateAgentPayload & { agent_id: string }) => {
-      const response = await api.put(`agent-profile?agent_id=${agent_id}`, {
+      const response = await api.put(`api/v1/agent-profile?agent_id=${agent_id}`, {
         body: JSON.stringify(data),
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
-          'Authorization': `Bearer ${token}`,
         },
         credentials: 'include'
       });
@@ -246,10 +241,7 @@ export function useAgent() {
 
   const deleteAgent = useMutation({
     mutationFn: async (agent_id: string) => {
-      const response = await api.delete(`agent-profile?agent_id=${agent_id}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
+      const response = await api.delete(`api/v1/agent-profile?agent_id=${agent_id}`, {
         credentials: 'include'
       });
 
@@ -288,11 +280,8 @@ export function useAgent() {
   const { data: agents, isLoading, error } = useQuery({
     queryKey: ['agents'],
     queryFn: async () => {
-      const response = await api.get('agent-profile',{
+      const response = await api.get('api/v1/agent-profile',{
         method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
         credentials: 'include'
       });
 

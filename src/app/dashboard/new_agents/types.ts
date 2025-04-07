@@ -25,13 +25,17 @@ export const modelConfigSchema = z.object({
 
 export const voiceConfigSchema = z.object({
   id: z.string().min(1, "Voice ID is required").optional(),
-  name: z.string().min(1, "Voice name is required").optional(),
+  name: z.string().min(1, "Voice name is required"),
   provider: z.enum(["elevenlabs", "openai","google"]).default("openai").optional(),
   details: z.object({
-    name: z.string().min(1, "Voice name is required").optional(),
+    name: z.string().min(1, "Voice name is required"),
     high_quality_base_model_ids: z.array(z.string()).min(1, "High quality base model IDs are required").optional(),
     preview_url: z.string().min(1, "Preview URL is required").optional(),
     labels: z.array(z.string()).min(1, "Labels are required").optional(),
+  }).optional(),
+  tts_options: z.object({
+    voice: z.string().optional(),
+    speed: z.number().min(0.1).max(2).default(1.0).optional(),
   }).optional()
 })
 

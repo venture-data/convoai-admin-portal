@@ -30,7 +30,7 @@ async function fetchWithAuth(url: string, options: RequestInit = {}) {
   if (token) {
     headers.set('Authorization', `Bearer ${token}`);
   }
-  const response = await fetch(`${BASE_URL}/api/v1/${url}`, {
+  const response = await fetch(`${BASE_URL}/${url}`, {
     ...options,
     headers,
     credentials: 'include'
@@ -44,7 +44,7 @@ async function fetchWithAuth(url: string, options: RequestInit = {}) {
         });
         const newToken = useAuthStore.getState().token;
         headers.set('Authorization', `Bearer ${newToken}`);
-        return fetch(`/api/v1/${url}`, {
+        return fetch(`${BASE_URL}/${url}`, {
           ...options,
           headers,
           credentials: 'include'
@@ -81,14 +81,22 @@ async function fetchWithAuth(url: string, options: RequestInit = {}) {
         throw new Error('No access token in refresh response');
       }
       
-      processQueue(null);
-      headers.set('Authorization', `Bearer ${data.access_token}`);
+      // Update the token in the auth store
+      useAuthStore.getState().setCreds({
+        token: data.access_token,
+        isAuth: true
+      });
       
-      return fetch(`/api/v1/${url}`, {
+      processQueue(null);
+      
+      headers.set('Authorization', `Bearer ${data.access_token}`);
+      const newResponse = await fetch(`${BASE_URL}/${url}`, {
         ...options,
         headers,
         credentials: 'include'
       });
+      
+      return newResponse;
     } catch (error) {
       console.error("Refresh error:", error);
       processQueue(error instanceof Error ? error : new Error('Token refresh failed'));

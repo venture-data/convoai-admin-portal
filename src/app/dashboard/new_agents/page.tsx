@@ -22,15 +22,26 @@ import { AgentConfig, ModelConfig as ModelConfigType, KnowledgeConfig as Knowled
 import { InteractionSettings } from "@/components/agent-config/interaction-settings"
 
 interface Agent {
-  id: number
+  id: string
   name: string
   description: string
   system_prompt: string
   greeting: string
-  voice: string
-  llm_model: string
-  stt_model: string
-  stt_model_telephony: string
+  llm_provider: "elevenlabs" | "openai" | "google"
+  tts_provider: "elevenlabs" | "openai" | "google"
+  stt_provider: string
+  llm_options: {
+    model: string
+    temperature: number
+  }
+  tts_options: {
+    voice: string
+    speed: number
+  }
+  stt_options: {
+    model: string
+    model_telephony: string
+  }
   allow_interruptions: boolean
   interrupt_speech_duration: number
   interrupt_min_words: number
@@ -39,7 +50,7 @@ interface Agent {
   active: boolean
   is_default: boolean
   max_nested_function_calls: number
-  owner_id: number
+  owner_id: string
   created_at: string
   updated_at: string
 }
@@ -69,7 +80,7 @@ export default function NewAgentPage() {
     agent.description.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const selectedAgent = filteredAgents.find((agent: Agent) => agent.id.toString() === selectedAgentId);
+  const selectedAgent = filteredAgents.find((agent: Agent) => agent.id === selectedAgentId);
 
   const initialConfig: AgentConfig = {
     model: {
@@ -122,11 +133,57 @@ export default function NewAgentPage() {
   const isModelValid = validateModelConfig(agentConfig.model);
   const isFormValid = isModelValid;
 
+  const handleSelectAgent = (agent: Agent) => {
+    if (selectedAgentId === agent.id) return;
+    
+    setSelectedAgentId(agent.id);
+    setAgentConfig({
+      model: {
+        ...agentConfig.model,
+        agentName: agent.name,
+        firstMessage: agent.greeting,
+        systemPrompt: agent.system_prompt,
+        model: agent.llm_options.model,
+        description: agent.description,
+        provider: agent.llm_provider,
+        temperature: agent.llm_options.temperature,
+        stt_model: agent.stt_options.model,
+        stt_model_telephony: agent.stt_options.model_telephony,
+        allow_interruptions: agent.allow_interruptions,
+        interrupt_speech_duration: agent.interrupt_speech_duration,
+        interrupt_min_words: agent.interrupt_min_words,
+        min_endpointing_delay: agent.min_endpointing_delay,
+        max_endpointing_delay: agent.max_endpointing_delay,
+        active: agent.active,
+        is_default: agent.is_default,
+        max_nested_function_calls: agent.max_nested_function_calls,
+      },
+      voice: {
+        ...agentConfig.voice,
+        id: agent.tts_options.voice,
+        name: agent.tts_options.voice,
+        provider: agent.tts_provider,
+        details: {
+          name: agent.tts_options.voice,
+          high_quality_base_model_ids: ["tts-1"],
+          preview_url: "",
+          labels: [],
+        },
+        tts_options: {
+          voice: agent.tts_options.voice,
+          speed: agent.tts_options.speed
+        }
+      },
+      knowledge: {
+        ...agentConfig.knowledge,
+      }
+    });
+  };
+
   const handleCreateAgent = async () => {
     try {
       setIsSaving(true)
       if (selectedAgentId) {
-        // Update existing agent
         const data = {
           agent_id: selectedAgentId,
           name: agentConfig.model.agentName,
@@ -141,7 +198,7 @@ export default function NewAgentPage() {
           },
           tts_options: {
             voice: agentConfig.voice?.name || "alloy",
-            speed: 1.0
+            speed: Number(agentConfig.voice?.tts_options?.speed || 1.0)
           },
           allow_interruptions: Boolean(agentConfig.model.allow_interruptions),
           interrupt_speech_duration: Number(agentConfig.model.interrupt_speech_duration || 0.5),
@@ -155,7 +212,6 @@ export default function NewAgentPage() {
 
         await updateAgent.mutateAsync(data);
       } else {
-        // Create new agent
         const createdAgent = await createAgent.mutateAsync(agentConfig);
         if (createdAgent) {
           setSelectedAgentId(createdAgent.id);
@@ -177,48 +233,15 @@ export default function NewAgentPage() {
     }
   };
 
-  const handleSelectAgent = (agent: Agent) => {
-    if (selectedAgentId === agent.id.toString()) return;
-    
-    setSelectedAgentId(agent.id.toString());
-    setAgentConfig({
-      model: {
-        ...agentConfig.model,
-        agentName: agent.name,
-        firstMessage: agent.greeting,
-        systemPrompt: agent.system_prompt,
-        model: agent.llm_model,
-        description: agent.description,
-        stt_model: agent.stt_model,
-        stt_model_telephony: agent.stt_model_telephony,
-        allow_interruptions: agent.allow_interruptions,
-        interrupt_speech_duration: agent.interrupt_speech_duration,
-        interrupt_min_words: agent.interrupt_min_words,
-        min_endpointing_delay: agent.min_endpointing_delay,
-        max_endpointing_delay: agent.max_endpointing_delay,
-        active: agent.active,
-        is_default: agent.is_default,
-        max_nested_function_calls: agent.max_nested_function_calls,
-      },
-      voice: {
-        ...agentConfig.voice,
-        name: agent.voice,
-      },
-      knowledge: {
-        ...agentConfig.knowledge,
-      }
-    });
-  };
-
   const handleDeleteAgent = async (agent: Agent) => {
     try {
-      setDeletingAgentId(agent.id.toString());
-      await deleteAgent.mutateAsync(agent.id.toString());
+      setDeletingAgentId(agent.id);
+      await deleteAgent.mutateAsync(agent.id);
       toast({
         title: "Success",
         description: "Agent deleted successfully",
       });
-      if (selectedAgentId === agent.id.toString()) {
+      if (selectedAgentId === agent.id) {
         setSelectedAgentId(null);
         setAgentConfig(initialConfig);
       }
@@ -329,7 +352,7 @@ export default function NewAgentPage() {
                       exit={{ opacity: 0, x: -100 }}
                       transition={{ duration: 0.2 }}
                       className={`p-2 rounded-md hover:bg-white/5 cursor-pointer transition-colors ${
-                        selectedAgentId === agent.id.toString() ? 'bg-white/10' : ''
+                        selectedAgentId === agent.id ? 'bg-white/10' : ''
                       }`}
                     >
                       <div className="flex items-center justify-between">
@@ -350,9 +373,9 @@ export default function NewAgentPage() {
                             e.stopPropagation();
                             handleDeleteAgent(agent);
                           }}
-                          disabled={deletingAgentId === agent.id.toString()}
+                          disabled={deletingAgentId === agent.id}
                         >
-                          {deletingAgentId === agent.id.toString() ? (
+                          {deletingAgentId === agent.id ? (
                             <Loader2 className="h-4 w-4 animate-spin" />
                           ) : (
                             <motion.svg 

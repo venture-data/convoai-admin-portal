@@ -2,7 +2,6 @@
 
 import React, { useState, useCallback, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
 import { useLiveKit } from "@/app/hooks/use-livekit";
 import {
   AgentState,
@@ -36,35 +35,42 @@ export function CallSessionModal({ isOpen, onClose, agent }: CallSessionModalPro
     agentId: number;
   } | null>(null);
   const [agentState, setAgentState] = useState<AgentState>("disconnected");
-
-  const handleToggleCall = async () => {
-    if (!isCallActive) {
-      try {
-        setIsLoading(true);
-        if (!agent || !agent.id) {
-          throw new Error("Agent not found");
-        }
-        const queryParams = new URLSearchParams({
-          agent_id: agent.id.toString(),
-          identity: `user-${Date.now()}`,
-          name: agent.name
-        }).toString();
-
-        const data = await createAccessToken.mutateAsync(queryParams);
-        console.log("Connection data:", data);
-        setConnectionDetails(data);
-        setIsCallActive(true);
-      } catch (error) {
-        console.error("Failed to create access token:", error);
-        alert("Failed to start call. Please try again.");
-      } finally {
-        setIsLoading(false);
-      }
-    } else {
-      setConnectionDetails(null);
-      setIsCallActive(false);
-      setAgentState("disconnected");
+  
+  useEffect(() => {
+    if (isOpen && !isCallActive) {
+      startCall();
     }
+  }, [isOpen]);
+
+  const startCall = async () => {
+    try {
+      setIsLoading(true);
+      if (!agent || !agent.id) {
+        throw new Error("Agent not found");
+      }
+      const queryParams = new URLSearchParams({
+        agent_id: agent.id.toString(),
+        identity: `user-${Date.now()}`,
+        name: agent.name
+      }).toString();
+
+      const data = await createAccessToken.mutateAsync(queryParams);
+      setConnectionDetails(data);
+      setIsCallActive(true);
+    } catch (error) {
+      console.error("Failed to create access token:", error);
+      alert("Failed to start call. Please try again.");
+      onClose();
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const endCall = () => {
+    setConnectionDetails(null);
+    setIsCallActive(false);
+    setAgentState("disconnected");
+    onClose();
   };
 
   const onDeviceFailure = useCallback((error?: MediaDeviceFailure) => {
@@ -72,52 +78,22 @@ export function CallSessionModal({ isOpen, onClose, agent }: CallSessionModalPro
     alert(
       "Error acquiring camera or microphone permissions. Please make sure you grant the necessary permissions in your browser and reload the tab"
     );
+    onClose();
   }, []);
 
-  const handleCloseModal = () => {
-    if (isCallActive) {
-      setConnectionDetails(null);
-      setIsCallActive(false);
-      setAgentState("disconnected");
-    }
-    onClose();
-  };
-
   return (
-    <Dialog open={isOpen} onOpenChange={handleCloseModal}>
+    <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-3xl bg-[#1A1D25] border-white/10">
         <DialogHeader>
           <DialogTitle className="text-lg font-semibold text-gray-200">Call with {agent?.name}</DialogTitle>
         </DialogHeader>
         <div className="backdrop-blur-xl bg-[#1A1D25]/70 rounded-lg">
-          <div className="flex items-center justify-end mb-4">
-            <Button 
-              onClick={handleToggleCall}
-              variant={isCallActive ? "destructive" : "default"}
-              className={`${!isCallActive ? 'bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-gray-100' : ''}`}
-              disabled={isLoading}
-              size="sm"
-            >
-              {isLoading ? (
-                <>
-                  <span className="animate-spin mr-2">⏳</span> 
-                  <span className="text-sm">Connecting...</span>
-                </>
-              ) : isCallActive ? (
-                <>
-                  <span className="mr-2">📞</span>
-                  <span className="text-sm">End Call</span>
-                </>
-              ) : (
-                <>
-                  <span className="mr-2">🎙️</span>
-                  <span className="text-sm">Start Call</span>
-                </>
-              )}
-            </Button>
-          </div>
-
-          {isCallActive && connectionDetails && (
+          {isLoading ? (
+            <div className="flex flex-col items-center justify-center min-h-[500px] space-y-4">
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange-500"></div>
+              <p className="text-gray-300">Connecting to call...</p>
+            </div>
+          ) : isCallActive && connectionDetails ? (
             <div className="rounded-lg border border-gray-800 overflow-hidden" data-lk-theme="default">
               <div className="p-4 backdrop-blur-xl bg-[#1A1D25]/90">
                 <LiveKitRoom
@@ -127,16 +103,12 @@ export function CallSessionModal({ isOpen, onClose, agent }: CallSessionModalPro
                   audio={true}
                   video={false}
                   onMediaDeviceFailure={onDeviceFailure}
-                  onDisconnected={() => {
-                    setConnectionDetails(null);
-                    setIsCallActive(false);
-                    setAgentState("disconnected");
-                  }}
+                  onDisconnected={endCall}
                   className="grid grid-rows-[2fr_1fr] items-center min-h-[500px]"
                 >
                   <SimpleVoiceAssistant onStateChange={setAgentState} />
                   <ControlBar 
-                    onConnectButtonClicked={handleToggleCall} 
+                    onEndCall={endCall}
                     agentState={agentState} 
                   />
                   <RoomAudioRenderer />
@@ -144,7 +116,7 @@ export function CallSessionModal({ isOpen, onClose, agent }: CallSessionModalPro
                 </LiveKitRoom>
               </div>
             </div>
-          )}
+          ) : null}
         </div>
       </DialogContent>
     </Dialog>
@@ -214,23 +186,9 @@ function SimpleVoiceAssistant(props: { onStateChange: (state: AgentState) => voi
   }
   
 
-function ControlBar(props: { onConnectButtonClicked: () => void; agentState: AgentState }) {
+function ControlBar(props: { onEndCall: () => void; agentState: AgentState }) {
   return (
     <div className="relative h-[100px]">
-      <AnimatePresence>
-        {props.agentState === "disconnected" && (
-          <motion.button
-            initial={{ opacity: 0, top: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0, top: "-10px" }}
-            transition={{ duration: 1, ease: [0.09, 1.04, 0.245, 1.055] }}
-            className="uppercase absolute left-1/2 -translate-x-1/2 px-6 py-3 bg-gradient-to-r from-orange-500 to-red-500 text-gray-100 rounded-lg font-medium shadow-lg hover:from-orange-600 hover:to-red-600 transition-all"
-            onClick={() => props.onConnectButtonClicked()}
-          >
-            Start a conversation
-          </motion.button>
-        )}
-      </AnimatePresence>
       <AnimatePresence>
         {props.agentState !== "disconnected" && props.agentState !== "connecting" && (
           <motion.div
@@ -241,7 +199,7 @@ function ControlBar(props: { onConnectButtonClicked: () => void; agentState: Age
             className="flex h-10 absolute left-1/2 -translate-x-1/2 justify-center items-center gap-2"
           >
             <VoiceAssistantControlBar controls={{ leave: false }} />
-            <DisconnectButton>
+            <DisconnectButton onClick={props.onEndCall}>
               <div className="cursor-pointer">
                 <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-red-500 hover:text-red-600">
                   <path d="M12.8536 2.85355C13.0488 2.65829 13.0488 2.34171 12.8536 2.14645C12.6583 1.95118 12.3417 1.95118 12.1464 2.14645L7.5 6.79289L2.85355 2.14645C2.65829 1.95118 2.34171 1.95118 2.14645 2.14645C1.95118 2.34171 1.95118 2.65829 2.14645 2.85355L6.79289 7.5L2.14645 12.1464C1.95118 12.3417 1.95118 12.6583 2.14645 12.8536C2.34171 13.0488 2.65829 13.0488 2.85355 12.8536L7.5 8.20711L12.1464 12.8536C12.3417 13.0488 12.6583 13.0488 12.8536 12.8536C13.0488 12.6583 13.0488 12.3417 12.8536 12.1464L8.20711 7.5L12.8536 2.85355Z" fill="currentColor" fillRule="evenodd" clipRule="evenodd" />
