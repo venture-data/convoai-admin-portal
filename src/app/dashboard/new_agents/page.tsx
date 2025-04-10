@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import React, { useState, useEffect } from "react"
 import { VoiceConfig } from "@/components/agent-config/voice-config"
 import { ModelConfig } from "@/components/agent-config/model-config"
 import { KnowledgeConfig } from "@/components/agent-config/knowledge-config"
@@ -11,8 +11,7 @@ import { Input } from "@/components/ui/input"
 import { Skeleton } from "@/components/ui/skeleton"
 import { TemplateSelectorModal } from "@/components/templates/template-selector-modal"
 import { formatDistanceToNow } from "date-fns"
-import { Loader2 } from "lucide-react"
-import { BotIcon } from "lucide-react"
+import { Loader2, BotIcon, Brain, Volume2, Settings2, FileText, Eye, Mic } from "lucide-react"
 import { useAgent } from "@/app/hooks/use-agent"
 import { motion, AnimatePresence } from "framer-motion"
 import { CallModal } from "@/components/modals/call-modal"
@@ -264,27 +263,38 @@ export default function NewAgentPage() {
     {
       id: "model",
       title: "Model",
-      description: "Configure AI model settings and behavior"
+      description: "Configure AI model settings and behavior",
+      icon: Brain
     },
     {
       id: "voice",
       title: "Voice",
-      description: "Configure voice settings and parameters"
+      description: "Configure voice settings and parameters",
+      icon: Volume2
+    },
+    {
+      id: "transcriber",
+      title: "Transcriber",
+      description: "Configure transcriber settings and parameters",
+      icon: Mic
     },
     {
       id: "interaction",
       title: "Interaction",
-      description: "Configure conversation behavior and timing"
+      description: "Configure conversation behavior and timing",
+      icon: Settings2
     },
     {
       id: "knowledge",
       title: "Knowledge",
-      description: "Upload and manage training materials"
+      description: "Upload and manage training materials",
+      icon: FileText
     },
     {
       id: "review",
       title: "Review",
-      description: "Review and test configuration"
+      description: "Review and test configuration",
+      icon: Eye
     }
   ];
 
@@ -431,12 +441,15 @@ export default function NewAgentPage() {
                       <button
                         key={tab.id}
                         onClick={() => setActiveTab(tab.id)}
-                        className={`px-4 py-2 text-sm font-medium transition-all ${
+                        className={`px-4 py-2 text-sm font-medium transition-all flex items-center gap-2 ${
                           activeTab === tab.id
-                            ? "text-white border-b-2 border-orange-500"
+                            ? "text-[#F97316] border-b-2 border-[#F97316]"
                             : "text-white/60 hover:text-white"
                         }`}
                       >
+                        <div className={activeTab === tab.id ? "text-[#F97316]" : "text-white/60"}>
+                          <tab.icon className="w-4 h-4" />
+                        </div>
                         {tab.title}
                       </button>
                     ))}
@@ -474,7 +487,8 @@ export default function NewAgentPage() {
                           setAgentConfig={(config) => handleAgentConfigChange("voice", config)} 
                         />
                       )}
-                       {activeTab === "transcriber" && (
+
+                      {activeTab === "transcriber" && (
                         <VoiceConfig 
                           provider={agentConfig.model.provider} 
                           agentConfig={agentConfig.voice} 
