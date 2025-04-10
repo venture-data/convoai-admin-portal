@@ -7,9 +7,10 @@ import { Button } from "./button";
 
 export default function UploadFile({files, setFiles}: {files: File[], setFiles: (files: File[]) => void}) {
   return (
-    <Card className="bg-inherit text-white">
+    <Card className="bg-inherit text-white border-[#F97316] border-2">
       <CardContent className="p-6 space-y-4 bg-inherit">
-        <div className="border-2  bg-inherit border-dashed border-gray-200 rounded-lg flex flex-col gap-1 p-6 items-center relative">
+        <div className="border-2 bg-inherit rounded-lg flex flex-col gap-1 p-6 items-center relative border-[#F97316] border-dotted">
+          <div className="absolute inset-[-2px] rounded-lg bg-gradient-to-r -z-10" />
           {files.length > 0 ? (
             <>
                {

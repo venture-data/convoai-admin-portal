@@ -162,10 +162,11 @@ export function useAgent() {
         queryClient.setQueryData(['agents'], context.previousAgents);
       }
     },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ['agents'] });
-    },
-    onSuccess: () => {
+    onSettled: (data) => {
+      if (data?.id) {
+        queryClient.invalidateQueries({ queryKey: ['agents', data.id.toString()] });
+      }
+      // Still invalidate the list since we added a new item
       queryClient.invalidateQueries({ queryKey: ['agents'] });
     }
   });
@@ -231,11 +232,10 @@ export function useAgent() {
         queryClient.setQueryData(['agents'], context.previousAgents);
       }
     },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ['agents'] });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['agents'] });
+    onSettled: (data) => {
+      if (data?.agent_id) {
+        queryClient.invalidateQueries({ queryKey: ['agents', data.agent_id] });
+      }
     }
   });
 
@@ -269,11 +269,11 @@ export function useAgent() {
         queryClient.setQueryData(['agents'], context.previousAgents);
       }
     },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ['agents'] });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['agents'] });
+    onSettled: (agent_id) => {
+      if (agent_id) {
+        // For delete, we only need to invalidate the list since the individual agent is gone
+        queryClient.invalidateQueries({ queryKey: ['agents'] });
+      }
     }
   });
 

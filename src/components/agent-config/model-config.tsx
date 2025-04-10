@@ -90,7 +90,7 @@ export function ModelConfig({agentConfig, setAgentConfig}: {agentConfig: ModelCo
           onChange={(e) => {
             onAgentConfigChange("systemPrompt", e.target.value);
           }}
-          className="w-full min-h-[150px] p-3 rounded-md border bg-[#1A1D25]/70 border-white/10 text-white placeholder:text-white/60 text-sm"
+          className="w-full min-h-[150px] p-3 rounded-md border bg-[#1A1D25]/70 border-white/10 text-white placeholder:text-white/60 text-sm focus:outline-none focus:ring-2 focus:ring-white/20 transition-all"
           value={agentConfig.systemPrompt}
         />
       </div>
@@ -98,23 +98,25 @@ export function ModelConfig({agentConfig, setAgentConfig}: {agentConfig: ModelCo
       <div className="space-y-4 border-t border-white/10 pt-4">
         <h3 className="font-medium text-white text-sm">Status</h3>
         
-        <div className="flex items-center justify-between">
-          <Label htmlFor="active" className="flex items-center cursor-pointer text-white/90 text-xs">
-            Active
-            <span
-              className="ml-1 text-white/60 hover:cursor-help"
-              title="Whether this agent is active and can be used"
-            >
-              ⓘ
-            </span>
-          </Label>
-          <Switch
-            id="active"
-            checked={agentConfig.active !== false}
-            onCheckedChange={(checked) => {
-              onAgentConfigChange("active", checked);
-            }}
-          />
+        <div className="bg-[#1A1D25]/70 border border-white/10 rounded-md p-4">
+          <div className="flex items-center justify-between">
+            <Label htmlFor="active" className="flex items-center cursor-pointer text-white/90 text-xs">
+              Active
+              <span
+                className="ml-1 text-white/60 hover:cursor-help"
+                title="Whether this agent is active and can be used"
+              >
+                ⓘ
+              </span>
+            </Label>
+            <Switch
+              id="active"
+              checked={agentConfig.active !== false}
+              onCheckedChange={(checked) => {
+                onAgentConfigChange("active", checked);
+              }}
+            />
+          </div>
         </div>
 
         <div className="flex items-center justify-between">

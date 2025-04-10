@@ -17,6 +17,8 @@ import { useAgent } from "@/app/hooks/use-agent"
 import { motion, AnimatePresence } from "framer-motion"
 import { CallModal } from "@/components/modals/call-modal"
 import type { AgentProfileResponse } from "@/app/types/agent-profile"
+import { Menu } from "lucide-react"
+import { useMobileMenu } from "@/store/use-mobile-menu"
 
 import { AgentConfig, ModelConfig as ModelConfigType, KnowledgeConfig as KnowledgeConfigType, VoiceConfig as VoiceConfigType } from "./types"
 import { InteractionSettings } from "@/components/agent-config/interaction-settings"
@@ -58,6 +60,7 @@ interface Agent {
 
 export default function NewAgentPage() {
   const { toast } = useToast()
+  const { toggle: toggleMobileMenu } = useMobileMenu()
   const [activeTab, setActiveTab] = useState("model")
   const [searchQuery, setSearchQuery] = useState("")
   const [isTemplateModalOpen, setIsTemplateModalOpen] = useState(false)
@@ -294,7 +297,14 @@ export default function NewAgentPage() {
       <div className="relative z-10 w-full border-b border-white/10 backdrop-blur-xl bg-[#1A1D25]/70">
         <div className="flex items-center justify-between px-4 py-2">
           <div className="flex items-center gap-2">
-              <h1 className="text-lg font-semibold text-white">Assistants</h1>
+              <button
+                onClick={toggleMobileMenu}
+                className="p-2 text-white hover:bg-white/5 rounded-lg md:hidden"
+                aria-label="Toggle Menu"
+              >
+                <Menu className="h-5 w-5" />
+              </button>
+              <h1 className="text-lg font-semibold text-white hidden md:block">Assistants</h1>
           </div>
           <button className="py-2 px-4 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-md hover:bg-orange-600 transition-colors flex items-center justify-center gap-2"
             onClick={() => selectedAgentId ? setIsCallModalOpen(true) : toast({
@@ -458,6 +468,13 @@ export default function NewAgentPage() {
                       )}
 
                       {activeTab === "voice" && (
+                        <VoiceConfig 
+                          provider={agentConfig.model.provider} 
+                          agentConfig={agentConfig.voice} 
+                          setAgentConfig={(config) => handleAgentConfigChange("voice", config)} 
+                        />
+                      )}
+                       {activeTab === "transcriber" && (
                         <VoiceConfig 
                           provider={agentConfig.model.provider} 
                           agentConfig={agentConfig.voice} 

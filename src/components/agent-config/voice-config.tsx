@@ -2,7 +2,7 @@
 
 import { VoiceConfig as VoiceConfigType } from "@/app/dashboard/new_agents/types"
 import { useVoice } from "@/app/hooks/use-voice";
-import { useState, useEffect } from "react";
+import { useState, useEffect} from "react";
 import { Input } from "@/components/ui/input";
 
 interface Voice {
@@ -24,6 +24,7 @@ interface VoiceConfigProps {
 export function VoiceConfig({provider, agentConfig, setAgentConfig }: VoiceConfigProps) {
   const [errors] = useState<{ [key: string]: boolean }>({});
   const {voices} = useVoice()
+  const [voiceprovider,setvoiceprovider] = useState("openai")
 
   // Set the initial voice if it's not already set
   useEffect(() => {
@@ -81,6 +82,19 @@ export function VoiceConfig({provider, agentConfig, setAgentConfig }: VoiceConfi
     <div className="space-y-6">
       <h3 className="text-lg font-medium text-white/90">Voice Configuration</h3>
       <div className="space-y-4">
+        <div className="space-y-2">
+          <label className="text-xs font-medium text-white/90">Select Provider</label>
+          <select onChange={(event)=>{
+             const {value} = event?.target
+              setvoiceprovider(value)
+          }}  value={voiceprovider}  className="bg-[#1A1D25]/70 border border-white/10 text-white/90 rounded-md p-2.5 w-full focus:outline-none focus:ring-2 focus:ring-white/20 transition-all" >
+          <option value="openai">Open AI</option>
+          <option value="uplift">Uplift</option>
+          <option value="elevenlabs">Eleven labs</option>
+          </select>
+        </div>
+      </div>
+      <div className="space-y-4">
         <div className={`flex flex-col space-y-2 ${errors.id ? 'text-red-500' : ''}`}>
           <label htmlFor="voice-select" className="text-xs font-medium text-white/90">
             Select Voice
@@ -89,10 +103,10 @@ export function VoiceConfig({provider, agentConfig, setAgentConfig }: VoiceConfi
             id="voice-select"
             value={agentConfig.name}
             onChange={(e) => handleVoiceChange(e.target.value)}
-            className="bg-[#1A1D25]/70 border border-white/10 text-white/90 rounded-md p-2 w-full"
+            className="bg-[#1A1D25]/70 border border-white/10 text-white/90 rounded-md p-2.5 w-full focus:outline-none focus:ring-2 focus:ring-white/20 transition-all"
           >
             <option value="">Select a voice</option>
-            {Array.isArray(voices?.items) && voices.items.map((voice: Voice) => (
+            {Array.isArray(voices?.items) && voices.items.filter((voice:Voice)=>voice.provider === voiceprovider).map((voice: Voice) => (
               voice.provider === provider && (
                 <option key={voice.id} value={voice.providerId.toLowerCase()}>
                   {voice.name.toLowerCase()} ({voice.provider.toLowerCase()})
@@ -101,9 +115,9 @@ export function VoiceConfig({provider, agentConfig, setAgentConfig }: VoiceConfi
             ))}
           </select>
         </div>
-
+{/* 
         {agentConfig.tts_options?.voice && (
-          <div className="flex flex-col space-y-2">
+          <div className="flex flex-col space-y-2 bg-[#1A1D25]/70 border border-white/10 rounded-md p-4">
             <label className="text-xs font-medium text-white/90">Preview Voice</label>
             <audio
               controls
@@ -113,12 +127,15 @@ export function VoiceConfig({provider, agentConfig, setAgentConfig }: VoiceConfi
               Your browser does not support the audio element.
             </audio>
           </div>
-        )}
+        )} */}
 
-        <div className="space-y-4">
+        <div className="bg-[#1A1D25]/70 border border-white/10 rounded-md p-4 space-y-4">
           <h4 className="text-sm font-medium text-white/90">TTS Options</h4>
           <div className="flex flex-col space-y-2">
-            <label className="text-xs font-medium text-white/90">Speed</label>
+            <div className="flex justify-between items-center">
+              <label className="text-xs font-medium text-white/90">Speed</label>
+              <span className="text-xs text-white/60">{agentConfig.tts_options?.speed || 1.0}x</span>
+            </div>
             <Input
               type="number"
               min="0.1"
@@ -126,7 +143,7 @@ export function VoiceConfig({provider, agentConfig, setAgentConfig }: VoiceConfi
               step="0.1"
               value={agentConfig.tts_options?.speed || 1.0}
               onChange={(e) => handleTtsOptionsChange('speed', parseFloat(e.target.value))}
-              className="bg-[#1A1D25]/70 border-white/10 text-white/90"
+              className="bg-[#1A1D25]/70 border-white/10 text-white/90 focus:ring-2 focus:ring-white/20 transition-all"
             />
           </div>
         </div>

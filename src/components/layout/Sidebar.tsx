@@ -5,15 +5,15 @@ import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { navigationItems } from "@/config/navigation";
 import { cn } from "@/lib/utils";
-import { CircleHelpIcon, Menu } from "lucide-react";
-import { useState } from "react";
+import { CircleHelpIcon } from "lucide-react";
 import { useIsMobile } from "@/app/hooks/use-mobile";
+import { useMobileMenu } from "@/store/use-mobile-menu";
 
 export default function Sidebar() {
   const pathname = usePathname();
   const { data: session } = useSession();
-  const [isMobileOpen, setIsMobileOpen] = useState(false);
   const isMobile = useIsMobile();
+  const { isOpen: isMobileOpen, setIsOpen: setIsMobileOpen } = useMobileMenu();
 
   return (
     <SidebarWrapper>
@@ -23,15 +23,6 @@ export default function Sidebar() {
           onClick={() => setIsMobileOpen(false)}
         />
       )}
-
-      <button 
-        className="md:hidden fixed top-4 left-4 z-50 p-2 bg-[#0F1117] rounded-md shadow-md"
-        onClick={() => setIsMobileOpen(!isMobileOpen)}
-        aria-label="Toggle menu"
-      >
-        <Menu className="h-6 w-6 stroke-white-700" />
-      </button>
-
       <nav className={cn(
         "fixed w-60 h-screen bg-gray-900/40 backdrop-blur-xl border-r border-white/10 flex flex-col z-50",
         isMobile ? (
