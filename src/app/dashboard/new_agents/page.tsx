@@ -21,6 +21,7 @@ import { useMobileMenu } from "@/store/use-mobile-menu"
 
 import { AgentConfig, ModelConfig as ModelConfigType, KnowledgeConfig as KnowledgeConfigType, VoiceConfig as VoiceConfigType } from "./types"
 import { InteractionSettings } from "@/components/agent-config/interaction-settings"
+import { TranscriberConfig } from "@/components/agent-config/transcriber-config"
 
 interface Agent {
   id: string
@@ -106,16 +107,22 @@ export default function NewAgentPage() {
       is_default: false,
       max_nested_function_calls: 1,
     },
+    
     voice: {
       id: "",
+      providerId: "alloy",
       name: "alloy",
       provider: "openai",
       details: {
-        name: "",
-        high_quality_base_model_ids: [],
+        name: "alloy",
+        high_quality_base_model_ids: ["tts-1"],
         preview_url: "",
         labels: [],
       },
+      tts_options: {
+        voice: "alloy",
+        speed: 1.0
+      }
     },
     knowledge: {
       files: []
@@ -163,6 +170,7 @@ export default function NewAgentPage() {
       voice: {
         ...agentConfig.voice,
         id: agent.tts_options.voice,
+        providerId: agent.tts_options.voice,
         name: agent.tts_options.voice,
         provider: agent.tts_provider,
         details: {
@@ -181,6 +189,7 @@ export default function NewAgentPage() {
       }
     });
   };
+  
 
   const handleCreateAgent = async () => {
     try {
@@ -194,13 +203,18 @@ export default function NewAgentPage() {
           greeting: agentConfig.model.firstMessage || "",
           llm_provider: agentConfig.model.provider || "openai",
           tts_provider: agentConfig.voice?.provider || "openai",
+          stt_provider: agentConfig.model.stt_provider || "deepgram",
           llm_options: {
             model: agentConfig.model.model || "gpt-4",
             temperature: Number(agentConfig.model.temperature || 0.7)
           },
           tts_options: {
-            voice: agentConfig.voice?.name || "alloy",
+            voice: agentConfig.voice?.tts_options?.voice || "alloy",
             speed: Number(agentConfig.voice?.tts_options?.speed || 1.0)
+          },
+          stt_options: {
+            model: agentConfig.model.stt_options?.model || "nova-3-general",
+            model_telephony: agentConfig.model.stt_options?.model_telephony || "nova-2-phonecall"
           },
           allow_interruptions: Boolean(agentConfig.model.allow_interruptions),
           interrupt_speech_duration: Number(agentConfig.model.interrupt_speech_duration || 0.5),
@@ -482,17 +496,17 @@ export default function NewAgentPage() {
 
                       {activeTab === "voice" && (
                         <VoiceConfig 
-                          provider={agentConfig.model.provider} 
+                          provider={agentConfig?.voice?.provider || ""} 
                           agentConfig={agentConfig.voice} 
                           setAgentConfig={(config) => handleAgentConfigChange("voice", config)} 
                         />
                       )}
 
                       {activeTab === "transcriber" && (
-                        <VoiceConfig 
+                        <TranscriberConfig 
                           provider={agentConfig.model.provider} 
-                          agentConfig={agentConfig.voice} 
-                          setAgentConfig={(config) => handleAgentConfigChange("voice", config)} 
+                          agentConfig={agentConfig.model} 
+                          setAgentConfig={(config) => handleAgentConfigChange("model", config)} 
                         />
                       )}
 
@@ -573,12 +587,17 @@ export default function NewAgentPage() {
                 name: template.voice?.name || "alloy",
                 provider: template.voice?.provider === "google" ? "google" : "openai",
                 id: "",
+                providerId: template.voice?.name || "alloy",
                 details: {
                   name: "",
                   high_quality_base_model_ids: [],
                   preview_url: "",
                   labels: [],
                 },
+                tts_options: {
+                  voice: template.voice?.name || "alloy",
+                  speed: 1.0
+                }
               },
               knowledge: {
                 files: []

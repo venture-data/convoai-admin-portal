@@ -12,6 +12,7 @@ interface UpdateAgentPayload {
   greeting: string;
   llm_provider: string;
   tts_provider: string;
+  stt_provider: "deepgram" | "google" | "openai";
   llm_options: {
     model: string;
     temperature: number;
@@ -19,6 +20,10 @@ interface UpdateAgentPayload {
   tts_options: {
     voice: string;
     speed: number;
+  };
+  stt_options: {
+    model: string;
+    model_telephony: string;
   };
   allow_interruptions: boolean;
   interrupt_speech_duration: number;
@@ -47,6 +52,8 @@ export function useAgent() {
   
   const createAgent = useMutation({
     mutationFn: async (agentConfig: AgentConfig) => {
+      console.log("agent cofig")
+      console.log(agentConfig)
       const payload = {
         name: agentConfig.model.agentName,
         description: agentConfig.model.description || null,
@@ -208,8 +215,15 @@ export function useAgent() {
                   description: updatedAgent.description,
                   system_prompt: updatedAgent.system_prompt,
                   greeting: updatedAgent.greeting,
-                  voice: updatedAgent.tts_options.voice,
-                  llm_model: updatedAgent.llm_options.model,
+                  stt_provider: updatedAgent.stt_provider,
+                  stt_options: {
+                    model: updatedAgent.stt_options.model,
+                    model_telephony: updatedAgent.stt_options.model_telephony
+                  },
+                  tts_provider: updatedAgent.tts_provider,
+                  tts_options: updatedAgent.tts_options,
+                  llm_provider: updatedAgent.llm_provider,
+                  llm_options: updatedAgent.llm_options,
                   allow_interruptions: updatedAgent.allow_interruptions,
                   interrupt_speech_duration: updatedAgent.interrupt_speech_duration,
                   interrupt_min_words: updatedAgent.interrupt_min_words,
