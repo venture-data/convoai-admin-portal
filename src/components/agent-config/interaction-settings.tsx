@@ -12,8 +12,8 @@ export function InteractionSettings({agentConfig, setAgentConfig}: {agentConfig:
   }
   
   return (
-    <div className="space-y-6">
-      <h3 className="text-lg font-medium text-white/90">Interaction Settings</h3>
+    <div className="space-y-6 text-white/90">
+      <h3 className="text-xl font-bold mb-4 text-white">Interaction Settings</h3>
       
       <div className="space-y-4">
         <div className="bg-[#1A1D25]/70 border border-white/10 rounded-md p-4">
@@ -50,7 +50,7 @@ export function InteractionSettings({agentConfig, setAgentConfig}: {agentConfig:
                     ⓘ
                   </span>
                 </Label>
-                <span className="text-sm text-white/90">{agentConfig.interrupt_speech_duration || 0.5}</span>
+                <span className="text-xs text-white/60">{agentConfig.interrupt_speech_duration || 0.5}</span>
               </div>
               <Slider
                 id="interrupt_speech_duration"
@@ -76,7 +76,7 @@ export function InteractionSettings({agentConfig, setAgentConfig}: {agentConfig:
                     ⓘ
                   </span>
                 </Label>
-                <span className="text-sm text-white/90">{agentConfig.interrupt_min_words || 0}</span>
+                <span className="text-xs text-white/60">{agentConfig.interrupt_min_words || 0}</span>
               </div>
               <Slider
                 id="interrupt_min_words"
@@ -87,7 +87,7 @@ export function InteractionSettings({agentConfig, setAgentConfig}: {agentConfig:
                 onValueChange={(value) => {
                   onAgentConfigChange("interrupt_min_words", value[0]);
                 }}
-                className="transition-all"
+                className="transition-all focus:ring-2 focus:ring-white/20"
               />
             </div>
           </>
@@ -104,7 +104,7 @@ export function InteractionSettings({agentConfig, setAgentConfig}: {agentConfig:
                 ⓘ
               </span>
             </Label>
-            <span className="text-sm text-white/90">{agentConfig.min_endpointing_delay || 0.5}</span>
+            <span className="text-xs text-white/60">{agentConfig.min_endpointing_delay || 0.5}</span>
           </div>
           <Slider
             id="min_endpointing_delay"
@@ -130,7 +130,7 @@ export function InteractionSettings({agentConfig, setAgentConfig}: {agentConfig:
                 ⓘ
               </span>
             </Label>
-            <span className="text-sm text-white/90">{agentConfig.max_endpointing_delay || 6}</span>
+            <span className="text-xs text-white/60">{agentConfig.max_endpointing_delay || 6}</span>
           </div>
           <Slider
             id="max_endpointing_delay"
@@ -156,7 +156,7 @@ export function InteractionSettings({agentConfig, setAgentConfig}: {agentConfig:
                 ⓘ
               </span>
             </Label>
-            <span className="text-sm text-white/90">{agentConfig.max_nested_function_calls || 1}</span>
+            <span className="text-xs text-white/60">{agentConfig.max_nested_function_calls || 1}</span>
           </div>
           <Slider
             id="max_nested_function_calls"

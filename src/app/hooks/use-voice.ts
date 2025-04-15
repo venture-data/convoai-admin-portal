@@ -6,7 +6,10 @@ export function useVoice(provider: string = "openai") {
   const { data: voices = [] as VoiceConfig[], isLoading, error } = useQuery({
     queryKey: ["voices", provider],
     queryFn: async () => {
-      const response = await api.get(`/api/voices?provider=${provider}`);
+      const response = await api.get(`/api/voices?provider=${provider}`,{
+        method: 'GET',
+        credentials: 'include'
+      });
       const data = await response.json();
       return data
     },

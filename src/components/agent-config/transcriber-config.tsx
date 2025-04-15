@@ -80,7 +80,6 @@ const telephonyModelOptions: Record<SttProvider, Array<{ value: TelephonyModel; 
 };
 
 export function TranscriberConfig({ agentConfig, setAgentConfig }: TranscriberConfigProps) {
-  const [errors] = useState<{ [key: string]: boolean }>({});
   const [sttProvider, setSttProvider] = useState<SttProvider>(agentConfig.stt_provider || "deepgram");
 
   const handleProviderChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -119,15 +118,23 @@ export function TranscriberConfig({ agentConfig, setAgentConfig }: TranscriberCo
   console.log(agentConfig);
 
   return (
-    <div className="space-y-6">
-      <h3 className="text-lg font-medium text-white/90">Transcriber Configuration</h3>
+    <div className="space-y-6 text-white/90">
+      <h3 className="text-xl font-bold mb-4 text-white">Transcriber Configuration</h3>
       <div className="space-y-4">
-        <div className="space-y-2">
-          <label className="text-xs font-medium text-white/90">Select Provider</label>
+        <div className="space-y-2 bg-[#1A1D25]/70 border border-white/10 rounded-md p-4">
+          <label className="text-xs font-medium text-white/90 flex items-center">
+            Select Provider
+            <span
+              className="ml-1 text-white/60 hover:cursor-help"
+              title="Choose the speech-to-text provider to use"
+            >
+              ⓘ
+            </span>
+          </label>
           <select
             value={sttProvider}
             onChange={handleProviderChange}
-            className="bg-[#1A1D25]/70 border border-white/10 text-white/90 rounded-md p-2.5 w-full focus:outline-none focus:ring-2 focus:ring-white/20 transition-all"
+            className="bg-[#1A1D25]/70 border border-white/10 text-white/90 text-sm rounded-md p-2.5 w-full focus:outline-none focus:ring-2 focus:ring-white/20 transition-all [&>option]:bg-[#1A1D25] [&>option]:text-white/90 [&>option:hover]:bg-orange-500"
           >
             {sttProviders.map(provider => (
               <option key={provider.value} value={provider.value}>
@@ -137,14 +144,20 @@ export function TranscriberConfig({ agentConfig, setAgentConfig }: TranscriberCo
           </select>
         </div>
 
-        <div className={`flex flex-col space-y-2 ${errors.model ? 'text-red-500' : ''}`}>
-          <label className="text-xs font-medium text-white/90">
+        <div className="space-y-2 bg-[#1A1D25]/70 border border-white/10 rounded-md p-4">
+          <label className="text-xs font-medium text-white/90 flex items-center">
             General Model
+            <span
+              className="ml-1 text-white/60 hover:cursor-help"
+              title="The model to use for general speech recognition"
+            >
+              ⓘ
+            </span>
           </label>
           <select
-            value={agentConfig.stt_options?.model || agentConfig?.stt_model ||  modelOptions[sttProvider][0].value}
+            value={agentConfig.stt_options?.model || agentConfig?.stt_model || modelOptions[sttProvider][0].value}
             onChange={(e) => handleModelChange("model", e.target.value)}
-            className="bg-[#1A1D25]/70 border border-white/10 text-white/90 rounded-md p-2.5 w-full focus:outline-none focus:ring-2 focus:ring-white/20 transition-all"
+            className="bg-[#1A1D25]/70 border border-white/10 text-white/90 text-sm rounded-md p-2.5 w-full focus:outline-none focus:ring-2 focus:ring-white/20 transition-all [&>option]:bg-[#1A1D25] [&>option]:text-white/90 [&>option:hover]:bg-orange-500"
           >
             {modelOptions[sttProvider].map(model => (
               <option key={model.value} value={model.value}>
@@ -155,14 +168,20 @@ export function TranscriberConfig({ agentConfig, setAgentConfig }: TranscriberCo
         </div>
 
         {telephonyModelOptions[sttProvider].length > 0 && (
-          <div className={`flex flex-col space-y-2 ${errors.model_telephony ? 'text-red-500' : ''}`}>
-            <label className="text-xs font-medium text-white/90">
+          <div className="space-y-2 bg-[#1A1D25]/70 border border-white/10 rounded-md p-4">
+            <label className="text-xs font-medium text-white/90 flex items-center">
               Telephony Model
+              <span
+                className="ml-1 text-white/60 hover:cursor-help"
+                title="The model to use specifically for phone call transcription"
+              >
+                ⓘ
+              </span>
             </label>
             <select
               value={agentConfig.stt_options?.model_telephony || agentConfig?.stt_model_telephony || telephonyModelOptions[sttProvider][0].value}
               onChange={(e) => handleModelChange("model_telephony", e.target.value)}
-              className="bg-[#1A1D25]/70 border border-white/10 text-white/90 rounded-md p-2.5 w-full focus:outline-none focus:ring-2 focus:ring-white/20 transition-all"
+              className="bg-[#1A1D25]/70 border border-white/10 text-white/90 text-sm rounded-md p-2.5 w-full focus:outline-none focus:ring-2 focus:ring-white/20 transition-all [&>option]:bg-[#1A1D25] [&>option]:text-white/90 [&>option:hover]:bg-orange-500"
             >
               {telephonyModelOptions[sttProvider].map(model => (
                 <option key={model.value} value={model.value}>
@@ -174,43 +193,61 @@ export function TranscriberConfig({ agentConfig, setAgentConfig }: TranscriberCo
         )}
 
         <div className="bg-[#1A1D25]/70 border border-white/10 rounded-md p-4 space-y-4">
-          <h4 className="text-sm font-medium text-white/90">Additional Settings</h4>
-          <div className="flex flex-col space-y-2">
-            <div className="flex justify-between items-center">
-              <label className="text-xs font-medium text-white/90">Minimum Endpointing Delay</label>
-              <span className="text-xs text-white/60">{agentConfig.min_endpointing_delay || 0.5}s</span>
+          <h4 className="text-sm font-medium text-white/90 mb-2">Additional Settings</h4>
+          <div className="flex flex-col space-y-4">
+            <div className="flex flex-col space-y-2">
+              <div className="flex justify-between items-center">
+                <label className="text-xs font-medium text-white/90 flex items-center">
+                  Minimum Endpointing Delay
+                  <span
+                    className="ml-1 text-white/60 hover:cursor-help"
+                    title="Minimum delay before considering speech ended"
+                  >
+                    ⓘ
+                  </span>
+                </label>
+                <span className="text-xs text-white/60">{agentConfig.min_endpointing_delay || 0.5}s</span>
+              </div>
+              <Input
+                type="number"
+                min="0.1"
+                max="2"
+                step="0.1"
+                value={agentConfig.min_endpointing_delay || 0.5}
+                onChange={(e) => setAgentConfig({
+                  ...agentConfig,
+                  min_endpointing_delay: parseFloat(e.target.value)
+                })}
+                className="bg-[#1A1D25]/70 border-white/10 text-white/90 text-sm focus:ring-2 focus:ring-white/20 transition-all"
+              />
             </div>
-            <Input
-              type="number"
-              min="0.1"
-              max="2"
-              step="0.1"
-              value={agentConfig.min_endpointing_delay || 0.5}
-              onChange={(e) => setAgentConfig({
-                ...agentConfig,
-                min_endpointing_delay: parseFloat(e.target.value)
-              })}
-              className="bg-[#1A1D25]/70 border-white/10 text-white/90 focus:ring-2 focus:ring-white/20 transition-all"
-            />
-          </div>
 
-          <div className="flex flex-col space-y-2">
-            <div className="flex justify-between items-center">
-              <label className="text-xs font-medium text-white/90">Maximum Endpointing Delay</label>
-              <span className="text-xs text-white/60">{agentConfig.max_endpointing_delay || 6.0}s</span>
+            <div className="flex flex-col space-y-2">
+              <div className="flex justify-between items-center">
+                <label className="text-xs font-medium text-white/90 flex items-center">
+                  Maximum Endpointing Delay
+                  <span
+                    className="ml-1 text-white/60 hover:cursor-help"
+                    title="Maximum delay before considering speech ended"
+                  >
+                    ⓘ
+                  </span>
+                </label>
+                <span className="text-xs text-white/60">{agentConfig.max_endpointing_delay || 6.0}s</span>
+              </div>
+              <Input
+                type="number"
+                min="1"
+                max="10"
+                step="0.5"
+                value={agentConfig.max_endpointing_delay || 6.0}
+                onChange={(e) => setAgentConfig({
+                  ...agentConfig,
+                  max_endpointing_delay: parseFloat(e.target.value)
+                })}
+                className="bg-[#1A1D25]/70 border-white/10 text-white/90 text-sm focus:ring-2 focus:ring-white/20 transition-all"
+              />
             </div>
-            <Input
-              type="number"
-              min="1"
-              max="10"
-              step="0.5"
-              value={agentConfig.max_endpointing_delay || 6.0}
-              onChange={(e) => setAgentConfig({
-                ...agentConfig,
-                max_endpointing_delay: parseFloat(e.target.value)
-              })}
-              className="bg-[#1A1D25]/70 border-white/10 text-white/90 focus:ring-2 focus:ring-white/20 transition-all"
-            />
           </div>
         </div>
       </div>
