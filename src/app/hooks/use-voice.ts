@@ -13,9 +13,11 @@ export function useVoice(provider: string = "openai") {
       const data = await response.json();
       return data
     },
-    staleTime: 1000 * 60 * 5,
-    refetchOnMount: false,
-    refetchOnWindowFocus: false
+    staleTime: 0,
+    gcTime: 1000 * 60 * 5,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    refetchOnReconnect: true
   })
 
   return {

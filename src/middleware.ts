@@ -35,6 +35,7 @@ export const config = {
     '/',
     '/dashboard/:path*',
     '/signup',
-    '/api/v1/:path*'
+    '/api/v1/:path*',
+    '/api/voices/:path*'
   ]
 };

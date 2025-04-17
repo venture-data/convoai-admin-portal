@@ -42,6 +42,12 @@ export async function GET() {
     });
     
     if (!response.ok) {
+      if (response.status === 401) {
+        return NextResponse.json(
+          { error: 'Unauthorized - Invalid or expired token' },
+          { status: 401 }
+        );
+      }
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     
