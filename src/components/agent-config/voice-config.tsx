@@ -5,6 +5,16 @@ import { useVoice } from "@/app/hooks/use-voice";
 import { useState, useEffect} from "react";
 import { Volume2, Mic, Speaker } from "lucide-react";
 
+// Add global styles for select options
+const globalStyles = `
+  .voice-select option:hover,
+  .voice-select option:focus {
+    box-shadow: 0 0 10px 100px #f97316 inset !important;
+    background-color: #f97316 !important;
+    color: white !important;
+  }
+`;
+
 interface Voice {
   id: string;
   provider: string;
@@ -96,6 +106,8 @@ export function VoiceConfig({ provider, agentConfig, setAgentConfig }: VoiceConf
 
   return (
     <div className="space-y-8 text-white/90">
+      <style jsx global>{globalStyles}</style>
+      
       <div className="flex items-center gap-3 pb-4 border-b border-white/10">
         <Volume2 className="h-5 w-5 text-orange-400" />
         <h3 className="text-xl font-bold text-white">Voice Configuration</h3>
@@ -112,7 +124,7 @@ export function VoiceConfig({ provider, agentConfig, setAgentConfig }: VoiceConf
             <select 
               value={voiceprovider}
               onChange={handleProviderChange}
-              className="bg-[#1A1D25] border border-white/10 text-white/90 text-sm rounded-md p-2.5 pl-9 w-full focus:outline-none focus:border-orange-500/50 focus:ring-1 focus:ring-orange-500/20 transition-all appearance-none"
+              className="voice-select bg-[#1A1D25] border border-white/10 text-white/90 text-sm rounded-md p-2.5 pl-9 w-full focus:outline-none focus:border-orange-500/50 focus:ring-1 focus:ring-orange-500/20 hover:!border-orange-500/50 hover:!border-2 transition-all appearance-none"
             >
               <option value="openai">OpenAI</option>
               <option value="elevenlabs">ElevenLabs</option>
@@ -139,7 +151,7 @@ export function VoiceConfig({ provider, agentConfig, setAgentConfig }: VoiceConf
               id="voice-select"
               value={agentConfig.tts_options?.voice || ""}
               onChange={(e) => handleVoiceChange(e.target.value)}
-              className="bg-[#1A1D25] border border-white/10 text-white/90 text-sm rounded-md p-2.5 pl-9 w-full focus:outline-none focus:border-orange-500/50 focus:ring-1 focus:ring-orange-500/20 transition-all appearance-none disabled:opacity-50 disabled:cursor-not-allowed"
+              className="voice-select bg-[#1A1D25] border border-white/10 text-white/90 text-sm rounded-md p-2.5 pl-9 w-full focus:outline-none focus:border-orange-500/50 focus:ring-1 focus:ring-orange-500/20 hover:!border-orange-500/50 hover:!border-2 transition-all appearance-none disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={isLoading}
             >
               <option value="">Select a voice</option>
@@ -163,18 +175,18 @@ export function VoiceConfig({ provider, agentConfig, setAgentConfig }: VoiceConf
             <p className="mt-2 text-xs text-white/50 italic">Loading available voices...</p>
           )}
           
+          
           {!isLoading && voices?.items && voices.items.length === 0 && (
             <p className="mt-2 text-xs text-orange-400">No voices available for this provider</p>
           )}
           
           {agentConfig.tts_options?.voice && (
             <div className="mt-4 p-3 rounded bg-[#1A1D25]/50 border border-white/5">
-              <p className="text-xs text-white/70">Selected voice: <span className="text-orange-400 font-medium">{agentConfig.details?.name}</span></p>
+              <p className="text-xs text-white/70">Selected voice: <span className="text-orange-400 font-medium">{agentConfig?.details?.name}</span></p>
             </div>
           )}
         </div>
-        
-        {/* Voice Preview section would go here if we had audio preview functionality */}
+
       </div>
     </div>
   );

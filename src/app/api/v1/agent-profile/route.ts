@@ -44,6 +44,13 @@ export async function POST(request: Request) {
     });
 
     if (!response.ok) {
+      if (response.status === 401) {
+        return NextResponse.json(
+          { error: 'Unauthorized - Invalid or expired token' },
+          { status: 401 }
+        );
+      }
+      
       const errorData = await response.json();
       return NextResponse.json(
         { error: errorData.detail || 'Request failed' },
@@ -91,6 +98,13 @@ export async function GET() {
     });
 
     if (!response.ok) {
+      if (response.status === 401) {
+        return NextResponse.json(
+          { error: 'Unauthorized - Invalid or expired token' },
+          { status: 401 }
+        );
+      }
+      
       const errorData = await response.json();
       return NextResponse.json(
         { error: errorData.detail || 'Request failed' },
@@ -144,6 +158,13 @@ export async function PUT(request: Request) {
     });
     
     if (!response.ok) {
+      if (response.status === 401) {
+        return NextResponse.json(
+          { error: 'Unauthorized - Invalid or expired token' },
+          { status: 401 }
+        );
+      }
+      
       const errorData = await response.json();
       return NextResponse.json(
         { error: errorData.detail || 'Request failed' },

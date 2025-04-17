@@ -537,7 +537,7 @@ export default function NewAgentPage() {
                   <Button 
                     onClick={handleCreateAgent} 
                     disabled={!isFormValid || isSaving}
-                    className="bg-orange-500 text-white hover:bg-orange-600"
+                    className="bg-gradient-to-r from-orange-500 to-red-500 text-white hover:bg-orange-600"
                   >
                     {isSaving ? (
                       <>

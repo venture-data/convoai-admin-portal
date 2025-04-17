@@ -15,8 +15,8 @@ export function useVoice(provider: string = "openai") {
     },
     staleTime: 0,
     gcTime: 1000 * 60 * 5,
-    refetchOnMount: true,
-    refetchOnWindowFocus: true,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
     refetchOnReconnect: true
   })
 

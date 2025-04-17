@@ -24,55 +24,30 @@ export function ModelConfig({agentConfig, setAgentConfig}: {agentConfig: ModelCo
   
   return (
     <div className="space-y-8 text-white/90">
-      <div className="flex items-center gap-3 pb-4 border-b border-white/10">
-        <BotIcon className="h-5 w-5 text-orange-400" />
-        <h3 className="text-xl font-bold text-white">Model Configuration</h3>
-      </div>
-      
-      <div className="space-y-2">
-        <h4 className="text-sm font-medium text-orange-400 mb-3">Status Settings</h4>
+      <div className="flex items-center justify-between pb-4 border-b border-white/10">
+        <div className="flex items-center gap-3">
+          <BotIcon className="h-5 w-5 text-orange-400" />
+          <h3 className="text-xl font-bold text-white">Model Configuration</h3>
+        </div>
         
-        <div className="space-y-4">
-          <div className="flex items-center justify-between py-2 border-b border-white/5">
-            <Label htmlFor="active" className="flex items-center cursor-pointer text-white/90 text-sm">
-              Active
-              <span
-                className="ml-1 text-white/60 hover:cursor-help"
-                title="Whether this agent is active and can be used"
-              >
-                ⓘ
-              </span>
-            </Label>
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-white/60">Status:</span>
+          <div className="flex items-center gap-2 px-2 py-1 rounded bg-[#1A1D25]/60 border border-white/5">
+            <span className="text-xs text-white/60">
+              {agentConfig.active !== false ? "Active" : "Inactive"}
+            </span>
             <Switch
               id="active"
               checked={agentConfig.active !== false}
               onCheckedChange={(checked) => {
                 onAgentConfigChange("active", checked);
               }}
-            />
-          </div>
-
-          <div className="flex items-center justify-between py-2">
-            <Label htmlFor="is_default" className="flex items-center cursor-pointer text-white/90 text-sm">
-              Set as Default Agent
-              <span
-                className="ml-1 text-white/60 hover:cursor-help"
-                title="Set this agent as the default one"
-              >
-                ⓘ
-              </span>
-            </Label>
-            <Switch
-              id="is_default"
-              checked={agentConfig.is_default === true}
-              onCheckedChange={(checked) => {
-                onAgentConfigChange("is_default", checked);
-              }}
+              className="data-[state=checked]:bg-orange-500 h-4 w-7"
             />
           </div>
         </div>
       </div>
-
+      
       {/* Basic Information */}
       <div className="p-4 rounded-lg bg-gradient-to-br from-[#1A1D25]/80 to-[#1A1D25]/60 border border-white/10">
         <h4 className="text-sm font-medium text-orange-400 mb-4 flex items-center gap-2">
