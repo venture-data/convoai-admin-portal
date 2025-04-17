@@ -3,7 +3,7 @@
 import { VoiceConfig as VoiceConfigType } from "@/app/dashboard/new_agents/types"
 import { useVoice } from "@/app/hooks/use-voice";
 import { useState, useEffect} from "react";
-import { Input } from "@/components/ui/input";
+import { Volume2, Mic, Speaker } from "lucide-react";
 
 interface Voice {
   id: string;
@@ -68,15 +68,15 @@ export function VoiceConfig({ provider, agentConfig, setAgentConfig }: VoiceConf
     }
   };
 
-  const handleTtsOptionsChange = (key: string, value: number) => {
-    setAgentConfig({
-      ...agentConfig,
-      tts_options: {
-        ...agentConfig.tts_options,
-        [key]: value
-      }
-    });
-  };
+  // const handleTtsOptionsChange = (key: string, value: number) => {
+  //   setAgentConfig({
+  //     ...agentConfig,
+  //     tts_options: {
+  //       ...agentConfig.tts_options,
+  //       [key]: value
+  //     }
+  //   });
+  // };
 
   const handleProviderChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const newProvider = event.target.value;
@@ -94,86 +94,87 @@ export function VoiceConfig({ provider, agentConfig, setAgentConfig }: VoiceConf
     });
   };
 
-  console.log(provider)
-  console.log(agentConfig)
   return (
-    <div className="space-y-6 text-white/90">
-      <h3 className="text-xl font-bold mb-4 text-white">Voice Configuration</h3>
-      <div className="space-y-4">
-        <div className="space-y-2 bg-[#1A1D25]/70 border border-white/10 rounded-md p-4">
-          <label className="text-xs font-medium text-white/90 flex items-center">
-            Select Provider
-            <span
-              className="ml-1 text-white/60 hover:cursor-help"
-              title="Choose the voice provider to use"
+    <div className="space-y-8 text-white/90">
+      <div className="flex items-center gap-3 pb-4 border-b border-white/10">
+        <Volume2 className="h-5 w-5 text-orange-400" />
+        <h3 className="text-xl font-bold text-white">Voice Configuration</h3>
+      </div>
+      
+      <div className="space-y-6">
+        <div className="p-4 rounded-lg bg-gradient-to-br from-[#1A1D25]/80 to-[#1A1D25]/60 border border-white/10">
+          <h4 className="text-sm font-medium text-orange-400 mb-4 flex items-center gap-2">
+            <Speaker className="h-4 w-4" />
+            Voice Provider
+          </h4>
+          
+          <div className="relative">
+            <select 
+              value={voiceprovider}
+              onChange={handleProviderChange}
+              className="bg-[#1A1D25] border border-white/10 text-white/90 text-sm rounded-md p-2.5 pl-9 w-full focus:outline-none focus:border-orange-500/50 focus:ring-1 focus:ring-orange-500/20 transition-all appearance-none"
             >
-              ⓘ
-            </span>
-          </label>
-          <select 
-            value={voiceprovider}
-            onChange={handleProviderChange}
-            className="bg-[#1A1D25]/70 border border-white/10 text-white/90 text-sm rounded-md p-2.5 w-full focus:outline-none focus:ring-2 focus:ring-white/20 transition-all [&>option]:bg-[#1A1D25] [&>option]:text-white/90 [&>option:hover]:bg-orange-500"
-          >
-            <option value="openai">Open AI</option>
-            <option value="elevenlabs">Eleven Labs</option>
-            <option value="uplift">Uplift</option>
-          </select>
-        </div>
-        <div className="space-y-2 bg-[#1A1D25]/70 border border-white/10 rounded-md p-4">
-          <label htmlFor="voice-select" className="text-xs font-medium text-white/90 flex items-center">
-            Select Voice
-            <span
-              className="ml-1 text-white/60 hover:cursor-help"
-              title="Choose the voice for your assistant"
-            >
-              ⓘ
-            </span>
-          </label>
-          <select
-            id="voice-select"
-            value={agentConfig.tts_options?.voice || ""}
-            onChange={(e) => handleVoiceChange(e.target.value)}
-            className="bg-[#1A1D25]/70 border border-white/10 text-white/90 text-sm rounded-md p-2.5 w-full focus:outline-none focus:ring-2 focus:ring-white/20 transition-all [&>option]:bg-[#1A1D25] [&>option]:text-white/90 [&>option:hover]:bg-orange-500"
-            disabled={isLoading}
-          >
-            <option value="">Select a voice</option>
-            {Array.isArray(voices?.items) && voices.items
-              .filter((voice: Voice) => voice.provider === voiceprovider)
-              .map((voice: Voice) => (
-                <option key={voice.id} value={voice.providerId}>
-                  {voice.name} ({voice.provider})
-                </option>
-              ))}
-          </select>
-        </div>
-
-        <div className="bg-[#1A1D25]/70 border border-white/10 rounded-md p-4 space-y-4">
-          <h4 className="text-sm font-medium text-white/90">Voice Options</h4>
-          <div className="flex flex-col space-y-2">
-            <div className="flex justify-between items-center">
-              <label className="text-xs font-medium text-white/90 flex items-center">
-                Speech Speed
-                <span
-                  className="ml-1 text-white/60 hover:cursor-help"
-                  title="Adjust the speed of speech"
-                >
-                  ⓘ
-                </span>
-              </label>
-              <span className="text-xs text-white/60">{agentConfig.tts_options?.speed || 1.0}x</span>
+              <option value="openai">OpenAI</option>
+              <option value="elevenlabs">ElevenLabs</option>
+              <option value="uplift">Uplift</option>
+            </select>
+            <Volume2 className="h-4 w-4 text-white/40 absolute left-3 top-1/2 transform -translate-y-1/2 pointer-events-none" />
+            <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+              <svg className="h-4 w-4 text-white/40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
             </div>
-            <Input
-              type="number"
-              min="0.1"
-              max="2"
-              step="0.1"
-              value={agentConfig.tts_options?.speed || 1.0}
-              onChange={(e) => handleTtsOptionsChange('speed', parseFloat(e.target.value))}
-              className="bg-[#1A1D25]/70 border-white/10 text-white/90 text-sm focus:ring-2 focus:ring-white/20 transition-all"
-            />
           </div>
         </div>
+        
+        <div className="p-4 rounded-lg bg-gradient-to-br from-[#1A1D25]/80 via-[#1A1D25]/60 to-orange-950/10 border border-orange-500/20 shadow-[0_0_15px_rgba(249,115,22,0.05)]">
+          <h4 className="text-sm font-medium text-orange-400 mb-4 flex items-center gap-2">
+            <Mic className="h-4 w-4" />
+            Voice Selection
+            <span className="ml-auto text-xs px-2 py-0.5 rounded-full bg-orange-500/20 text-orange-400">Important</span>
+          </h4>
+          
+          <div className="relative">
+            <select
+              id="voice-select"
+              value={agentConfig.tts_options?.voice || ""}
+              onChange={(e) => handleVoiceChange(e.target.value)}
+              className="bg-[#1A1D25] border border-white/10 text-white/90 text-sm rounded-md p-2.5 pl-9 w-full focus:outline-none focus:border-orange-500/50 focus:ring-1 focus:ring-orange-500/20 transition-all appearance-none disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={isLoading}
+            >
+              <option value="">Select a voice</option>
+              {Array.isArray(voices?.items) && voices.items
+                .filter((voice: Voice) => voice.provider === voiceprovider)
+                .map((voice: Voice) => (
+                  <option key={voice.id} value={voice.providerId}>
+                    {voice.name} ({voice.provider})
+                  </option>
+                ))}
+            </select>
+            <Mic className="h-4 w-4 text-orange-400 absolute left-3 top-1/2 transform -translate-y-1/2 pointer-events-none" />
+            <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+              <svg className="h-4 w-4 text-white/40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+          </div>
+          
+          {isLoading && (
+            <p className="mt-2 text-xs text-white/50 italic">Loading available voices...</p>
+          )}
+          
+          {!isLoading && voices?.items && voices.items.length === 0 && (
+            <p className="mt-2 text-xs text-orange-400">No voices available for this provider</p>
+          )}
+          
+          {agentConfig.tts_options?.voice && (
+            <div className="mt-4 p-3 rounded bg-[#1A1D25]/50 border border-white/5">
+              <p className="text-xs text-white/70">Selected voice: <span className="text-orange-400 font-medium">{agentConfig.details?.name}</span></p>
+            </div>
+          )}
+        </div>
+        
+        {/* Voice Preview section would go here if we had audio preview functionality */}
       </div>
     </div>
   );

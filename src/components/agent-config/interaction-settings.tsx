@@ -4,6 +4,7 @@ import { ModelConfig as ModelConfigType } from "@/app/dashboard/new_agents/types
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
+import { Settings2, Clock, MessagesSquare, Zap } from "lucide-react";
 
 export function InteractionSettings({agentConfig, setAgentConfig}: {agentConfig: ModelConfigType, setAgentConfig: (config: ModelConfigType) => void}) {
   const onAgentConfigChange = (key: string, value: string | number | boolean) => {
@@ -12,36 +13,51 @@ export function InteractionSettings({agentConfig, setAgentConfig}: {agentConfig:
   }
   
   return (
-    <div className="space-y-6 text-white/90">
-      <h3 className="text-xl font-bold mb-4 text-white">Interaction Settings</h3>
+    <div className="space-y-8 text-white/90">
+      <div className="flex items-center gap-3 pb-4 border-b border-white/10">
+        <Settings2 className="h-5 w-5 text-orange-400" />
+        <h3 className="text-xl font-bold text-white">Interaction Settings</h3>
+      </div>
       
-      <div className="space-y-4">
-        <div className="bg-[#1A1D25]/70 border border-white/10 rounded-md p-4">
-          <div className="flex items-center justify-between">
-            <Label htmlFor="allow_interruptions" className="flex items-center text-xs text-white/90">
-              Allow Interruptions
-              <span
-                className="ml-1 text-white/60 hover:cursor-help"
-                title="Allow users to interrupt the agent while speaking"
-              >
-                ⓘ
-              </span>
-            </Label>
-            <Switch
-              id="allow_interruptions"
-              checked={agentConfig.allow_interruptions !== false}
-              onCheckedChange={(checked) => {
-                onAgentConfigChange("allow_interruptions", checked);
-              }}
-            />
-          </div>
+      {/* Interruption Settings - No background as requested */}
+      <div className="space-y-2">
+        <h4 className="text-sm font-medium text-orange-400 mb-3 flex items-center gap-2">
+          <MessagesSquare className="h-4 w-4" />
+          Interruption Control
+        </h4>
+        
+        <div className="flex items-center justify-between py-2 border-b border-white/5">
+          <Label htmlFor="allow_interruptions" className="flex items-center text-sm text-white/90">
+            Allow Interruptions
+            <span
+              className="ml-1 text-white/60 hover:cursor-help"
+              title="Allow users to interrupt the agent while speaking"
+            >
+              ⓘ
+            </span>
+          </Label>
+          <Switch
+            id="allow_interruptions"
+            checked={agentConfig.allow_interruptions !== false}
+            onCheckedChange={(checked) => {
+              onAgentConfigChange("allow_interruptions", checked);
+            }}
+          />
         </div>
+      </div>
 
-        {agentConfig.allow_interruptions !== false && (
-          <>
-            <div className="space-y-2 bg-[#1A1D25]/70 border border-white/10 rounded-md p-4">
+      {/* Timing configuration */}
+      {agentConfig.allow_interruptions !== false && (
+        <div className="p-4 rounded-lg bg-gradient-to-br from-[#1A1D25]/80 to-[#1A1D25]/60 border border-white/10">
+          <h4 className="text-sm font-medium text-orange-400 mb-4 flex items-center gap-2">
+            <Clock className="h-4 w-4" />
+            Interruption Timing
+          </h4>
+          
+          <div className="space-y-6">
+            <div className="space-y-3">
               <div className="flex justify-between">
-                <Label htmlFor="interrupt_speech_duration" className="flex items-center text-xs text-white/90">
+                <Label htmlFor="interrupt_speech_duration" className="flex items-center text-sm text-white/90">
                   Interrupt Speech Duration (seconds)
                   <span
                     className="ml-1 text-white/60 hover:cursor-help"
@@ -50,7 +66,7 @@ export function InteractionSettings({agentConfig, setAgentConfig}: {agentConfig:
                     ⓘ
                   </span>
                 </Label>
-                <span className="text-xs text-white/60">{agentConfig.interrupt_speech_duration || 0.5}</span>
+                <span className="text-sm text-orange-400 font-medium">{agentConfig.interrupt_speech_duration || 0.5}s</span>
               </div>
               <Slider
                 id="interrupt_speech_duration"
@@ -61,13 +77,14 @@ export function InteractionSettings({agentConfig, setAgentConfig}: {agentConfig:
                 onValueChange={(value) => {
                   onAgentConfigChange("interrupt_speech_duration", value[0]);
                 }}
-                className="focus:ring-2 focus:ring-white/20 transition-all"
+                className="focus:ring-1 focus:ring-orange-500/20 transition-all"
               />
+              <p className="text-xs text-white/50 italic">Shorter duration allows for quicker interruptions</p>
             </div>
 
-            <div className="space-y-2 bg-[#1A1D25]/70 border border-white/10 rounded-md p-4">
+            <div className="space-y-3">
               <div className="flex justify-between">
-                <Label htmlFor="interrupt_min_words" className="flex items-center text-xs text-white/90">
+                <Label htmlFor="interrupt_min_words" className="flex items-center text-sm text-white/90">
                   Interrupt Minimum Words
                   <span
                     className="ml-1 text-white/60 hover:cursor-help"
@@ -76,7 +93,7 @@ export function InteractionSettings({agentConfig, setAgentConfig}: {agentConfig:
                     ⓘ
                   </span>
                 </Label>
-                <span className="text-xs text-white/60">{agentConfig.interrupt_min_words || 0}</span>
+                <span className="text-sm text-orange-400 font-medium">{agentConfig.interrupt_min_words || 0} words</span>
               </div>
               <Slider
                 id="interrupt_min_words"
@@ -87,67 +104,88 @@ export function InteractionSettings({agentConfig, setAgentConfig}: {agentConfig:
                 onValueChange={(value) => {
                   onAgentConfigChange("interrupt_min_words", value[0]);
                 }}
-                className="transition-all focus:ring-2 focus:ring-white/20"
+                className="focus:ring-1 focus:ring-orange-500/20 transition-all"
               />
             </div>
-          </>
-        )}
-
-        <div className="space-y-2 bg-[#1A1D25]/70 border border-white/10 rounded-md p-4">
-          <div className="flex justify-between">
-            <Label htmlFor="min_endpointing_delay" className="flex items-center text-xs text-white/90">
-              Minimum Endpointing Delay (seconds)
-              <span
-                className="ml-1 text-white/60 hover:cursor-help"
-                title="Minimum delay before considering speech ended"
-              >
-                ⓘ
-              </span>
-            </Label>
-            <span className="text-xs text-white/60">{agentConfig.min_endpointing_delay || 0.5}</span>
           </div>
-          <Slider
-            id="min_endpointing_delay"
-            min={0}
-            max={2}
-            step={0.1}
-            value={[agentConfig.min_endpointing_delay || 0.5]}
-            onValueChange={(value) => {
-              onAgentConfigChange("min_endpointing_delay", value[0]);
-            }}
-            className="focus:ring-2 focus:ring-white/20 transition-all"
-          />
         </div>
+      )}
 
-        <div className="space-y-2 bg-[#1A1D25]/70 border border-white/10 rounded-md p-4">
-          <div className="flex justify-between">
-            <Label htmlFor="max_endpointing_delay" className="flex items-center text-xs text-white/90">
-              Maximum Endpointing Delay (seconds)
-              <span
-                className="ml-1 text-white/60 hover:cursor-help"
-                title="Maximum delay before considering speech ended"
-              >
-                ⓘ
-              </span>
-            </Label>
-            <span className="text-xs text-white/60">{agentConfig.max_endpointing_delay || 6}</span>
+      {/* Endpointing Settings - Highlighted as important */}
+      <div className="p-4 rounded-lg bg-gradient-to-br from-[#1A1D25]/80 via-[#1A1D25]/60 to-orange-950/10 border border-orange-500/20 shadow-[0_0_15px_rgba(249,115,22,0.05)]">
+        <h4 className="text-sm font-medium text-orange-400 mb-4 flex items-center gap-2">
+          <Zap className="h-4 w-4" />
+          Response Timing
+          <span className="ml-auto text-xs px-2 py-0.5 rounded-full bg-orange-500/20 text-orange-400">Important</span>
+        </h4>
+        
+        <div className="space-y-6">
+          <div className="space-y-3">
+            <div className="flex justify-between">
+              <Label htmlFor="min_endpointing_delay" className="flex items-center text-sm text-white/90">
+                Minimum Endpointing Delay
+                <span
+                  className="ml-1 text-white/60 hover:cursor-help"
+                  title="Minimum delay before considering speech ended (seconds)"
+                >
+                  ⓘ
+                </span>
+              </Label>
+              <span className="text-sm text-orange-400 font-medium">{agentConfig.min_endpointing_delay || 0.5}s</span>
+            </div>
+            <Slider
+              id="min_endpointing_delay"
+              min={0}
+              max={2}
+              step={0.1}
+              value={[agentConfig.min_endpointing_delay || 0.5]}
+              onValueChange={(value) => {
+                onAgentConfigChange("min_endpointing_delay", value[0]);
+              }}
+              className="focus:ring-1 focus:ring-orange-500/20 transition-all"
+            />
+            <p className="text-xs text-white/50 italic">Shorter delays mean quicker responses but may cut off speech</p>
           </div>
-          <Slider
-            id="max_endpointing_delay"
-            min={1}
-            max={10}
-            step={0.5}
-            value={[agentConfig.max_endpointing_delay || 6]}
-            onValueChange={(value) => {
-              onAgentConfigChange("max_endpointing_delay", value[0]);
-            }}
-            className="focus:ring-2 focus:ring-white/20 transition-all"
-          />
-        </div>
 
-        <div className="space-y-2 bg-[#1A1D25]/70 border border-white/10 rounded-md p-4">
+          <div className="space-y-3">
+            <div className="flex justify-between">
+              <Label htmlFor="max_endpointing_delay" className="flex items-center text-sm text-white/90">
+                Maximum Endpointing Delay
+                <span
+                  className="ml-1 text-white/60 hover:cursor-help"
+                  title="Maximum delay before considering speech ended (seconds)"
+                >
+                  ⓘ
+                </span>
+              </Label>
+              <span className="text-sm text-orange-400 font-medium">{agentConfig.max_endpointing_delay || 6}s</span>
+            </div>
+            <Slider
+              id="max_endpointing_delay"
+              min={1}
+              max={10}
+              step={0.5}
+              value={[agentConfig.max_endpointing_delay || 6]}
+              onValueChange={(value) => {
+                onAgentConfigChange("max_endpointing_delay", value[0]);
+              }}
+              className="focus:ring-1 focus:ring-orange-500/20 transition-all"
+            />
+            <p className="text-xs text-white/50 italic">Longer delays prevent premature responses during pauses</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Function Call Settings */}
+      <div className="p-4 rounded-lg bg-gradient-to-br from-[#1A1D25]/80 to-[#1A1D25]/60 border border-white/10">
+        <h4 className="text-sm font-medium text-orange-400 mb-4 flex items-center gap-2">
+          <Zap className="h-4 w-4" />
+          Function Call Settings
+        </h4>
+        
+        <div className="space-y-3">
           <div className="flex justify-between">
-            <Label htmlFor="max_nested_function_calls" className="flex items-center text-xs text-white/90">
+            <Label htmlFor="max_nested_function_calls" className="flex items-center text-sm text-white/90">
               Maximum Nested Function Calls
               <span
                 className="ml-1 text-white/60 hover:cursor-help"
@@ -156,7 +194,7 @@ export function InteractionSettings({agentConfig, setAgentConfig}: {agentConfig:
                 ⓘ
               </span>
             </Label>
-            <span className="text-xs text-white/60">{agentConfig.max_nested_function_calls || 1}</span>
+            <span className="text-sm text-orange-400 font-medium">{agentConfig.max_nested_function_calls || 1}</span>
           </div>
           <Slider
             id="max_nested_function_calls"
@@ -167,8 +205,9 @@ export function InteractionSettings({agentConfig, setAgentConfig}: {agentConfig:
             onValueChange={(value) => {
               onAgentConfigChange("max_nested_function_calls", value[0]);
             }}
-            className="focus:ring-2 focus:ring-white/20 transition-all"
+            className="focus:ring-1 focus:ring-orange-500/20 transition-all"
           />
+          <p className="text-xs text-white/50 italic">Higher values allow more complex operations but may increase latency</p>
         </div>
       </div>
     </div>

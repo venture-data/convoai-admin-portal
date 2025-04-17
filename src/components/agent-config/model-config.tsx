@@ -5,6 +5,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { useState } from "react";
+import { BotIcon, Brain, MessageSquare, Sparkles } from "lucide-react";
+import { 
+  Select, 
+  SelectContent, 
+  SelectItem, 
+  SelectTrigger, 
+  SelectValue 
+} from "@/components/ui/select";
 
 export function ModelConfig({agentConfig, setAgentConfig}: {agentConfig: ModelConfigType, setAgentConfig: (config: ModelConfigType) => void}) {
   const [errors] = useState<{ [key: string]: boolean }>({});
@@ -13,16 +21,20 @@ export function ModelConfig({agentConfig, setAgentConfig}: {agentConfig: ModelCo
     const newConfig = { ...agentConfig, [key]: value };
     setAgentConfig(newConfig);
   }
+  
   return (
-    <div className="space-y-6 text-white/90">
+    <div className="space-y-8 text-white/90">
+      <div className="flex items-center gap-3 pb-4 border-b border-white/10">
+        <BotIcon className="h-5 w-5 text-orange-400" />
+        <h3 className="text-xl font-bold text-white">Model Configuration</h3>
+      </div>
       
-      <h3 className="text-xl font-bold mb-4 text-white">Basic Information</h3>
-      
-      <div className="space-y-4 bg-[#1A1D25]/70 border border-white/10 rounded-md p-4">
-          <h4 className="font-medium text-white text-sm mb-2">Status Settings</h4>
-          
-          <div className="flex items-center justify-between">
-            <Label htmlFor="active" className="flex items-center cursor-pointer text-white/90 text-xs">
+      <div className="space-y-2">
+        <h4 className="text-sm font-medium text-orange-400 mb-3">Status Settings</h4>
+        
+        <div className="space-y-4">
+          <div className="flex items-center justify-between py-2 border-b border-white/5">
+            <Label htmlFor="active" className="flex items-center cursor-pointer text-white/90 text-sm">
               Active
               <span
                 className="ml-1 text-white/60 hover:cursor-help"
@@ -40,8 +52,8 @@ export function ModelConfig({agentConfig, setAgentConfig}: {agentConfig: ModelCo
             />
           </div>
 
-          <div className="flex items-center justify-between">
-            <Label htmlFor="is_default" className="flex items-center cursor-pointer text-white/90 text-xs">
+          <div className="flex items-center justify-between py-2">
+            <Label htmlFor="is_default" className="flex items-center cursor-pointer text-white/90 text-sm">
               Set as Default Agent
               <span
                 className="ml-1 text-white/60 hover:cursor-help"
@@ -59,10 +71,18 @@ export function ModelConfig({agentConfig, setAgentConfig}: {agentConfig: ModelCo
             />
           </div>
         </div>
-      <div className="space-y-4">
-        <div className="space-y-4 bg-[#1A1D25]/70 border border-white/10 rounded-md p-4">
+      </div>
+
+      {/* Basic Information */}
+      <div className="p-4 rounded-lg bg-gradient-to-br from-[#1A1D25]/80 to-[#1A1D25]/60 border border-white/10">
+        <h4 className="text-sm font-medium text-orange-400 mb-4 flex items-center gap-2">
+          <BotIcon className="h-4 w-4" />
+          Basic Information
+        </h4>
+        
+        <div className="space-y-5">
           <div className={`space-y-2 ${errors.agentName ? 'text-red-500' : ''}`}>
-            <Label htmlFor="agent-name" className="flex items-center text-white/90 text-xs">
+            <Label htmlFor="agent-name" className="flex items-center text-white/90 text-sm">
               Agent Name
               <span
                 className="ml-1 text-white/60 hover:cursor-help"
@@ -71,18 +91,22 @@ export function ModelConfig({agentConfig, setAgentConfig}: {agentConfig: ModelCo
                 ⓘ
               </span>
             </Label>
-            <Input
-              id="agent-name"
-              value={agentConfig.agentName}
-              className="w-full bg-[#1A1D25]/70 border-white/10 text-white text-sm placeholder:text-white/60"
-              onChange={(e) => {
-                onAgentConfigChange("agentName", e.target.value);
-              }}
-            />
+            <div className="relative">
+              <Input
+                id="agent-name"
+                value={agentConfig.agentName}
+                className="w-full bg-[#1A1D25] border-white/10 text-white rounded-md pl-9 text-sm placeholder:text-white/60 focus:border-orange-500/50 focus:ring-orange-500/20"
+                placeholder="Enter agent name"
+                onChange={(e) => {
+                  onAgentConfigChange("agentName", e.target.value);
+                }}
+              />
+              <BotIcon className="h-4 w-4 text-white/40 absolute left-3 top-1/2 transform -translate-y-1/2" />
+            </div>
           </div>
 
           <div className={`space-y-2 ${errors.description ? 'text-red-500' : ''}`}>
-            <Label htmlFor="description" className="flex items-center text-white/90 text-xs">
+            <Label htmlFor="description" className="flex items-center text-white/90 text-sm">
               Description
               <span
                 className="ml-1 text-white/60 hover:cursor-help"
@@ -91,20 +115,67 @@ export function ModelConfig({agentConfig, setAgentConfig}: {agentConfig: ModelCo
                 ⓘ
               </span>
             </Label>
-            <textarea
-              id="description"
-              onChange={(e) => {
-                onAgentConfigChange("description", e.target.value);
-              }}
-              className="w-full min-h-[80px] p-3 rounded-md border bg-[#1A1D25]/70 border-white/10 text-white placeholder:text-white/60 text-sm"
-              value={agentConfig.description || ""}
-            />
+            <div className="relative">
+              <textarea
+                id="description"
+                onChange={(e) => {
+                  onAgentConfigChange("description", e.target.value);
+                }}
+                placeholder="Describe what this agent does"
+                className="w-full min-h-[80px] p-3 pl-9 rounded-md border bg-[#1A1D25] border-white/10 text-white placeholder:text-white/60 text-sm focus:border-orange-500/50 focus:ring-orange-500/20"
+                value={agentConfig.description || ""}
+              />
+              <MessageSquare className="h-4 w-4 text-white/40 absolute left-3 top-3" />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="llm-provider" className="flex items-center text-white/90 text-sm">
+              LLM Provider
+              <span
+                className="ml-1 text-white/60 hover:cursor-help"
+                title="The provider for the language model"
+              >
+                ⓘ
+              </span>
+            </Label>
+            <Select 
+              value={agentConfig.provider} 
+              onValueChange={(value) => onAgentConfigChange("provider", value)}
+            >
+              <SelectTrigger 
+                className="w-full bg-[#1A1D25] border-white/10 text-white placeholder:text-white/60 focus:border-orange-500/50 focus:ring-orange-500/20"
+                id="llm-provider"
+              >
+                <div className="flex items-center">
+                  <Brain className="w-4 h-4 mr-2 text-orange-400" />
+                  <SelectValue placeholder="Select provider" />
+                </div>
+              </SelectTrigger>
+              <SelectContent className="bg-[#1A1D25] border-white/10 text-white">
+                <SelectItem value="openai">OpenAI</SelectItem>
+                <SelectItem value="elevenlabs">ElevenLabs</SelectItem>
+                <SelectItem value="google">Google</SelectItem>
+                <SelectItem value="anthropic">Anthropic</SelectItem>
+                <SelectItem value="uplift">Uplift</SelectItem>
+                <SelectItem value="cartesia">Cartesia</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </div>
+      </div>
 
-        <div className="space-y-4 bg-[#1A1D25]/70 border border-white/10 rounded-md p-4">
+
+      <div className="p-4 rounded-lg bg-gradient-to-br from-[#1A1D25]/80 via-[#1A1D25]/60 to-orange-950/10 border border-orange-500/20 shadow-[0_0_15px_rgba(249,115,22,0.05)]">
+        <h4 className="text-sm font-medium text-orange-400 mb-4 flex items-center gap-2">
+          <Sparkles className="h-4 w-4" />
+          AI Prompt Settings
+          <span className="ml-auto text-xs px-2 py-0.5 rounded-full bg-orange-500/20 text-orange-400">Important</span>
+        </h4>
+        
+        <div className="space-y-5">
           <div className={`space-y-2 ${errors.firstMessage ? 'text-red-500' : ''}`}>
-            <Label htmlFor="first-message" className="flex items-center text-white/90 text-xs">
+            <Label htmlFor="first-message" className="flex items-center text-white/90 text-sm">
               Greeting
               <span
                 className="ml-1 text-white/60 hover:cursor-help"
@@ -113,17 +184,22 @@ export function ModelConfig({agentConfig, setAgentConfig}: {agentConfig: ModelCo
                 ⓘ
               </span>
             </Label>
-            <Input
-              id="first-message"
-              className="w-full bg-[#1A1D25]/70 border-white/10 text-white text-sm placeholder:text-white/60"
-              value={agentConfig.firstMessage}
-              onChange={(e) => {
-                onAgentConfigChange("firstMessage", e.target.value);
-              }}
-            />
+            <div className="relative">
+              <Input
+                id="first-message"
+                className="w-full bg-[#1A1D25] border-white/10 text-white pl-9 rounded-md text-sm placeholder:text-white/60 focus:border-orange-500/50 focus:ring-orange-500/20"
+                placeholder="Hello! How can I assist you today?"
+                value={agentConfig.firstMessage}
+                onChange={(e) => {
+                  onAgentConfigChange("firstMessage", e.target.value);
+                }}
+              />
+              <MessageSquare className="h-4 w-4 text-white/40 absolute left-3 top-1/2 transform -translate-y-1/2" />
+            </div>
           </div>
+
           <div className={`space-y-2 ${errors.systemPrompt ? 'text-red-500' : ''}`}>
-            <Label htmlFor="system-prompt" className="flex items-center text-white/90 text-xs">
+            <Label htmlFor="system-prompt" className="flex items-center text-white/90 text-sm">
               System Prompt
               <span
                 className="ml-1 text-white/60 hover:cursor-help"
@@ -132,14 +208,19 @@ export function ModelConfig({agentConfig, setAgentConfig}: {agentConfig: ModelCo
                 ⓘ
               </span>
             </Label>
-            <textarea
-              id="system-prompt"
-              onChange={(e) => {
-                onAgentConfigChange("systemPrompt", e.target.value);
-              }}
-              className="w-full min-h-[150px] p-3 rounded-md border bg-[#1A1D25]/70 border-white/10 text-white placeholder:text-white/60 text-sm focus:outline-none focus:ring-2 focus:ring-white/20 transition-all"
-              value={agentConfig.systemPrompt}
-            />
+            <div className="relative">
+              <textarea
+                id="system-prompt"
+                onChange={(e) => {
+                  onAgentConfigChange("systemPrompt", e.target.value);
+                }}
+                placeholder="You are a helpful AI assistant..."
+                className="w-full min-h-[150px] p-3 pl-9 rounded-md border bg-[#1A1D25] border-white/10 text-white placeholder:text-white/60 text-sm focus:border-orange-500/50 focus:ring-orange-500/20 transition-all"
+                value={agentConfig.systemPrompt}
+              />
+              <Sparkles className="h-4 w-4 text-orange-400 absolute left-3 top-3" />
+            </div>
+            <p className="text-xs text-white/50 italic mt-1">Detailed instructions to control how the AI behaves</p>
           </div>
         </div>
       </div>
