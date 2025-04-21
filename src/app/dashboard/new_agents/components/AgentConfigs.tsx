@@ -1,4 +1,4 @@
-import { Loader2, Phone, PhoneOff, X, Mic } from "lucide-react";
+import { Loader2, Phone, PhoneOff, X, Mic, GripHorizontal } from "lucide-react";
 import { BotIcon, Settings2, Brain, Volume2, FileText, Eye } from "lucide-react";
 import { Agent, AgentConfig, ModelConfig as ModelConfigType, KnowledgeConfig as KnowledgeConfigType, VoiceConfig as VoiceConfigType } from "../types";
 import { Button } from "@/components/ui/button";
@@ -22,6 +22,7 @@ import {
 import "@livekit/components-styles";
 import { MediaDeviceFailure } from "livekit-client";
 import { NoAgentNotification } from "@/components/NoAgentNotification";
+import { AnimatePresence } from "framer-motion";
 
 const tabs = [
   {
@@ -269,23 +270,20 @@ function AgentConfigs({
               )}
             </div>
           )}
-          
-          {isCallActive && <div className="h-[350px] call-spacer" />}
         </div>
       </div>
-      <div className="fixed bottom-8 right-6 z-[1000] max-w-[350px] w-full">
-        <TransitionEffect>
-          {isCallActive && selectedAgent && (
-            <MiniCallInterface 
-              agent={selectedAgent as unknown as AgentProfileResponse} 
-              onClose={() => setIsCallActive(false)} 
-              callContainerRef={callContainerRef as React.RefObject<HTMLDivElement>}
-            />
-          )}
-        </TransitionEffect>
-      </div>
+      
+      {isCallActive && selectedAgent && (
+        <AnimatePresence>
+          <MiniCallInterface 
+            agent={selectedAgent as unknown as AgentProfileResponse} 
+            onClose={() => setIsCallActive(false)} 
+            callContainerRef={callContainerRef as React.RefObject<HTMLDivElement>}
+          />
+        </AnimatePresence>
+      )}
     </section>
-  )
+  );
 }
 
 function MiniCallInterface({ agent, onClose, callContainerRef }: { agent: AgentProfileResponse, onClose: () => void, callContainerRef: React.RefObject<HTMLDivElement>  }) {
@@ -300,28 +298,26 @@ function MiniCallInterface({ agent, onClose, callContainerRef }: { agent: AgentP
   const [agentState, setAgentState] = useState<AgentState>("disconnected");
   const [hasStartedSpeaking, setHasStartedSpeaking] = useState(false);
   
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const dragStartPos = useRef({ x: 0, y: 0 });
+  
+  // Use initial position from the right bottom corner
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      // Start at bottom right (0,0)
+      setPosition({
+        x: 0,
+        y: 0
+      });
+    }
+  }, []);
 
   useEffect(() => {
-    if ((agentState === "speaking" || agentState === "thinking" || agentState === "listening") && !hasStartedSpeaking) {
-      setHasStartedSpeaking(true);
-    }
-  }, [agentState, hasStartedSpeaking]);
-  
-  useEffect(() => {
     startCall();
-    const scrollToBottom = () => {
-      const spacerElement = document.querySelector('.call-spacer');
-      if (spacerElement) {
-        spacerElement.scrollIntoView({ behavior: 'smooth' });
-      }
-    };
-    scrollToBottom();
-    const timer1 = setTimeout(scrollToBottom, 100);
-    const timer2 = setTimeout(scrollToBottom, 500);
     
     return () => {
-      clearTimeout(timer1);
-      clearTimeout(timer2);
+      // Clean up any resources if needed
     };
   }, []);
 
@@ -334,6 +330,65 @@ function MiniCallInterface({ agent, onClose, callContainerRef }: { agent: AgentP
       return () => clearTimeout(timer);
     }
   }, [isCallActive, hasStartedSpeaking]);
+
+  // Check when agent has started speaking
+  useEffect(() => {
+    if ((agentState === "speaking" || agentState === "thinking" || agentState === "listening") && !hasStartedSpeaking) {
+      setHasStartedSpeaking(true);
+    }
+  }, [agentState, hasStartedSpeaking]);
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    setIsDragging(true);
+    dragStartPos.current = {
+      x: e.clientX - position.x,
+      y: e.clientY - position.y
+    };
+  };
+
+  const handleMouseMove = useCallback((e: MouseEvent) => {
+    if (isDragging) {
+      // Calculate new position
+      const newX = e.clientX - dragStartPos.current.x;
+      const newY = e.clientY - dragStartPos.current.y;
+      
+      // Get mini assistant dimensions
+      const miniAssistant = callContainerRef.current;
+      if (!miniAssistant) return;
+      
+      const rect = miniAssistant.getBoundingClientRect();
+      const width = rect.width;
+      const height = rect.height;
+      
+      // Ensure the mini assistant stays within viewport bounds
+      const maxX = window.innerWidth - width * 0.3;
+      const maxY = window.innerHeight - height * 0.3;
+      const minX = -width * 0.7;
+      const minY = -height * 0.7;
+      
+      setPosition({
+        x: Math.min(Math.max(newX, minX), maxX),
+        y: Math.min(Math.max(newY, minY), maxY)
+      });
+    }
+  }, [isDragging, callContainerRef]);
+
+  const handleMouseUp = useCallback(() => {
+    setIsDragging(false);
+  }, []);
+
+
+  useEffect(() => {
+    if (isDragging) {
+      window.addEventListener('mousemove', handleMouseMove);
+      window.addEventListener('mouseup', handleMouseUp);
+    }
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isDragging, handleMouseMove, handleMouseUp]);
 
   const startCall = async () => {
     try {
@@ -350,15 +405,6 @@ function MiniCallInterface({ agent, onClose, callContainerRef }: { agent: AgentP
       const data = await createAccessToken.mutateAsync(queryParams);
       setConnectionDetails(data);
       setIsCallActive(true);
-      
-      const scrollToCallInterface = () => {
-        const spacerElement = document.querySelector('.call-spacer');
-        if (spacerElement) {
-          spacerElement.scrollIntoView({ behavior: 'smooth' });
-        }
-      };
-      
-      setTimeout(scrollToCallInterface, 300);
       
     } catch (error) {
       console.error("Failed to create access token:", error);
@@ -386,9 +432,22 @@ function MiniCallInterface({ agent, onClose, callContainerRef }: { agent: AgentP
   }, [onClose]);
 
   return (
-    <div ref={callContainerRef} className="w-full shadow-2xl rounded-lg overflow-hidden shadow-orange-900/20 bg-gradient-to-b from-black/90 to-black/95 backdrop-blur-xl border border-orange-500/30 transition-all duration-300">
-      <div className="p-3 flex items-center justify-between border-b border-white/10">
+    <div 
+      ref={callContainerRef} 
+      className="fixed top-0 right-5 max-w-[350px] w-full shadow-2xl rounded-lg overflow-hidden shadow-orange-900/20 bg-gradient-to-b from-black/90 to-black/95 backdrop-blur-xl border border-orange-500/30 transition-all duration-300"
+      style={{ 
+        transform: `translate(${position.x}px, ${position.y}px) scale(${isDragging ? 0.98 : 1})`,
+        cursor: isDragging ? 'grabbing' : 'grab',
+        zIndex: 9999,
+        transition: isDragging ? 'transform 0.05s ease' : 'transform 0.2s ease'
+      }}
+    >
+      <div 
+        className="p-3 flex items-center justify-between border-b border-white/10"
+        onMouseDown={handleMouseDown}
+      >
         <div className="flex items-center gap-2">
+          <GripHorizontal className="size-4 text-white/30 mr-1 cursor-grab" />
           <div className="size-8 rounded-full bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center">
             <BotIcon className="size-4 text-white" />
           </div>
@@ -444,7 +503,6 @@ function MiniCallInterface({ agent, onClose, callContainerRef }: { agent: AgentP
               <MiniVoiceVisualizer agentState={agentState} />
               <MiniControlBar onStateChange={(state) => {
                 setAgentState(state);
-                // Set hasStartedSpeaking for any active state
                 if (state === "speaking" || state === "thinking" || state === "listening") {
                   setHasStartedSpeaking(true);
                 }
