@@ -27,7 +27,7 @@ interface SidebarProps {
 
 function Sidebar({isLoading, displayedAgents, selectedAgentId, handleSelectAgent, handleDeleteAgent, deletingAgentId, searchQuery, setSearchQuery, setIsTemplateModalOpen}:SidebarProps) {
   return (
-    <aside className="sticky top-[60px] self-start h-[calc(100vh-60px)] backdrop-blur-xl bg-[#1A1D25]/70 border-r border-white/10">
+    <aside className="sticky top-[40px] self-start h-[calc(100vh-40px)] backdrop-blur-xl bg-[#1A1D25]/70 border-r border-white/10">
     <div className="p-4 grid grid-rows-[auto_auto_1fr] h-full">
       <div className="relative mb-4">
         <Input

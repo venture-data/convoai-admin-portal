@@ -1,6 +1,7 @@
 "use client"
 
 import Sidebar from "@/components/layout/Sidebar";
+import TransitionEffect from "../ui/transitioneffect";
 
 export default function DashboardLayout({
   children
@@ -17,7 +18,9 @@ export default function DashboardLayout({
       <div className="flex">
         <Sidebar />
         <main className="flex-1 md:ml-60">
-          {children}
+          <TransitionEffect>
+            {children}
+          </TransitionEffect>
         </main>
       </div>
     </div>

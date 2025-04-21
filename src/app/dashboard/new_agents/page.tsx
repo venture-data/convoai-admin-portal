@@ -3,8 +3,6 @@ import React, { useState, useEffect } from "react"
 import { useToast } from "@/app/hooks/use-toast"
 import { TemplateSelectorModal } from "@/components/templates/template-selector-modal"
 import { useAgent } from "@/app/hooks/use-agent"
-import { CallModal } from "@/components/modals/call-modal"
-import type { AgentProfileResponse } from "@/app/types/agent-profile"
 import { useMobileMenu } from "@/store/use-mobile-menu"
 
 import Navbar  from "./components/Navbar"
@@ -23,7 +21,6 @@ export default function NewAgentPage() {
   const { createAgent, updateAgent, agents: backendAgents, isLoading, deleteAgent } = useAgent()
   const [isSaving, setIsSaving] = useState(false)
   const [deletingAgentId, setDeletingAgentId] = useState<string | null>(null);
-  const [isCallModalOpen, setIsCallModalOpen] = useState(false);
 
   useEffect(() => {
     if (!selectedAgentId && backendAgents && backendAgents.items?.length > 0) {
@@ -233,7 +230,7 @@ export default function NewAgentPage() {
       <div className="absolute inset-0">
         <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-gradient-to-r from-[#F97316]/40 to-[#EF4444]/30 blur-[100px] rounded-full"></div>
       </div>
-      <Navbar toggleMobileMenu={toggleMobileMenu} selectedAgentId={selectedAgentId} setIsCallModalOpen={setIsCallModalOpen} />
+      <Navbar toggleMobileMenu={toggleMobileMenu} />
 
       <main className="grid grid-cols-[16rem_1fr] w-full h-full">
         <Sidebar 
@@ -335,12 +332,7 @@ export default function NewAgentPage() {
           }
         }}
       />
-
-      <CallModal
-        isOpen={isCallModalOpen}
-        onClose={() => setIsCallModalOpen(false)}
-        agent={selectedAgent as AgentProfileResponse}
-      />
     </div>
   )
 } 
+
