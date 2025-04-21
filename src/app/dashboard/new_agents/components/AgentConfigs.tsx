@@ -22,7 +22,6 @@ import {
 import "@livekit/components-styles";
 import { MediaDeviceFailure } from "livekit-client";
 import { NoAgentNotification } from "@/components/NoAgentNotification";
-import { AnimatePresence } from "framer-motion";
 
 const tabs = [
   {
@@ -95,18 +94,7 @@ function AgentConfigs({
   const contentScrollRef = useRef<HTMLDivElement>(null);
   
   const handleTalkNow = useCallback(() => {
-    // Set call to active
     setIsCallActive(true);
-    
-    // Scroll to bottom after the interface is rendered
-    setTimeout(() => {
-      if (contentScrollRef.current) {
-        contentScrollRef.current.scrollTo({
-          top: contentScrollRef.current.scrollHeight,
-          behavior: 'smooth'
-        });
-      }
-    }, 200);
   }, []);
   
   return (
@@ -127,7 +115,7 @@ function AgentConfigs({
               className="!bg-gradient-to-r !from-orange-500/10 !to-orange-600/10 !border !border-orange-500/30 hover:!bg-orange-500/20 text-white"  
             >
               <Phone className="w-4 h-4 mr-2 text-orange-400" />
-              Talk Now
+              Talk to Assistant
             </Button>
           )}
         </div>
@@ -270,20 +258,23 @@ function AgentConfigs({
               )}
             </div>
           )}
+          
+          {isCallActive && <div className="h-[350px] call-spacer" />}
         </div>
       </div>
-      
-      {isCallActive && selectedAgent && (
-        <AnimatePresence>
-          <MiniCallInterface 
-            agent={selectedAgent as unknown as AgentProfileResponse} 
-            onClose={() => setIsCallActive(false)} 
-            callContainerRef={callContainerRef as React.RefObject<HTMLDivElement>}
-          />
-        </AnimatePresence>
-      )}
+      <div className="absolute bottom-8 right-6 z-[1000] max-w-[350px] w-full">
+        <TransitionEffect>
+          {isCallActive && selectedAgent && (
+            <MiniCallInterface 
+              agent={selectedAgent as unknown as AgentProfileResponse} 
+              onClose={() => setIsCallActive(false)} 
+              callContainerRef={callContainerRef as React.RefObject<HTMLDivElement>}
+            />
+          )}
+        </TransitionEffect>
+      </div>
     </section>
-  );
+  )
 }
 
 function MiniCallInterface({ agent, onClose, callContainerRef }: { agent: AgentProfileResponse, onClose: () => void, callContainerRef: React.RefObject<HTMLDivElement>  }) {
@@ -301,24 +292,15 @@ function MiniCallInterface({ agent, onClose, callContainerRef }: { agent: AgentP
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const dragStartPos = useRef({ x: 0, y: 0 });
-  
-  // Use initial position from the right bottom corner
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      // Start at bottom right (0,0)
-      setPosition({
-        x: 0,
-        y: 0
-      });
-    }
-  }, []);
 
   useEffect(() => {
+    if ((agentState === "speaking" || agentState === "thinking" || agentState === "listening") && !hasStartedSpeaking) {
+      setHasStartedSpeaking(true);
+    }
+  }, [agentState, hasStartedSpeaking]);
+  
+  useEffect(() => {
     startCall();
-    
-    return () => {
-      // Clean up any resources if needed
-    };
   }, []);
 
   useEffect(() => {
@@ -331,12 +313,6 @@ function MiniCallInterface({ agent, onClose, callContainerRef }: { agent: AgentP
     }
   }, [isCallActive, hasStartedSpeaking]);
 
-  // Check when agent has started speaking
-  useEffect(() => {
-    if ((agentState === "speaking" || agentState === "thinking" || agentState === "listening") && !hasStartedSpeaking) {
-      setHasStartedSpeaking(true);
-    }
-  }, [agentState, hasStartedSpeaking]);
 
   const handleMouseDown = (e: React.MouseEvent) => {
     setIsDragging(true);
@@ -348,30 +324,24 @@ function MiniCallInterface({ agent, onClose, callContainerRef }: { agent: AgentP
 
   const handleMouseMove = useCallback((e: MouseEvent) => {
     if (isDragging) {
-      // Calculate new position
-      const newX = e.clientX - dragStartPos.current.x;
+      const fixedX = position.x;
+      
       const newY = e.clientY - dragStartPos.current.y;
       
-      // Get mini assistant dimensions
       const miniAssistant = callContainerRef.current;
       if (!miniAssistant) return;
       
       const rect = miniAssistant.getBoundingClientRect();
-      const width = rect.width;
       const height = rect.height;
       
-      // Ensure the mini assistant stays within viewport bounds
-      const maxX = window.innerWidth - width * 0.3;
-      const maxY = window.innerHeight - height * 0.3;
-      const minX = -width * 0.7;
-      const minY = -height * 0.7;
+      const maxY = window.innerHeight - height;
       
       setPosition({
-        x: Math.min(Math.max(newX, minX), maxX),
-        y: Math.min(Math.max(newY, minY), maxY)
+        x: fixedX,
+        y: Math.max(0, Math.min(newY, maxY))
       });
     }
-  }, [isDragging, callContainerRef]);
+  }, [isDragging, callContainerRef, position.x]);
 
   const handleMouseUp = useCallback(() => {
     setIsDragging(false);
@@ -434,11 +404,11 @@ function MiniCallInterface({ agent, onClose, callContainerRef }: { agent: AgentP
   return (
     <div 
       ref={callContainerRef} 
-      className="fixed top-0 right-5 max-w-[350px] w-full shadow-2xl rounded-lg overflow-hidden shadow-orange-900/20 bg-gradient-to-b from-black/90 to-black/95 backdrop-blur-xl border border-orange-500/30 transition-all duration-300"
+      className="fixed top-80 right-5 max-w-[350px] w-full shadow-2xl rounded-lg overflow-hidden shadow-orange-900/20 bg-gradient-to-b from-black/90 to-black/95 backdrop-blur-xl border border-orange-500/30 transition-all duration-300"
       style={{ 
         transform: `translate(${position.x}px, ${position.y}px) scale(${isDragging ? 0.98 : 1})`,
         cursor: isDragging ? 'grabbing' : 'grab',
-        zIndex: 9999,
+        zIndex: 1000,
         transition: isDragging ? 'transform 0.05s ease' : 'transform 0.2s ease'
       }}
     >
