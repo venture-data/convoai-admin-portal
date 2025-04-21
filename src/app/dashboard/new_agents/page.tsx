@@ -1,62 +1,16 @@
 "use client"
-
 import React, { useState, useEffect } from "react"
-import { VoiceConfig } from "@/components/agent-config/voice-config"
-import { ModelConfig } from "@/components/agent-config/model-config"
-import { KnowledgeConfig } from "@/components/agent-config/knowledge-config"
-import { ReviewConfig } from "@/components/agent-config/review-config"
 import { useToast } from "@/app/hooks/use-toast"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Skeleton } from "@/components/ui/skeleton"
 import { TemplateSelectorModal } from "@/components/templates/template-selector-modal"
-import { formatDistanceToNow } from "date-fns"
-import { Loader2, BotIcon, Brain, Volume2, Settings2, FileText, Eye, Mic } from "lucide-react"
 import { useAgent } from "@/app/hooks/use-agent"
-import { motion, AnimatePresence } from "framer-motion"
 import { CallModal } from "@/components/modals/call-modal"
 import type { AgentProfileResponse } from "@/app/types/agent-profile"
-import { Menu } from "lucide-react"
 import { useMobileMenu } from "@/store/use-mobile-menu"
 
-import { AgentConfig, ModelConfig as ModelConfigType, KnowledgeConfig as KnowledgeConfigType, VoiceConfig as VoiceConfigType } from "./types"
-import { InteractionSettings } from "@/components/agent-config/interaction-settings"
-import { TranscriberConfig } from "@/components/agent-config/transcriber-config"
-
-interface Agent {
-  id: string
-  name: string
-  description: string
-  system_prompt: string
-  greeting: string
-  llm_provider: "elevenlabs" | "openai" | "google"
-  tts_provider: "elevenlabs" | "openai" | "google"
-  stt_provider: string
-  llm_options: {
-    model: string
-    temperature: number
-  }
-  tts_options: {
-    voice: string
-    speed: number
-  }
-  stt_options: {
-    model: string
-    model_telephony: string
-  }
-  allow_interruptions: boolean
-  interrupt_speech_duration: number
-  interrupt_min_words: number
-  min_endpointing_delay: number
-  max_endpointing_delay: number
-  active: boolean
-  is_default: boolean
-  max_nested_function_calls: number
-  owner_id: string
-  created_at: string
-  updated_at: string
-}
-
+import { AgentConfig, ModelConfig as ModelConfigType, KnowledgeConfig as KnowledgeConfigType, VoiceConfig as VoiceConfigType, Agent } from "./types"
+import Navbar  from "./components/Navbar"
+import Sidebar from "./components/Sidebar"
+import AgentConfigs from "./components/AgentConfigs"
 
 export default function NewAgentPage() {
   const { toast } = useToast()
@@ -273,339 +227,39 @@ export default function NewAgentPage() {
     }
   };
 
-  const tabs = [
-    {
-      id: "model",
-      title: "Model",
-      description: "Configure AI model settings and behavior",
-      icon: Brain
-    },
-    {
-      id: "voice",
-      title: "Voice",
-      description: "Configure voice settings and parameters",
-      icon: Volume2
-    },
-    {
-      id: "transcriber",
-      title: "Transcriber",
-      description: "Configure transcriber settings and parameters",
-      icon: Mic
-    },
-    {
-      id: "interaction",
-      title: "Interaction",
-      description: "Configure conversation behavior and timing",
-      icon: Settings2
-    },
-    {
-      id: "knowledge",
-      title: "Knowledge",
-      description: "Upload and manage training materials",
-      icon: FileText
-    },
-    {
-      id: "review",
-      title: "Review",
-      description: "Review and test configuration",
-      icon: Eye
-    }
-  ];
-
   return (
     <div className="min-h-screen bg-[#080A0F] grid grid-rows-[auto_1fr] relative">
       <div className="absolute inset-0">
         <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-gradient-to-r from-[#F97316]/40 to-[#EF4444]/30 blur-[100px] rounded-full"></div>
       </div>
+      <Navbar toggleMobileMenu={toggleMobileMenu} selectedAgentId={selectedAgentId} setIsCallModalOpen={setIsCallModalOpen} />
 
+      <main className="grid grid-cols-[16rem_1fr] w-full h-full">
+        <Sidebar 
+          isLoading={isLoading} 
+          displayedAgents={displayedAgents} 
+          selectedAgentId={selectedAgentId} 
+          handleSelectAgent={handleSelectAgent} 
+          handleDeleteAgent={handleDeleteAgent} 
+          deletingAgentId={deletingAgentId} 
+          searchQuery={searchQuery} 
+          setSearchQuery={setSearchQuery} 
+          setIsTemplateModalOpen={setIsTemplateModalOpen} 
+        />
 
-      <header className="sticky top-0 z-50 w-full border-b border-white/10 backdrop-blur-xl bg-[#1A1D25]/70">
-        <div className="grid grid-cols-[auto_1fr_auto] items-center px-4 py-2">
-          <div className="flex items-center gap-2">
-            <button
-              onClick={toggleMobileMenu}
-              className="p-2 text-white hover:bg-white/5 rounded-lg md:hidden"
-              aria-label="Toggle Menu"
-            >
-              <Menu className="h-5 w-5" />
-            </button>
-            <h1 className="text-lg font-semibold text-white hidden md:block">Assistants</h1>
-          </div>
-          <div></div>
-          <button className="py-2 px-4 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-md hover:bg-orange-600 transition-colors grid grid-flow-col items-center gap-2"
-            onClick={() => selectedAgentId ? setIsCallModalOpen(true) : toast({
-              title: "No agent selected",
-              description: "Please select an agent first to start a call",
-              variant: "destructive"
-            })}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M8 12H16M12 8V16" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-            </svg>
-            Talk with Assistant
-          </button>
-        </div>
-      </header>
-
-      <main className="grid grid-cols-[16rem_1fr]">
-        <aside className="sticky top-[60px] self-start h-[calc(100vh-60px)] backdrop-blur-xl bg-[#1A1D25]/70 border-r border-white/10">
-          <div className="p-4 grid grid-rows-[auto_auto_1fr] h-full">
-            <div className="relative mb-4">
-              <Input
-                type="text"
-                placeholder="Search assistants..."
-                className="w-full bg-[#1A1D25]/70 border-white/10"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </div>
-            <Button 
-              className="w-full mb-4 bg-gradient-to-r from-orange-500 to-red-500"
-              onClick={() => setIsTemplateModalOpen(true)}
-            >
-              + Create Assistant
-            </Button>
-
-            <div className="pr-2 overflow-y-auto sidebar-scroll">
-              <style jsx global>{`
-                .sidebar-scroll::-webkit-scrollbar {
-                  width: 4px;
-                }
-                
-                .sidebar-scroll::-webkit-scrollbar-track {
-                  background: transparent;
-                }
-                
-                .sidebar-scroll::-webkit-scrollbar-thumb {
-                  background: rgba(255, 255, 255, 0.1);
-                  border-radius: 20px;
-                }
-
-                .sidebar-scroll::-webkit-scrollbar-thumb:hover {
-                  background: rgba(255, 255, 255, 0.2);
-                }
-
-                /* For Firefox */
-                .sidebar-scroll {
-                  scrollbar-width: thin;
-                  scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
-                }
-              `}</style>
-              <div className="space-y-1">
-                {isLoading ? (
-                  Array(3).fill(0).map((_, i) => (
-                    <div key={i} className="p-2">
-                      <div className="grid grid-cols-[auto_1fr] gap-3">
-                        <Skeleton className="h-6 w-6 rounded" />
-                        <div className="space-y-2">
-                          <Skeleton className="h-4 w-24" />
-                          <Skeleton className="h-3 w-32" />
-                        </div>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <AnimatePresence mode="popLayout">
-                    {displayedAgents?.map((agent: Agent) => (
-                      <motion.div
-                        key={agent.id}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, x: -100 }}
-                        transition={{ duration: 0.2 }}
-                        className={`p-2 rounded-md hover:bg-white/5 cursor-pointer transition-colors ${
-                          selectedAgentId === agent.id ? 'bg-white/10' : ''
-                        }`}
-                      >
-                        <div className="grid grid-cols-[1fr_auto] gap-2">
-                          <div className="grid grid-cols-[auto_1fr] gap-3 items-center" onClick={() => handleSelectAgent(agent)}>
-                            <BotIcon className="w-6 h-6 text-orange-500" />
-                            <div>
-                              <p className="text-sm text-white">{agent.name}</p>
-                              <p className="text-xs text-gray-400">
-                                {agent.updated_at ? `Last updated ${formatDistanceToNow(new Date(agent.updated_at))} ago` : 'Recently updated'}
-                              </p>
-                            </div>
-                          </div>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="text-red-500 hover:text-red-600 hover:bg-red-500/10 relative"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleDeleteAgent(agent);
-                            }}
-                            disabled={deletingAgentId === agent.id}
-                          >
-                            {deletingAgentId === agent.id ? (
-                              <Loader2 className="h-4 w-4 animate-spin" />
-                            ) : (
-                              <motion.svg 
-                                width="16" 
-                                height="16" 
-                                viewBox="0 0 24 24" 
-                                fill="none" 
-                                xmlns="http://www.w3.org/2000/svg"
-                                whileHover={{ scale: 1.1 }}
-                                whileTap={{ scale: 0.9 }}
-                              >
-                                <path d="M3 6H5H21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                                <path d="M8 6V4C8 3.46957 8.21071 2.96086 8.58579 2.58579C8.96086 2.21071 9.46957 2 10 2H14C14.5304 2 15.0391 2.21071 15.4142 2.58579C15.7893 2.96086 16 3.46957 16 4V6M19 6V20C19 20.5304 18.7893 21.0391 18.4142 21.4142C18.0391 21.7893 17.5304 22 17 22H7C6.46957 22 5.96086 21.7893 5.58579 21.4142C5.21071 21.0391 5 20.5304 5 20V6H19Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                              </motion.svg>
-                            )}
-                          </Button>
-                        </div>
-                      </motion.div>
-                    ))}
-                  </AnimatePresence>
-                )}
-              </div>
-            </div>
-          </div>
-        </aside>
-
-        <section className="backdrop-blur-xl bg-[#1A1D25]/70 grid grid-rows-[auto_auto_1fr]">
-          <div className="p-4 pb-0">
-            <div className="grid grid-cols-[auto_1fr] gap-2 items-center max-w-4xl">
-              <BotIcon className="w-8 h-8 text-orange-500" />
-              <div>
-                <h1 className="text-base font-semibold text-white">
-                  {selectedAgent ? selectedAgent.name : 'New Assistant'}
-                </h1>
-                <p className="text-[13px] text-white/60">Configure your AI assistant&apos;s behavior and capabilities</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="px-4">
-            <div className="border-b border-white/10 mb-6 max-w-4xl">
-              <div className="grid grid-flow-col auto-cols-max gap-2">
-                {tabs.map((tab) => (
-                  <button
-                    key={tab.id}
-                    onClick={() => setActiveTab(tab.id as "model" | "voice" | "transcriber" | "interaction" | "knowledge" | "review")}
-                    className={`px-4 py-2 text-sm font-medium transition-all grid grid-flow-col gap-2 items-center ${
-                      activeTab === tab.id
-                        ? "text-[#F97316] border-b-2 border-[#F97316]"
-                        : "text-white/60 hover:text-white"
-                    }`}
-                  >
-                    <div className={activeTab === tab.id ? "text-[#F97316]" : "text-white/60"}>
-                      <tab.icon className="w-4 h-4" />
-                    </div>
-                    {tab.title}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Scrollable config area */}
-          <div className="overflow-y-auto px-4 pb-4 content-scroll">
-            <style jsx global>{`
-                .content-scroll::-webkit-scrollbar {
-                  width: 6px;
-                }
-                
-                .content-scroll::-webkit-scrollbar-track {
-                  background: transparent;
-                }
-                
-                .content-scroll::-webkit-scrollbar-thumb {
-                  background: rgba(255, 255, 255, 0.1);
-                  border-radius: 20px;
-                }
-
-                .content-scroll::-webkit-scrollbar-thumb:hover {
-                  background: rgba(255, 255, 255, 0.2);
-                }
-
-                /* For Firefox */
-                .content-scroll {
-                  scrollbar-width: thin;
-                  scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
-                }
-              `}</style>
-            <div className="max-w-4xl">
-              {!isLoading && (!backendAgents?.items || backendAgents.items.length === 0) ? (
-                <div className="grid place-items-center text-center p-8">
-                  <BotIcon className="w-12 h-12 text-orange-500/50 mb-4" />
-                  <h3 className="text-lg font-medium text-white mb-2">No Assistants Available</h3>
-                  <p className="text-sm text-white/60 mb-4">
-                    You haven&apos;t created any assistants yet. Create your first assistant to get started.
-                  </p>
-                  <Button 
-                    className="bg-gradient-to-r from-orange-500 to-red-500"
-                    onClick={() => setIsTemplateModalOpen(true)}
-                  >
-                    Create Your First Assistant
-                  </Button>
-                </div>
-              ) : (
-                <>
-                  {activeTab === "model" && (
-                    <ModelConfig 
-                      agentConfig={agentConfig.model} 
-                      setAgentConfig={(config) => handleAgentConfigChange("model", config)} 
-                    />
-                  )}
-
-                  {activeTab === "voice" && (
-                    <VoiceConfig 
-                      provider={agentConfig?.voice?.provider || ""} 
-                      agentConfig={agentConfig.voice} 
-                      setAgentConfig={(config) => handleAgentConfigChange("voice", config)} 
-                    />
-                  )}
-
-                  {activeTab === "transcriber" && (
-                    <TranscriberConfig 
-                      provider={agentConfig.model.provider} 
-                      agentConfig={agentConfig.model} 
-                      setAgentConfig={(config) => handleAgentConfigChange("model", config)} 
-                    />
-                  )}
-
-                  {activeTab === "interaction" && (
-                    <InteractionSettings 
-                      agentConfig={agentConfig.model} 
-                      setAgentConfig={(config) => handleAgentConfigChange("model", config)} 
-                    />
-                  )}
-
-                  {activeTab === "knowledge" && (
-                    <KnowledgeConfig 
-                      agentConfig={agentConfig.knowledge} 
-                      setAgentConfig={(config) => handleAgentConfigChange("knowledge", config)} 
-                    />
-                  )}
-
-                  {activeTab === "review" && (
-                    <ReviewConfig agentConfig={agentConfig} />
-                  )}
-
-                  {(!isLoading && backendAgents?.items && backendAgents.items.length > 0) && (
-                    <div className="grid justify-items-end mt-8">
-                      <Button 
-                        onClick={handleCreateAgent} 
-                        disabled={!isFormValid || isSaving}
-                        className="bg-gradient-to-r from-orange-500 to-red-500 text-white hover:bg-orange-600"
-                      >
-                        {isSaving ? (
-                          <>
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            Saving...
-                          </>
-                        ) : (
-                          'Save Changes'
-                        )}
-                      </Button>
-                    </div>
-                  )}
-                </>
-              )}
-            </div>
-          </div>
-        </section>
+        <AgentConfigs 
+          selectedAgent={selectedAgent} 
+          activeTab={activeTab} 
+          setActiveTab={setActiveTab} 
+          agentConfig={agentConfig}
+          handleAgentConfigChange={handleAgentConfigChange}
+          isLoading={isLoading}
+          backendAgents={backendAgents}
+          handleCreateAgent={handleCreateAgent}
+          isSaving={isSaving}
+          isFormValid={isFormValid}
+          setIsTemplateModalOpen={setIsTemplateModalOpen}
+        />
       </main>
 
       <TemplateSelectorModal

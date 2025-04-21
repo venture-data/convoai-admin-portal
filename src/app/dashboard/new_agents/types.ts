@@ -120,6 +120,43 @@ export const agentConfigSchema = z.object({
   knowledge: data.knowledge || { files: [] }
 }))
 
+
+
+export interface Agent {
+  id: string
+  name: string
+  description: string
+  system_prompt: string
+  greeting: string
+  llm_provider: "elevenlabs" | "openai" | "google"
+  tts_provider: "elevenlabs" | "openai" | "google"
+  stt_provider: string
+  llm_options: {
+    model: string
+    temperature: number
+  }
+  tts_options: {
+    voice: string
+    speed: number
+  }
+  stt_options: {
+    model: string
+    model_telephony: string
+  }
+  allow_interruptions: boolean
+  interrupt_speech_duration: number
+  interrupt_min_words: number
+  min_endpointing_delay: number
+  max_endpointing_delay: number
+  active: boolean
+  is_default: boolean
+  max_nested_function_calls: number
+  owner_id: string
+  created_at: string
+  updated_at: string
+}
+
+
 export type AgentConfig = z.infer<typeof agentConfigSchema>
 export type VoiceConfig = z.infer<typeof voiceConfigSchema>
 export type KnowledgeConfig = z.infer<typeof knowledgeConfigSchema>
