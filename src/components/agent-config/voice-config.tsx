@@ -179,12 +179,7 @@ export function VoiceConfig({ provider, agentConfig, setAgentConfig }: VoiceConf
           {!isLoading && voices?.items && voices.items.length === 0 && (
             <p className="mt-2 text-xs text-orange-400">No voices available for this provider</p>
           )}
-          
-          {agentConfig.tts_options?.voice && (
-            <div className="mt-4 p-3 rounded bg-[#1A1D25]/50 border border-white/5">
-              <p className="text-xs text-white/70">Selected voice: <span className="text-orange-400 font-medium">{agentConfig?.details?.name}</span></p>
-            </div>
-          )}
+
         </div>
 
       </div>

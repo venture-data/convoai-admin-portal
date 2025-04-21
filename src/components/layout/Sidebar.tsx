@@ -19,7 +19,7 @@ export default function Sidebar() {
     <SidebarWrapper>
       {isMobile && isMobileOpen && (
         <div 
-          className="fixed inset-0 !bg-black/50 z-40 md:hidden"
+          className="fixed inset-0 !bg-black/50 z-80 md:hidden"
           onClick={() => setIsMobileOpen(false)}
         />
       )}

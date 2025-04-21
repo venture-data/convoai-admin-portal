@@ -5,7 +5,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { useLiveKit } from "@/app/hooks/use-livekit";
 import {
   AgentState,
-  BarVisualizer,
   DisconnectButton,
   LiveKitRoom,
   RoomAudioRenderer,
@@ -18,6 +17,7 @@ import { NoAgentNotification } from "@/components/NoAgentNotification";
 import type { AgentProfileResponse } from "@/app/types/agent-profile";
 import { AnimatePresence } from "framer-motion";
 import { motion } from "framer-motion";
+import { X } from "lucide-react";
 
 interface CallSessionModalProps {
   isOpen: boolean;
@@ -87,19 +87,30 @@ export function CallSessionModal({ isOpen, onClose, agent }: CallSessionModalPro
       endCall()
       onClose()
     }}>
-      <DialogContent className="max-w-3xl bg-[#1A1D25] border-white/10">
+      <DialogContent className="max-w-3xl bg-black/80 backdrop-blur-xl border-orange-500/50 border shadow-[0_0_25px_rgba(249,115,22,0.2)]">
+        <div className="absolute right-4 top-4 z-10">
+          <button 
+            onClick={() => {
+              endCall();
+              onClose();
+            }}
+            className="rounded-full p-1.5 bg-black/50 hover:bg-orange-500/20 border border-orange-500/30 transition-colors duration-200"
+          >
+            <X className="h-4 w-4 text-white/80 hover:text-white" />
+          </button>
+        </div>
         <DialogHeader>
-          <DialogTitle className="text-lg font-semibold text-gray-200">Call with {agent?.name}</DialogTitle>
+          <DialogTitle className="text-xl font-semibold text-white/90">Call with {agent?.name}</DialogTitle>
         </DialogHeader>
-        <div className="backdrop-blur-xl bg-[#1A1D25]/70 rounded-lg">
+        <div className="bg-black/60 backdrop-blur-lg rounded-lg overflow-hidden">
           {isLoading ? (
-            <div className="flex flex-col items-center justify-center min-h-[500px] space-y-4">
-              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange-500"></div>
-              <p className="text-gray-300">Connecting to call...</p>
+            <div className="flex flex-col items-center justify-center min-h-[500px] space-y-4 bg-gradient-to-b from-black/10 to-black/40">
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange-500 shadow-[0_0_15px_rgba(249,115,22,0.3)]"></div>
+              <p className="text-white/80">Connecting to call...</p>
             </div>
           ) : isCallActive && connectionDetails ? (
-            <div className="rounded-lg border border-gray-800 overflow-hidden" data-lk-theme="default">
-              <div className="p-4 backdrop-blur-xl bg-[#1A1D25]/90">
+            <div className="rounded-lg border-none overflow-hidden" data-lk-theme="default">
+              <div className="p-4 bg-gradient-to-b from-black/80 to-black/90 backdrop-blur-lg">
                 <LiveKitRoom
                   token={connectionDetails.accessToken}
                   serverUrl={process.env.NEXT_PUBLIC_LIVEKIT_URL || "wss://your-livekit-server.com"}
@@ -129,67 +140,83 @@ export function CallSessionModal({ isOpen, onClose, agent }: CallSessionModalPro
 
 function SimpleVoiceAssistant(props: { onStateChange: (state: AgentState) => void }) {
     const { state, audioTrack } = useVoiceAssistant();
+    const [isPulsing, setIsPulsing] = useState(false);
   
     useEffect(() => {
-      if (audioTrack?.publication) {
-        const track = audioTrack.publication;
-        console.log("Track publication details:", {
-          trackSid: track.trackSid,
-          trackName: track.trackName,
-          source: track.source,
-          isMuted: track.isMuted,
-          isSubscribed: track.isSubscribed,
-          isEnabled: track.isEnabled,
-        });
-      }
-    }, [audioTrack]);
-  
-    useEffect(() => {
+      // Propagate state changes to parent component
       props.onStateChange(state);
-      console.log("Voice assistant state:", state);
-      console.log("Audio track available:", !!audioTrack);
       
-      if (audioTrack) {
-        console.log("Audio track details:", {
-          trackSid: audioTrack.publication?.trackSid,
-          trackName: audioTrack.publication?.trackName,
-          source: audioTrack.source,
-          isMuted: audioTrack.publication?.isMuted
-        });
-      }
+      // Update pulsing effect based on state
+      setIsPulsing(state === 'speaking' || state === 'listening');
     }, [props, state, audioTrack]);
     
     return (
-      <div className="h-[200px]  mx-auto flex flex-col items-center justify-center rounded-lg">
+      <div className="h-[200px] mx-auto flex flex-col items-center justify-center rounded-lg">
         {!audioTrack && (
           <div className="text-red-400 mb-4 p-2 rounded-md bg-red-500/10 border border-red-500/20">
             Audio track not available
           </div>
         )}
         
-        <div className="w-[400px] h-[200px] flex items-center justify-center rounded-lg backdrop-blur-sm bg-[#1A1D25]/90 border border-gray-800">
-          <div className="w-full h-full p-4">
-            <BarVisualizer
-              state={state}
-              barCount={15}
-              trackRef={audioTrack}
-              className="w-full h-full flex items-center justify-center gap-[3px]"
-              options={{ 
-                minHeight: 10,
-                maxHeight: 100
-              }}
-            />
+        <div className="w-[400px] h-[200px] flex items-center justify-center bg-gradient-to-r from-black/30 via-black/20 to-black/30 backdrop-blur-sm">
+          <div className="relative flex items-center justify-center w-full h-full">
+            {/* Glowing background effect */}
+            <div className="absolute w-40 h-40 rounded-full bg-gradient-to-r from-orange-500/5 via-purple-500/5 to-orange-500/5 blur-xl"></div>
+            
+            {/* Base pulse circle */}
+            <div className="absolute w-32 h-32 bg-orange-500/10 rounded-full backdrop-blur-sm"></div>
+            
+            {/* Animated pulse circles - using CSS animations instead of audio data */}
+            <div 
+              className={`absolute w-40 h-40 bg-orange-500/5 rounded-full transition-all duration-200 ease-out ${
+                isPulsing ? 'animate-[pulse_1.5s_ease-in-out_infinite]' : ''
+              }`}
+            ></div>
+            
+            <div 
+              className={`absolute w-48 h-48 bg-orange-500/5 rounded-full transition-all duration-300 ease-out ${
+                isPulsing ? 'animate-[pulse_2s_ease-in-out_infinite]' : ''
+              }`}
+            ></div>
+            
+            {/* Inner glow based on state */}
+            <div 
+              className={`absolute w-28 h-28 rounded-full transition-opacity duration-500 ${
+                state === 'speaking' 
+                  ? 'bg-gradient-to-r from-orange-500/30 to-red-500/30 opacity-100 blur-[1px]' 
+                  : state === 'listening' 
+                    ? 'bg-gradient-to-r from-blue-500/30 to-indigo-500/30 opacity-100 blur-[1px]' 
+                    : 'opacity-0'
+              }`}
+            ></div>
+            
+            {/* Core circle with state-based border */}
+            <div 
+              className={`
+                relative w-24 h-24 rounded-full flex items-center justify-center border-2
+                transition-all duration-300 ease-out backdrop-blur-sm
+                ${state === 'speaking' 
+                  ? 'bg-gradient-to-br from-orange-500/20 to-orange-600/30 border-orange-500/60' 
+                  : state === 'listening' 
+                    ? 'bg-gradient-to-br from-blue-500/20 to-indigo-500/30 border-blue-500/60'
+                    : 'bg-gradient-to-br from-slate-500/10 to-slate-600/20 border-white/20'
+                }
+                ${isPulsing ? 'shadow-[0_0_15px_5px_rgba(249,115,22,0.2)]' : ''}
+              `}
+            >
+              <div className="text-white/90 text-xs font-medium">
+                {state === "speaking" ? "Speaking" : 
+                 state === "listening" ? "Listening" : 
+                 state === "connecting" ? "Connecting" :
+                 state === "thinking" ? "Thinking" : "Waiting"}
+              </div>
+            </div>
           </div>
-        </div>
-        
-        <div className="mt-4 text-sm text-gray-400">
-          Status: <span className="font-medium text-gray-200">{state}</span>
         </div>
       </div>
     );
-  }
+}
   
-
 function ControlBar(props: { onEndCall: () => void; agentState: AgentState }) {
   return (
     <div className="relative h-[100px]">
@@ -205,9 +232,7 @@ function ControlBar(props: { onEndCall: () => void; agentState: AgentState }) {
             <VoiceAssistantControlBar controls={{ leave: false }} />
             <DisconnectButton onClick={props.onEndCall}>
               <div className="cursor-pointer">
-                <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-white hover:text-white/80">
-                  <path d="M12.8536 2.85355C13.0488 2.65829 13.0488 2.34171 12.8536 2.14645C12.6583 1.95118 12.3417 1.95118 12.1464 2.14645L7.5 6.79289L2.85355 2.14645C2.65829 1.95118 2.34171 1.95118 2.14645 2.14645C1.95118 2.34171 1.95118 2.65829 2.14645 2.85355L6.79289 7.5L2.14645 12.1464C1.95118 12.3417 1.95118 12.6583 2.14645 12.8536C2.34171 13.0488 2.65829 13.0488 2.85355 12.8536L7.5 8.20711L12.1464 12.8536C12.3417 13.0488 12.6583 13.0488 12.8536 12.8536C13.0488 12.6583 13.0488 12.3417 12.8536 12.1464L8.20711 7.5L12.8536 2.85355Z" fill="currentColor" fillRule="evenodd" clipRule="evenodd" />
-                </svg>
+                <X className="text-white hover:text-white/80" />
               </div>
             </DisconnectButton>
           </motion.div>
