@@ -8,6 +8,7 @@ import { KnowledgeConfig } from "@/components/agent-config/knowledge-config";
 import { TranscriberConfig } from "@/components/agent-config/transcriber-config";
 import { InteractionSettings } from "@/components/agent-config/interaction-settings";
 import { ReviewConfig } from "@/components/agent-config/review-config";
+import TransitionEffect from "@/components/ui/transitioneffect";
 
 const tabs = [
   {
@@ -75,6 +76,8 @@ function AgentConfigs({
   isFormValid,
   setIsTemplateModalOpen
 }: AgentConfigsProps) {
+
+    
   return (
     <section className="backdrop-blur-xl bg-[#1A1D25]/70 grid grid-rows-[auto_auto_1fr] w-full h-full">
     <div className="p-4 pb-0 w-full">
@@ -154,44 +157,56 @@ function AgentConfigs({
         ) : (
           <div className="w-full">
             {activeTab === "model" && (
-              <ModelConfig 
-                agentConfig={agentConfig.model} 
-                setAgentConfig={(config) => handleAgentConfigChange("model", config)} 
-              />
+              <TransitionEffect>    
+                <ModelConfig 
+                  agentConfig={agentConfig.model} 
+                  setAgentConfig={(config) => handleAgentConfigChange("model", config)} 
+                />
+              </TransitionEffect>
             )}
 
             {activeTab === "voice" && (
+            <TransitionEffect>
               <VoiceConfig 
                 provider={agentConfig?.voice?.provider || ""} 
                 agentConfig={agentConfig.voice} 
                 setAgentConfig={(config) => handleAgentConfigChange("voice", config)} 
               />
+            </TransitionEffect>
             )}
 
             {activeTab === "transcriber" && (
-              <TranscriberConfig 
-                provider={agentConfig.model.provider} 
-                agentConfig={agentConfig.model} 
-                setAgentConfig={(config) => handleAgentConfigChange("model", config)} 
-              />
+              <TransitionEffect>
+                <TranscriberConfig 
+                  provider={agentConfig.model.provider} 
+                  agentConfig={agentConfig.model} 
+                  setAgentConfig={(config) => handleAgentConfigChange("model", config)} 
+                />
+              </TransitionEffect>
             )}
 
             {activeTab === "interaction" && (
-              <InteractionSettings 
-                agentConfig={agentConfig.model} 
-                setAgentConfig={(config) => handleAgentConfigChange("model", config)} 
-              />
+              <TransitionEffect>
+                <InteractionSettings 
+                  agentConfig={agentConfig.model} 
+                  setAgentConfig={(config) => handleAgentConfigChange("model", config)} 
+                />
+              </TransitionEffect>
             )}
 
             {activeTab === "knowledge" && (
-              <KnowledgeConfig 
-                agentConfig={agentConfig.knowledge} 
-                setAgentConfig={(config) => handleAgentConfigChange("knowledge", config)} 
-              />
+              <TransitionEffect>
+                <KnowledgeConfig 
+                  agentConfig={agentConfig.knowledge} 
+                  setAgentConfig={(config) => handleAgentConfigChange("knowledge", config)} 
+                />
+              </TransitionEffect>
             )}
 
             {activeTab === "review" && (
-              <ReviewConfig agentConfig={agentConfig} />
+              <TransitionEffect>
+                <ReviewConfig agentConfig={agentConfig} />
+              </TransitionEffect>
             )}
 
             {(!isLoading && backendAgents?.items && backendAgents.items.length > 0) && (
