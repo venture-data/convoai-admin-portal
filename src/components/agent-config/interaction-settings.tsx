@@ -110,13 +110,10 @@ export function InteractionSettings({agentConfig, setAgentConfig}: {agentConfig:
           </div>
         </div>
       )}
-
-      {/* Endpointing Settings - Highlighted as important */}
       <div className="p-4 rounded-lg bg-gradient-to-br from-[#1A1D25]/80 via-[#1A1D25]/60 to-orange-950/10 border border-orange-500/20 shadow-[0_0_15px_rgba(249,115,22,0.05)]">
         <h4 className="text-sm font-medium text-orange-400 mb-4 flex items-center gap-2">
           <Zap className="h-4 w-4" />
           Response Timing
-          <span className="ml-auto text-xs px-2 py-0.5 rounded-full bg-orange-500/20 text-orange-400">Important</span>
         </h4>
         
         <div className="space-y-6">

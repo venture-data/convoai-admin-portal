@@ -151,7 +151,6 @@ export function TranscriberConfig({ agentConfig, setAgentConfig }: TranscriberCo
         <h4 className="text-sm font-medium text-orange-400 mb-4 flex items-center gap-2">
           <Sliders className="h-4 w-4" />
           Model Selection
-          <span className="ml-auto text-xs px-2 py-0.5 rounded-full bg-orange-500/20 text-orange-400">Important</span>
         </h4>
         
         <div className="space-y-5">

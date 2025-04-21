@@ -25,7 +25,6 @@ export function KnowledgeConfig({agentConfig, setAgentConfig}: {agentConfig: Kno
         <h4 className="text-sm font-medium text-orange-400 mb-4 flex items-center gap-2">
           <BookOpen className="h-4 w-4" />
           Document Upload
-          <span className="ml-auto text-xs px-2 py-0.5 rounded-full bg-orange-500/20 text-orange-400">Important</span>
         </h4>
         
         <div className="space-y-3">

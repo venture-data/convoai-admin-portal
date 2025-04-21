@@ -144,7 +144,6 @@ export function VoiceConfig({ provider, agentConfig, setAgentConfig }: VoiceConf
           <h4 className="text-sm font-medium text-orange-400 mb-4 flex items-center gap-2">
             <Mic className="h-4 w-4" />
             Voice Selection
-            <span className="ml-auto text-xs px-2 py-0.5 rounded-full bg-orange-500/20 text-orange-400">Important</span>
           </h4>
           
           <div className="relative">
