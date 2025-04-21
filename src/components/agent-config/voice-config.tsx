@@ -3,7 +3,8 @@
 import { VoiceConfig as VoiceConfigType } from "@/app/dashboard/new_agents/types"
 import { useVoice } from "@/app/hooks/use-voice";
 import { useState, useEffect} from "react";
-import { Volume2, Mic, Speaker } from "lucide-react";
+import { Volume2, Mic, Speaker, Info } from "lucide-react";
+import { Input } from "../ui/input";
 
 // Add global styles for select options
 const globalStyles = `
@@ -78,15 +79,15 @@ export function VoiceConfig({ provider, agentConfig, setAgentConfig }: VoiceConf
     }
   };
 
-  // const handleTtsOptionsChange = (key: string, value: number) => {
-  //   setAgentConfig({
-  //     ...agentConfig,
-  //     tts_options: {
-  //       ...agentConfig.tts_options,
-  //       [key]: value
-  //     }
-  //   });
-  // };
+  const handleTtsOptionsChange = (key: string, value: number) => {
+    setAgentConfig({
+      ...agentConfig,
+      tts_options: {
+        ...agentConfig.tts_options,
+        [key]: value
+      }
+    });
+  };
 
   const handleProviderChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const newProvider = event.target.value;
@@ -170,6 +171,8 @@ export function VoiceConfig({ provider, agentConfig, setAgentConfig }: VoiceConf
               </svg>
             </div>
           </div>
+          <br/>
+        
           
           {isLoading && (
             <p className="mt-2 text-xs text-white/50 italic">Loading available voices...</p>
@@ -183,6 +186,37 @@ export function VoiceConfig({ provider, agentConfig, setAgentConfig }: VoiceConf
         </div>
 
       </div>
+      {provider === "openai" &&        <div className="p-4 rounded-lg bg-gradient-to-br from-[#1A1D25]/80 via-[#1A1D25]/60 to-orange-950/10 border border-orange-500/20 shadow-[0_0_15px_rgba(249,115,22,0.05)]">
+          <h4 className="text-sm font-medium text-orange-400 mb-4 flex items-center gap-2">
+            <Info className="h-4 w-4" />
+            Speech Speed
+          </h4>
+          
+          <div className="flex flex-col space-y-2">
+            <Input
+              type="number"
+              min="0.1"
+              max="2"
+              step="0.1"
+              value={agentConfig.tts_options?.speed || 1.0}
+              onChange={(e) => handleTtsOptionsChange('speed', parseFloat(e.target.value))}
+              className="bg-[#1A1D25]/70 border-white/10 text-white/90 text-sm focus:ring-2 focus:ring-white/20 transition-all"
+            />
+            <div className="mt-2 text-xs text-white/60 p-3 bg-[#1A1D25]/30 rounded border border-white/5">
+              <p className="flex items-start gap-2">
+                <Info className="h-3 w-3 text-orange-400 mt-0.5 flex-shrink-0" />
+                <span>
+                  Speech speed controls how quickly the AI speaks. Values range from 0.1 (very slow) to 2.0 (very fast), with 1.0 being the normal speaking rate. Adjust this to match your preference or the context of the conversation.
+                </span>
+              </p>
+              <div className="grid grid-cols-3 gap-2 mt-2 text-center text-white/40 text-[10px]">
+                <span className="bg-[#1A1D25]/50 p-1 rounded">0.5x - Slower, more deliberate speech</span>
+                <span className="bg-[#1A1D25]/50 p-1 rounded">1.0x - Normal conversational speed</span>
+                <span className="bg-[#1A1D25]/50 p-1 rounded">1.5x - Faster, more efficient speech</span>
+              </div>
+            </div>
+          </div>
+        </div> }
     </div>
   );
 } 

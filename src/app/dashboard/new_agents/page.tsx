@@ -7,10 +7,11 @@ import { CallModal } from "@/components/modals/call-modal"
 import type { AgentProfileResponse } from "@/app/types/agent-profile"
 import { useMobileMenu } from "@/store/use-mobile-menu"
 
-import { AgentConfig, ModelConfig as ModelConfigType, KnowledgeConfig as KnowledgeConfigType, VoiceConfig as VoiceConfigType, Agent } from "./types"
 import Navbar  from "./components/Navbar"
 import Sidebar from "./components/Sidebar"
 import AgentConfigs from "./components/AgentConfigs"
+
+import { AgentConfig, ModelConfig as ModelConfigType, KnowledgeConfig as KnowledgeConfigType, VoiceConfig as VoiceConfigType, Agent } from "./types"
 
 export default function NewAgentPage() {
   const { toast } = useToast()
