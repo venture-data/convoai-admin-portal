@@ -1,4 +1,4 @@
-import { Loader2, Phone, PhoneOff, X, Mic, GripHorizontal } from "lucide-react";
+import { Loader2, Phone, PhoneOff, X, Mic } from "lucide-react";
 import { BotIcon, Settings2, Brain, Volume2, FileText, Eye } from "lucide-react";
 import { Agent, AgentConfig, ModelConfig as ModelConfigType, KnowledgeConfig as KnowledgeConfigType, VoiceConfig as VoiceConfigType } from "../types";
 import { Button } from "@/components/ui/button";
@@ -289,10 +289,6 @@ function MiniCallInterface({ agent, onClose, callContainerRef }: { agent: AgentP
   const [agentState, setAgentState] = useState<AgentState>("disconnected");
   const [hasStartedSpeaking, setHasStartedSpeaking] = useState(false);
   
-  const [position, setPosition] = useState({ x: 0, y: 0 });
-  const [isDragging, setIsDragging] = useState(false);
-  const dragStartPos = useRef({ x: 0, y: 0 });
-
   useEffect(() => {
     if ((agentState === "speaking" || agentState === "thinking" || agentState === "listening") && !hasStartedSpeaking) {
       setHasStartedSpeaking(true);
@@ -312,53 +308,6 @@ function MiniCallInterface({ agent, onClose, callContainerRef }: { agent: AgentP
       return () => clearTimeout(timer);
     }
   }, [isCallActive, hasStartedSpeaking]);
-
-
-  const handleMouseDown = (e: React.MouseEvent) => {
-    setIsDragging(true);
-    dragStartPos.current = {
-      x: e.clientX - position.x,
-      y: e.clientY - position.y
-    };
-  };
-
-  const handleMouseMove = useCallback((e: MouseEvent) => {
-    if (isDragging) {
-      const fixedX = position.x;
-      
-      const newY = e.clientY - dragStartPos.current.y;
-      
-      const miniAssistant = callContainerRef.current;
-      if (!miniAssistant) return;
-      
-      const rect = miniAssistant.getBoundingClientRect();
-      const height = rect.height;
-      
-      const maxY = window.innerHeight - height;
-      
-      setPosition({
-        x: fixedX,
-        y: Math.max(0, Math.min(newY, maxY))
-      });
-    }
-  }, [isDragging, callContainerRef, position.x]);
-
-  const handleMouseUp = useCallback(() => {
-    setIsDragging(false);
-  }, []);
-
-
-  useEffect(() => {
-    if (isDragging) {
-      window.addEventListener('mousemove', handleMouseMove);
-      window.addEventListener('mouseup', handleMouseUp);
-    }
-
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseup', handleMouseUp);
-    };
-  }, [isDragging, handleMouseMove, handleMouseUp]);
 
   const startCall = async () => {
     try {
@@ -404,20 +353,17 @@ function MiniCallInterface({ agent, onClose, callContainerRef }: { agent: AgentP
   return (
     <div 
       ref={callContainerRef} 
-      className="fixed top-80 right-5 max-w-[350px] w-full shadow-2xl rounded-lg overflow-hidden shadow-orange-900/20 bg-gradient-to-b from-black/90 to-black/95 backdrop-blur-xl border border-orange-500/30 transition-all duration-300"
+      className="fixed max-w-[350px] w-full shadow-2xl rounded-lg overflow-hidden shadow-orange-900/20 bg-gradient-to-b from-black/90 to-black/95 backdrop-blur-xl border border-orange-500/30 transition-all duration-300"
       style={{ 
-        transform: `translate(${position.x}px, ${position.y}px) scale(${isDragging ? 0.98 : 1})`,
-        cursor: isDragging ? 'grabbing' : 'grab',
-        zIndex: 1000,
-        transition: isDragging ? 'transform 0.05s ease' : 'transform 0.2s ease'
+        right: '24px',
+        top: 'calc(100vh - 450px)',
+        zIndex: 1000
       }}
     >
       <div 
         className="p-3 flex items-center justify-between border-b border-white/10"
-        onMouseDown={handleMouseDown}
       >
         <div className="flex items-center gap-2">
-          <GripHorizontal className="size-4 text-white/30 mr-1 cursor-grab" />
           <div className="size-8 rounded-full bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center">
             <BotIcon className="size-4 text-white" />
           </div>
