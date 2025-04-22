@@ -24,7 +24,7 @@ type FormValues = z.infer<typeof formSchema>;
 export default function Page() {
   const authStore = useAuthStore();
   const [isLoading, setIsLoading] = useState(false);
-  const [googleLoading, setGoogleLoading] = useState(false);
+  // const [googleLoading, setGoogleLoading] = useState(false);
   const router = useRouter();
 
   const { register, errors, onSubmitHandler } = useDynamicForm<FormValues>(

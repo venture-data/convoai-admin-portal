@@ -30,7 +30,7 @@ type FormValues = z.infer<typeof formSchema>;
 export default function SignUpPage() {
   const authStore = useAuthStore();
   const [isLoading, setIsLoading] = useState(false);
-  const [googleLoading, setGoogleLoading] = useState(false);
+  // const [googleLoading, setGoogleLoading] = useState(false);
   
   const router = useRouter();
 
