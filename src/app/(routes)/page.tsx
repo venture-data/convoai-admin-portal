@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Loader } from 'lucide-react';
 import { useAuthStore } from '../hooks/useAuth';
 import { useDynamicForm } from '../hooks/use-form';
-import { GoogleButton } from '@/components/auth/buttons/GoogleButton';
+// import { GoogleButton } from '@/components/auth/buttons/GoogleButton';
 import { FormField } from '@/components/auth/forms/FormField';
 import { z } from 'zod';
 import { FieldValues, UseFormRegister } from 'react-hook-form';
@@ -65,15 +65,16 @@ export default function Page() {
     }
   );
 
-  const handleSignIn = async (provider: string) => {
-    setGoogleLoading(true);
-    try {
-      await signIn(provider, { redirect: true, callbackUrl: '/dashboard' });
-    } catch (error) {
-      console.error(`Error during ${provider} sign-in:`, error);
-      setGoogleLoading(false);
-    }
-  };
+  // Google sign-in handler - commented out
+  // const handleSignIn = async (provider: string) => {
+  //   setGoogleLoading(true);
+  //   try {
+  //     await signIn(provider, { redirect: true, callbackUrl: '/dashboard' });
+  //   } catch (error) {
+  //     console.error(`Error during ${provider} sign-in:`, error);
+  //     setGoogleLoading(false);
+  //   }
+  // };
 
   return (
     <div >
@@ -126,11 +127,13 @@ export default function Page() {
           <div className='w-full h-[1px] bg-gray-700'></div>  
         </div>
 
+        {/* Google Button - commented out
         <GoogleButton 
           onClick={() => handleSignIn('google')} 
           isLoading={googleLoading} 
           mode='signin'
         />
+        */}
 
         <div className='text-center text-sm text-gray-400'>
           Don&apos;t have an account? <Link href='/signup' className='text-[#FF5C00] hover:text-[#FF7A33]'>Sign up</Link>

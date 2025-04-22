@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Loader } from "lucide-react";
 import { useAuthStore } from "../../hooks/useAuth";
 import { useDynamicForm } from "../../hooks/use-form";
-import { GoogleButton } from "@/components/auth/buttons/GoogleButton";
+// import { GoogleButton } from "@/components/auth/buttons/GoogleButton";
 import { FormField } from "@/components/auth/forms/FormField";
 import { toast } from "@/app/hooks/use-toast";
 import { useRouter } from "next/navigation";
@@ -77,31 +77,32 @@ export default function SignUpPage() {
     }
   );
 
-  const handleSignIn = async (provider: string, mode: string) => {
-    setGoogleLoading(true);
-    try {
-      const res = await signIn(provider, { 
-        redirect: false,
-        callbackUrl: "/dashboard",
-        mode:mode,
-      });
-      if(res?.error){
-        toast({
-          variant: "destructive",
-          title: "Error",
-          description: res.error,
-        });
-      }
-      else{
-        router.push("/dashboard");
-      }
-      
-    } catch (error) {
-      console.error(`Error during ${provider} sign-in:`, error);
-    } finally {
-      setGoogleLoading(false);
-    }
-  };
+  // Google sign-in handler - commented out
+  // const handleSignIn = async (provider: string, mode: string) => {
+  //   setGoogleLoading(true);
+  //   try {
+  //     const res = await signIn(provider, { 
+  //       redirect: false,
+  //       callbackUrl: "/dashboard",
+  //       mode:mode,
+  //     });
+  //     if(res?.error){
+  //       toast({
+  //         variant: "destructive",
+  //         title: "Error",
+  //         description: res.error,
+  //       });
+  //     }
+  //     else{
+  //       router.push("/dashboard");
+  //     }
+  //     
+  //   } catch (error) {
+  //     console.error(`Error during ${provider} sign-in:`, error);
+  //   } finally {
+  //     setGoogleLoading(false);
+  //   }
+  // };
 
   return (
     <div>
@@ -156,11 +157,13 @@ export default function SignUpPage() {
           <div className='w-full h-[1px] bg-gray-700'></div>  
         </div>
 
+        {/* Google Button - commented out
         <GoogleButton
           onClick={() => handleSignIn("google", "signup")}
           isLoading={googleLoading}
           mode="signup"
         />
+        */}
 
         <div className='text-center text-sm text-gray-400'>
           Already have an account? <Link href='/' className='text-[#FF5C00] hover:text-[#FF7A33]'>Sign in</Link>

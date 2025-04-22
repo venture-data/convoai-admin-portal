@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import NextAuth, { NextAuthOptions } from "next-auth";
-import GoogleProvider from "next-auth/providers/google";
+// import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { NextResponse } from 'next/server';
 import { setCookies } from "@/lib/set-cookies";
@@ -60,7 +60,10 @@ const authOptions: NextAuthOptions = {
           }
           
           throw new Error("Invalid response from authentication server");
-        } else if (account?.provider === "google") {
+        } 
+        // Google sign-in implementation - commented out
+        /*
+        else if (account?.provider === "google") {
           const endpoint = `${process.env.BASE_URL}/auth/login`;
           const response = await fetch(endpoint, {
             method: "POST",
@@ -91,6 +94,7 @@ const authOptions: NextAuthOptions = {
             return true;
           }
         }
+        */
         return false;
       } catch (error: any) {
         throw new Error(error.message || "Authentication failed");
@@ -127,6 +131,8 @@ const authOptions: NextAuthOptions = {
     },
   },
   providers: [
+    // Google Provider - commented out
+    /*
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
@@ -137,6 +143,7 @@ const authOptions: NextAuthOptions = {
       },
       allowDangerousEmailAccountLinking:true
     }),
+    */
     CredentialsProvider({
       name: "Credentials",
       credentials: {
