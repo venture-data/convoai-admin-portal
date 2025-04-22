@@ -104,12 +104,12 @@ export default function NewAgentPage() {
         agentName: agent.name,
         firstMessage: agent.greeting,
         systemPrompt: agent.system_prompt,
-        model: agent.llm_options.model,
+        model: agent.llm_options?.model || "gpt-4",
         description: agent.description,
         provider: agent.llm_provider,
-        temperature: agent.llm_options.temperature,
-        stt_model: agent.stt_options.model,
-        stt_model_telephony: agent.stt_options.model_telephony,
+        temperature: agent.llm_options?.temperature || 0.7,
+        stt_model: agent.stt_options?.model || "nova-3-general",
+        stt_model_telephony: agent.stt_options?.model_telephony || "nova-2-phonecall",
         allow_interruptions: agent.allow_interruptions,
         interrupt_speech_duration: agent.interrupt_speech_duration,
         interrupt_min_words: agent.interrupt_min_words,
@@ -121,19 +121,19 @@ export default function NewAgentPage() {
       },
       voice: {
         ...agentConfig.voice,
-        id: agent.tts_options.voice,
-        providerId: agent.tts_options.voice,
-        name: agent.tts_options.voice,
+        id: agent.tts_options?.voice || "",
+        providerId: agent.tts_options?.voice || "",
+        name: agent.tts_options?.voice || "",
         provider: agent.tts_provider,
         details: {
-          name: agent.tts_options.voice,
+          name: agent.tts_options?.voice || "",
           high_quality_base_model_ids: ["tts-1"],
           preview_url: "",
           labels: [],
         },
         tts_options: {
-          voice: agent.tts_options.voice,
-          speed: agent.tts_options.speed
+          voice: agent.tts_options?.voice || "",
+          speed: agent.tts_options?.speed || 1.0
         }
       },
       knowledge: {
