@@ -112,9 +112,10 @@ function AgentConfigs({
             <Button 
               onClick={handleTalkNow}
               size="sm"
-              className="!bg-gradient-to-r !from-orange-500/10 !to-orange-600/10 !border !border-orange-500/30 hover:!bg-orange-500/20 text-white"  
+              variant="outline"
+              className="bg-gradient-to-r from-orange-500 to-red-500 border-gray-500/30 text-white"
             >
-              <Phone className="w-4 h-4 mr-2 text-orange-400" />
+              <Phone className="w-4 h-4 mr-2 text-white" />
               Talk to Assistant
             </Button>
           )}
