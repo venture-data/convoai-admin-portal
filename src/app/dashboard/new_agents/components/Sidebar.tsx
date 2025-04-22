@@ -45,32 +45,39 @@ function Sidebar({isLoading, displayedAgents, selectedAgentId, handleSelectAgent
         + Create Assistant
       </Button>
 
-      <div className="pr-2 overflow-y-auto sidebar-scroll">
+      <div className="pr-4 overflow-y-auto sidebar-scroll">
         <style jsx global>{`
           .sidebar-scroll::-webkit-scrollbar {
             width: 4px;
+            margin-left: 8px;
           }
           
           .sidebar-scroll::-webkit-scrollbar-track {
             background: transparent;
+            margin: 4px;
           }
           
           .sidebar-scroll::-webkit-scrollbar-thumb {
             background: rgba(255, 255, 255, 0.1);
             border-radius: 20px;
+            border: 4px solid transparent;
+            background-clip: padding-box;
           }
 
           .sidebar-scroll::-webkit-scrollbar-thumb:hover {
             background: rgba(255, 255, 255, 0.2);
+            border: 4px solid transparent;
+            background-clip: padding-box;
           }
 
           /* For Firefox */
           .sidebar-scroll {
             scrollbar-width: thin;
             scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+            padding-right: 8px;
           }
         `}</style>
-        <div className="space-y-1">
+        <div className="space-y-2">
           {isLoading ? (
             Array(3).fill(0).map((_, i) => (
               <div key={i} className="p-2">
