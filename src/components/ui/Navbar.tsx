@@ -26,8 +26,7 @@ export const ResponsiveNavbar: React.FC = () => {
             try {
               setIsLoading(true);
               await signOut({ callbackUrl: "/" });
-            } catch (e) {
-              console.log(e);
+            } catch{
               setIsLoading(false);
             } finally {
               setIsLoading(false);

@@ -133,6 +133,7 @@ export default function NewAgentPage() {
         },
         tts_options: {
           voice: agent.tts_options?.voice || "",
+          voice_name: agent.tts_options?.voice_name || "",
           speed: agent.tts_options?.speed || 1.0
         }
       },
@@ -162,6 +163,7 @@ export default function NewAgentPage() {
           },
           tts_options: {
             voice: agentConfig.voice?.tts_options?.voice || "alloy",
+            voice_name: agentConfig.voice?.tts_options?.voice_name || "alloy",
             speed: Number(agentConfig.voice?.tts_options?.speed || 1.0)
           },
           stt_options: {

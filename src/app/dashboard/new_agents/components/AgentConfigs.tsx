@@ -10,8 +10,8 @@ import { InteractionSettings } from "@/components/agent-config/interaction-setti
 import { ReviewConfig } from "@/components/agent-config/review-config";
 import TransitionEffect from "@/components/ui/transitioneffect";
 import { useState, useCallback, useRef } from "react";
-import type { AgentProfileResponse } from "@/app/types/agent-profile";
 import MiniCallInterface from "./MiniCallInterface";
+import { useLiveKit } from "@/app/hooks/use-livekit";
 
 interface AgentConfigsProps {
   selectedAgent: Agent | undefined;
@@ -79,14 +79,46 @@ function AgentConfigs({
   isFormValid,
   setIsTemplateModalOpen
 }: AgentConfigsProps) {
+  const { createAccessToken } = useLiveKit();
   const [isCallActive, setIsCallActive] = useState(false);
+  const [isTokenLoading, setIsTokenLoading] = useState(false);
+  const [connectionDetails, setConnectionDetails] = useState<{
+    accessToken: string;
+    roomName: string;
+    agentId: number;
+  } | null>(null);
   const callContainerRef = useRef<HTMLDivElement>(null);
   const contentScrollRef = useRef<HTMLDivElement>(null);
   
-  const handleTalkNow = useCallback(() => {
-    setIsCallActive(true);
+  const handleTalkNow = useCallback(async () => {
+    try {
+      if (!selectedAgent || !selectedAgent.id) {
+        throw new Error("Agent not found");
+      }
+
+      setIsTokenLoading(true);
+      const queryParams = new URLSearchParams({
+        agent_id: selectedAgent.id.toString(),
+        identity: `user-${Date.now()}`,
+        name: selectedAgent.name
+      }).toString();
+
+      const data = await createAccessToken.mutateAsync(queryParams);
+      setConnectionDetails(data);
+      setIsCallActive(true);
+    } catch (error) {
+      console.error("Failed to create access token:", error);
+      alert("Failed to start call. Please try again.");
+    } finally {
+      setIsTokenLoading(false);
+    }
+  }, [selectedAgent, createAccessToken]);
+
+  const handleCloseCall = useCallback(() => {
+    setIsCallActive(false);
+    setConnectionDetails(null);
   }, []);
-  
+
   return (
     <section className="backdrop-blur-xl bg-[#1A1D25]/70 grid grid-rows-[auto_auto_1fr] w-full h-full relative">
       <div className="p-4 pb-0 w-full">
@@ -251,10 +283,12 @@ function AgentConfigs({
           )}
           
           {isCallActive && selectedAgent && (
-            <MiniCallInterface 
-              agent={selectedAgent as unknown as AgentProfileResponse} 
-              onClose={() => setIsCallActive(false)} 
-              callContainerRef={callContainerRef as React.RefObject<HTMLDivElement>}
+            <MiniCallInterface
+              agent={selectedAgent}
+              onClose={handleCloseCall}
+              callContainerRef={callContainerRef}
+              connectionDetails={connectionDetails}
+              isLoading={isTokenLoading}
             />
           )}
         </div>

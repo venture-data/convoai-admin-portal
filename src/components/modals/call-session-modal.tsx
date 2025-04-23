@@ -38,7 +38,6 @@ export function CallSessionModal({ isOpen, onClose, agent }: CallSessionModalPro
   
   useEffect(() => {
     if (isOpen && !isCallActive) {
-      console.log("change")
       startCall();
     }
   }, [isOpen,agent]);

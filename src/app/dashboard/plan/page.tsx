@@ -26,7 +26,6 @@ export default function Page() {
 
   const isCurrentPlan = (planType: 'monthly' | 'yearly') => {
     if (!subscription.planName) return false;
-    console.log(subscription.planName)
     return (planType === 'monthly' && subscription.planName.includes('monthly')) ||
            (planType === 'yearly' && subscription.planName.includes('yearly'));
   };

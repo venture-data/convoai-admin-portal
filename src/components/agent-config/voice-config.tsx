@@ -5,6 +5,13 @@ import { useVoice } from "@/app/hooks/use-voice";
 import { useState, useEffect} from "react";
 import { Volume2, Mic, Speaker, Info } from "lucide-react";
 import { Input } from "../ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 // Add global styles for select options
 const globalStyles = `
@@ -57,7 +64,6 @@ export function VoiceConfig({ provider, agentConfig, setAgentConfig }: VoiceConf
   }, [agentConfig.tts_options?.voice, voices?.items]);
 
   const handleVoiceChange = (voiceId: string) => {
-    console.log(voiceId);
     const selectedVoice = Array.isArray(voices?.items) ? voices?.items?.find((voice: Voice) => voice.providerId === voiceId) : null;
     if (selectedVoice) {
       setAgentConfig({
@@ -73,7 +79,9 @@ export function VoiceConfig({ provider, agentConfig, setAgentConfig }: VoiceConf
         },
         tts_options: {
           ...agentConfig.tts_options,
-          voice: selectedVoice.providerId
+          voice: selectedVoice.providerId,
+          speed: agentConfig.tts_options?.speed || 1.0,
+          voice_name: selectedVoice.name
         }
       });
     }
@@ -89,8 +97,7 @@ export function VoiceConfig({ provider, agentConfig, setAgentConfig }: VoiceConf
     });
   };
 
-  const handleProviderChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const newProvider = event.target.value;
+  const handleProviderChange = (newProvider: string) => {
     setvoiceprovider(newProvider);
     setAgentConfig({
       ...agentConfig,
@@ -122,21 +129,16 @@ export function VoiceConfig({ provider, agentConfig, setAgentConfig }: VoiceConf
           </h4>
           
           <div className="relative">
-            <select 
-              value={voiceprovider}
-              onChange={handleProviderChange}
-              className="voice-select bg-[#1A1D25] border border-white/10 text-white/90 text-sm rounded-md p-2.5 pl-9 w-full focus:outline-none focus:border-orange-500/50 focus:ring-1 focus:ring-orange-500/20 hover:!border-orange-500/50 hover:!border-2 transition-all appearance-none"
-            >
-              <option value="openai">OpenAI</option>
-              <option value="elevenlabs">ElevenLabs</option>
-              <option value="uplift">Uplift</option>
-            </select>
-            <Volume2 className="h-4 w-4 text-white/40 absolute left-3 top-1/2 transform -translate-y-1/2 pointer-events-none" />
-            <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-              <svg className="h-4 w-4 text-white/40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-            </div>
+            <Select value={voiceprovider} onValueChange={handleProviderChange}>
+              <SelectTrigger className="w-full bg-[#1A1D25] border-white/10">
+                <SelectValue placeholder="Select provider" />
+              </SelectTrigger>
+              <SelectContent className="bg-[#1A1D25] border-white/10">
+                <SelectItem value="openai" className="text-white/90 focus:bg-orange-500 focus:text-white data-[highlighted]:bg-orange-500 data-[highlighted]:text-white">OpenAI</SelectItem>
+                <SelectItem value="elevenlabs" className="text-white/90 focus:bg-orange-500 focus:text-white data-[highlighted]:bg-orange-500 data-[highlighted]:text-white">ElevenLabs</SelectItem>
+                <SelectItem value="uplift" className="text-white/90 focus:bg-orange-500 focus:text-white data-[highlighted]:bg-orange-500 data-[highlighted]:text-white">Uplift</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </div>
         
@@ -147,41 +149,38 @@ export function VoiceConfig({ provider, agentConfig, setAgentConfig }: VoiceConf
           </h4>
           
           <div className="relative">
-            <select
-              id="voice-select"
-              value={agentConfig.tts_options?.voice || ""}
-              onChange={(e) => handleVoiceChange(e.target.value)}
-              className="voice-select bg-[#1A1D25] border border-white/10 text-white/90 text-sm rounded-md p-2.5 pl-9 w-full focus:outline-none focus:border-orange-500/50 focus:ring-1 focus:ring-orange-500/20 hover:!border-orange-500/50 hover:!border-2 transition-all appearance-none disabled:opacity-50 disabled:cursor-not-allowed"
+            <Select 
+              value={agentConfig.tts_options?.voice || ""} 
+              onValueChange={handleVoiceChange}
               disabled={isLoading}
             >
-              <option value="">Select a voice</option>
-              {Array.isArray(voices?.items) && voices.items
-                .filter((voice: Voice) => voice.provider === voiceprovider)
-                .map((voice: Voice) => (
-                  <option key={voice.id} value={voice.providerId}>
-                    {voice.name} ({voice.provider})
-                  </option>
-                ))}
-            </select>
-            <Mic className="h-4 w-4 text-orange-400 absolute left-3 top-1/2 transform -translate-y-1/2 pointer-events-none" />
-            <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-              <svg className="h-4 w-4 text-white/40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-            </div>
+              <SelectTrigger className="w-full bg-[#1A1D25] border-white/10">
+                <SelectValue placeholder="Select a voice" />
+              </SelectTrigger>
+              <SelectContent className="bg-[#1A1D25] border-white/10">
+                {Array.isArray(voices?.items) && voices.items
+                  .filter((voice: Voice) => voice.provider === voiceprovider)
+                  .map((voice: Voice) => (
+                    <SelectItem 
+                      key={voice.id} 
+                      value={voice.providerId}
+                      className="text-white/90 focus:bg-orange-500 focus:text-white data-[highlighted]:bg-orange-500 data-[highlighted]:text-white"
+                    >
+                      {voice.name} ({voice.provider})
+                    </SelectItem>
+                  ))}
+              </SelectContent>
+            </Select>
           </div>
           <br/>
         
-          
           {isLoading && (
             <p className="mt-2 text-xs text-white/50 italic">Loading available voices...</p>
           )}
           
-          
           {!isLoading && voices?.items && voices.items.length === 0 && (
             <p className="mt-2 text-xs text-orange-400">No voices available for this provider</p>
           )}
-
         </div>
 
       </div>
@@ -215,7 +214,13 @@ export function VoiceConfig({ provider, agentConfig, setAgentConfig }: VoiceConf
               </div>
             </div>
           </div>
+          
         </div> }
+        {agentConfig.tts_options?.voice_name && (
+            <div className="mt-4 p-3 rounded bg-[#1A1D25]/50 border border-white/5">
+              <p className="text-xs text-white/70">Selected voice: <span className="text-orange-400 font-medium">{agentConfig?.tts_options?.voice_name}</span></p>
+            </div>
+          )}
     </div>
   );
 } 

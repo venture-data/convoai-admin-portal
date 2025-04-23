@@ -24,7 +24,6 @@ const processQueue = (error: Error | null) => {
 
 async function fetchWithAuth(url: string, options: RequestInit = {}) {
   const token = useAuthStore.getState().token;
-  console.log("Current token:", token);
   const headers = new Headers(options.headers || {});
   
   if (token) {
@@ -59,7 +58,6 @@ async function fetchWithAuth(url: string, options: RequestInit = {}) {
     isRefreshing = true;
 
     try {
-      console.log("Attempting to refresh token");
       const refreshResponse = await fetch('/api/refresh', {
         method: 'POST',
         credentials: 'include',
@@ -75,13 +73,10 @@ async function fetchWithAuth(url: string, options: RequestInit = {}) {
       }
 
       const data = await refreshResponse.json();
-      console.log("Refresh response:", data);
-      
       if (!data.access_token) {
         throw new Error('No access token in refresh response');
       }
-      
-      // Update the token in the auth store
+
       useAuthStore.getState().setCreds({
         token: data.access_token,
         isAuth: true
@@ -123,7 +118,6 @@ const api = {
   },
 
   async delete(url: string, options: RequestInit = {}) {
-    console.log("Making DELETE request for:", url);
     return fetchWithAuth(url, { ...options, method: 'DELETE' });
   }
 };

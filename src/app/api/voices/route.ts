@@ -29,8 +29,6 @@ export async function GET() {
       );
     }
 
-    console.log("trigered")
-
     const url = `${process.env.BASE_URL}/api/v1/voices`;
 
     

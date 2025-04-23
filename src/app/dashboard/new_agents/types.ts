@@ -25,7 +25,6 @@ export const ModelConfig = z.object({
       "conversationalai", "voicemail", "video",
       "whisper-tiny", "whisper-base", "whisper-small",
       "whisper-medium", "whisper-large",
-      // OpenAI models
       "whisper-1"
     ]),
     model_telephony: z.enum([
@@ -36,22 +35,19 @@ export const ModelConfig = z.object({
   tts_provider: z.enum(["elevenlabs", "openai", "cartesia"]).optional(),
   tts_options: z.object({
     model: z.enum([
-      // ElevenLabs models
       "eleven_monolingual_v1", "eleven_multilingual_v1",
       "eleven_multilingual_v2", "eleven_turbo_v2",
       "eleven_turbo_v2_5", "eleven_flash_v2_5",
       "eleven_flash_v2",
-      // OpenAI models
       "tts-1", "tts-1-hd",
-      // Cartesia models
       "sonic-english", "sonic-multilingual"
     ]).optional(),
     voice: z.string().optional(),
+    voice_name: z.string().optional(),
     speed: z.number().min(0.1).max(2).default(1.0).optional(),
   }).optional(),
   llm_options: z.object({
     model: z.enum([
-      // OpenAI models
       "gpt-4", "gpt-40314", "gpt-40613",
       "gpt-432k", "gpt-432k-0314", "gpt-432k-0613",
       "gpt-3.5-turbo", "gpt-3.5-turbo-16k",
@@ -92,6 +88,7 @@ export const voiceConfigSchema = z.object({
   }).optional(),
   tts_options: z.object({
     voice: z.string().optional(),
+    voice_name: z.string().optional(),
     speed: z.number().min(0.1).max(2).default(1.0).optional(),
   }).optional()
 })
@@ -110,6 +107,11 @@ export const agentConfigSchema = z.object({
     id: "",
     name: "alloy",
     provider: "openai",
+    tts_options: {
+      voice: "",
+      voice_name: "",
+      speed: 1.0
+    },
     details: {
       name: "",
       high_quality_base_model_ids: [],
@@ -137,6 +139,7 @@ export interface Agent {
   }
   tts_options: {
     voice: string
+    voice_name: string
     speed: number
   }
   stt_options: {

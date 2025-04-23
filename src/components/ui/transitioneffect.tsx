@@ -5,5 +5,18 @@ import { usePathname } from "next/navigation";
 
 export default function TransitionEffect({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();   
-  return <motion.div key={pathname} initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: -20, opacity: 0 }} transition={{ duration: 0.5 }}>{children}</motion.div>;
+  return (
+    <div className="relative w-full">
+      <motion.div 
+        key={pathname} 
+        initial={{ opacity: 0, scale: 0.98 }} 
+        animate={{ opacity: 1, scale: 1 }} 
+        exit={{ opacity: 0, scale: 0.98 }} 
+        transition={{ duration: 0.2, ease: "easeOut" }}
+        className="w-full"
+      >
+        {children}
+      </motion.div>
+    </div>
+  );
 }

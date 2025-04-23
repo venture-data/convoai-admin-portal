@@ -1,63 +1,45 @@
 import { useState, useCallback, useEffect } from "react";
 import { createPortal } from "react-dom";
-import { useLiveKit } from "@/app/hooks/use-livekit";
 import { AgentState } from "@livekit/components-react";
 import { BotIcon, GripVertical } from "lucide-react";
 import { PhoneOff, X } from "lucide-react";
 import { MediaDeviceFailure } from "livekit-client";
-import type { AgentProfileResponse } from "@/app/types/agent-profile";
 import LiveKitConnection from "./LiveKitConnection";
 import "@livekit/components-styles";
+import { Agent } from "../types";
 
 interface MiniCallInterfaceProps {
-  agent: AgentProfileResponse;
+  agent: Agent;
   onClose: () => void;
   callContainerRef: React.RefObject<HTMLDivElement>;
-}
-
-function MiniCallInterface({ agent, onClose, callContainerRef }: MiniCallInterfaceProps) {
-  const { createAccessToken } = useLiveKit();
-  const [isCallActive, setIsCallActive] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [connectionDetails, setConnectionDetails] = useState<{
+  connectionDetails: {
     accessToken: string;
     roomName: string;
     agentId: number;
-  } | null>(null);
+  } | null;
+  isLoading: boolean;
+}
+
+function MiniCallInterface({ 
+  agent, 
+  onClose, 
+  callContainerRef, 
+  connectionDetails,
+  isLoading: isLoadingProp 
+}: MiniCallInterfaceProps) {
+  const [isCallActive, setIsCallActive] = useState(false);
   const [agentState, setAgentState] = useState<AgentState>("disconnected");
   const [hasStartedSpeaking, setHasStartedSpeaking] = useState(false);
   const [position, setPosition] = useState({ x: window.innerWidth - 374, y: window.innerHeight - 450 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
-
-  const startCall = useCallback(async () => {
-    try {
-      setIsLoading(true);
-      if (!agent || !agent.id) {
-        throw new Error("Agent not found");
-      }
-      const queryParams = new URLSearchParams({
-        agent_id: agent.id.toString(),
-        identity: `user-${Date.now()}`,
-        name: agent.name
-      }).toString();
-
-      const data = await createAccessToken.mutateAsync(queryParams);
-      setConnectionDetails(data);
-      setIsCallActive(true);
-      
-    } catch (error) {
-      console.error("Failed to create access token:", error);
-      alert("Failed to start call. Please try again.");
-      onClose();
-    } finally {
-      setIsLoading(false);
-    }
-  }, [agent, createAccessToken, onClose]);
+  const [isLiveKitConnected, setIsLiveKitConnected] = useState(false);
 
   useEffect(() => {
-    startCall();
-  }, []); 
+    if (connectionDetails && !isCallActive) {
+      setIsCallActive(true);
+    }
+  }, [connectionDetails, isCallActive]);
   
   useEffect(() => {
     if ((agentState === "speaking" || agentState === "thinking" || agentState === "listening") && !hasStartedSpeaking) {
@@ -120,9 +102,12 @@ function MiniCallInterface({ agent, onClose, callContainerRef }: MiniCallInterfa
     }
   };
 
+  const handleConnectionStatus = useCallback((connected: boolean) => {
+    setIsLiveKitConnected(connected);
+  }, []);
+
   const endCall = () => {
     setIsLiveKitConnected(false);
-    setConnectionDetails(null);
     setIsCallActive(false);
     setAgentState("disconnected");
     setHasStartedSpeaking(false);
@@ -137,28 +122,15 @@ function MiniCallInterface({ agent, onClose, callContainerRef }: MiniCallInterfa
     onClose();
   }, [onClose]);
 
-  const [isLiveKitConnected, setIsLiveKitConnected] = useState(false);
-
-  useEffect(() => {
-    return () => {
-      if (isCallActive) {
-        setIsCallActive(false);
-      }
-    };
-  }, [isCallActive]);
-
-  const handleConnectionStatus = useCallback((connected: boolean) => {
-    setIsLiveKitConnected(connected);
-  }, []);
-
   const content = (
     <div 
       ref={callContainerRef} 
-      className="fixed shadow-2xl rounded-lg overflow-hidden shadow-orange-900/20 bg-gradient-to-b from-black/90 to-black/95 backdrop-blur-xl border border-orange-500/30 transition-all duration-300 max-w-[350px] w-full"
+      className="fixed shadow-2xl  rounded-lg overflow-hidden shadow-orange-900/20 bg-gradient-to-b from-black/90 to-black/95 backdrop-blur-xl border border-orange-500/30 transition-all duration-300 max-w-[350px] w-full isolate"
       style={{ 
         left: `${position.x}px`,
         top: `${position.y}px`,
-        zIndex: 2000,
+        zIndex: 2147483647,
+        transform: 'translate3d(0, 0, 0)',
         cursor: isDragging ? 'grabbing' : 'default'
       }}
       onMouseDown={handleMouseDown}
@@ -194,11 +166,11 @@ function MiniCallInterface({ agent, onClose, callContainerRef }: MiniCallInterfa
       </div>
       
       <div className="p-3 min-h-[200px] max-h-[300px]">
-        {(isLoading || !hasStartedSpeaking) ? (
+        {(isLoadingProp || !hasStartedSpeaking) ? (
           <div className="flex flex-col items-center justify-center h-full space-y-3">
             <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-orange-500 shadow-[0_0_15px_rgba(249,115,22,0.3)]"></div>
             <p className="text-white/70 text-sm">
-              {isLoading ? "Connecting to agent..." : 
+              {isLoadingProp ? "Connecting to agent..." : 
                agentState === "connecting" ? "Connecting..." : 
                agentState === "thinking" ? "Agent is thinking..." :
                "Waiting for response..."}

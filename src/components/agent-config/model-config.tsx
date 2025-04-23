@@ -124,13 +124,13 @@ export function ModelConfig({agentConfig, setAgentConfig}: {agentConfig: ModelCo
                   <SelectValue placeholder="Select provider" />
                 </div>
               </SelectTrigger>
-              <SelectContent className="bg-[#1A1D25] border-white/10 text-white">
-                <SelectItem value="openai">OpenAI</SelectItem>
-                <SelectItem value="elevenlabs">ElevenLabs</SelectItem>
-                <SelectItem value="google">Google</SelectItem>
-                <SelectItem value="anthropic">Anthropic</SelectItem>
-                <SelectItem value="uplift">Uplift</SelectItem>
-                <SelectItem value="cartesia">Cartesia</SelectItem>
+              <SelectContent className="bg-[#1A1D25] border-white/10">
+                <SelectItem value="openai" className="text-white/90 focus:bg-orange-500 focus:text-white data-[highlighted]:bg-orange-500 data-[highlighted]:text-white">OpenAI</SelectItem>
+                <SelectItem value="elevenlabs" className="text-white/90 focus:bg-orange-500 focus:text-white data-[highlighted]:bg-orange-500 data-[highlighted]:text-white">ElevenLabs</SelectItem>
+                <SelectItem value="google" className="text-white/90 focus:bg-orange-500 focus:text-white data-[highlighted]:bg-orange-500 data-[highlighted]:text-white">Google</SelectItem>
+                <SelectItem value="anthropic" className="text-white/90 focus:bg-orange-500 focus:text-white data-[highlighted]:bg-orange-500 data-[highlighted]:text-white">Anthropic</SelectItem>
+                <SelectItem value="uplift" className="text-white/90 focus:bg-orange-500 focus:text-white data-[highlighted]:bg-orange-500 data-[highlighted]:text-white">Uplift</SelectItem>
+                <SelectItem value="cartesia" className="text-white/90 focus:bg-orange-500 focus:text-white data-[highlighted]:bg-orange-500 data-[highlighted]:text-white">Cartesia</SelectItem>
               </SelectContent>
             </Select>
           </div>

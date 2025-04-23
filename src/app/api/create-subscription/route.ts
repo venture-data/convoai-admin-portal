@@ -33,8 +33,6 @@ export async function POST(request: Request) {
 
     const body = await request.json();
     const url = `${process.env.BASE_URL}/payment/create-subscription`;
-    
-    console.log("requesting")
     const response = await fetch(url, {
       method: 'POST',
       body: JSON.stringify(body),

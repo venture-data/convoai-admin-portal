@@ -189,8 +189,6 @@ export async function DELETE(request: Request) {
     const { searchParams } = new URL(request.url);
     const agent_id = searchParams.get('agent_id');
 
-    console.log("Processing DELETE request for agent:", agent_id);
-
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return NextResponse.json(
         { error: 'Unauthorized - No valid token provided' },
@@ -215,8 +213,7 @@ export async function DELETE(request: Request) {
     }
 
     const url = `${process.env.BASE_URL}/api/v1/agent-profile/${agent_id}`;
-    console.log("Sending DELETE request to:", url);
-    
+
     const response = await fetch(url, {
       method: 'DELETE',
       headers: {
@@ -227,8 +224,6 @@ export async function DELETE(request: Request) {
       },
       credentials: 'include'
     });
-    
-    console.log("Delete response status:", response.status);
 
     const contentType = response.headers.get('content-type');
     if (contentType?.includes('text/html')) {

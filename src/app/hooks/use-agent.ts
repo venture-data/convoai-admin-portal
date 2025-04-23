@@ -2,7 +2,6 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AgentConfig } from "@/app/dashboard/new_agents/types";
-import { useAuthStore } from "./useAuth";
 import api from "@/lib/api-instance";
 
 interface UpdateAgentPayload {
@@ -45,15 +44,8 @@ interface AgentsResponse {
 
 export function useAgent() {
   const queryClient = useQueryClient()
-  const token = useAuthStore.getState().token;
-
-  console.log("token")
-  console.log(token)
-  
   const createAgent = useMutation({
     mutationFn: async (agentConfig: AgentConfig) => {
-      console.log("agent cofig")
-      console.log(agentConfig)
       const payload = {
         name: agentConfig.model.agentName,
         description: agentConfig.model.description || null,
@@ -108,8 +100,6 @@ export function useAgent() {
 
         return responseData;
       } else {
-        console.log(payload)
-        console.log(token)
         const response = await api.post('api/v1/agent-profile', {
           body: JSON.stringify(payload),
           headers: {
@@ -188,8 +178,6 @@ export function useAgent() {
         },
         credentials: 'include'
       });
-
-      console.log("response")
 
       const responseData = await response.json();
       
