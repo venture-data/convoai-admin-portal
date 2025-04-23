@@ -192,7 +192,12 @@ function AgentConfigs({
             }
           `}</style>
         <div className="w-full">
-          {!isLoading && (!backendAgents?.items || backendAgents.items.length === 0) ? (
+          {isLoading ? (
+            <div className="grid place-items-center text-center p-8 w-full">
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange-500 shadow-[0_0_15px_rgba(249,115,22,0.3)]"></div>
+              <p className="text-white/70 mt-4">Loading assistant configuration...</p>
+            </div>
+          ) : (!backendAgents?.items || backendAgents.items.length === 0) ? (
             <div className="grid place-items-center text-center p-8 w-full">
               <BotIcon className="w-12 h-12 text-orange-500/50 mb-4" />
               <h3 className="text-lg font-medium text-white mb-2">No Assistants Available</h3>
@@ -261,7 +266,7 @@ function AgentConfigs({
                 </TransitionEffect>
               )}
 
-              {(!isLoading && backendAgents?.items && backendAgents.items.length > 0) && (
+              {backendAgents?.items && backendAgents.items.length > 0 && (
                 <div className="grid justify-items-end mt-8 w-full">
                   <Button 
                     onClick={handleCreateAgent} 
