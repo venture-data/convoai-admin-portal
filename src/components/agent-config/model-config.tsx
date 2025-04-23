@@ -14,6 +14,7 @@ import {
   SelectValue 
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
+import { GPT_MODELS } from "@/constants";
 
 type GPTModel = 
   | "gpt-4o" 
@@ -48,7 +49,6 @@ export function ModelConfig({agentConfig, setAgentConfig}: {agentConfig: ModelCo
     setAgentConfig(newConfig);
   }
 
-  
   return (
     <div className="space-y-8 text-white/90 w-full">
       <div className="flex items-center justify-between pb-4 border-b border-white/10">
@@ -195,29 +195,13 @@ export function ModelConfig({agentConfig, setAgentConfig}: {agentConfig: ModelCo
                   </div>
                 </SelectTrigger>
                 <SelectContent className="bg-[#1A1D25] border-white/10 max-h-[300px] overflow-y-auto">
-                  <SelectItem value="gpt-4" className="text-white/90 focus:bg-orange-500 focus:text-white data-[highlighted]:bg-orange-500 data-[highlighted]:text-white">GPT-4</SelectItem>
-                  <SelectItem value="gpt-4o" className="text-white/90 focus:bg-orange-500 focus:text-white data-[highlighted]:bg-orange-500 data-[highlighted]:text-white">GPT-4O</SelectItem>
-                  <SelectItem value="gpt-4o-20240513" className="text-white/90 focus:bg-orange-500 focus:text-white data-[highlighted]:bg-orange-500 data-[highlighted]:text-white">GPT-4O (2024-05-13)</SelectItem>
-                  <SelectItem value="gpt-4o-mini" className="text-white/90 focus:bg-orange-500 focus:text-white data-[highlighted]:bg-orange-500 data-[highlighted]:text-white">GPT-4O Mini</SelectItem>
-                  <SelectItem value="gpt-4o-mini-20240718" className="text-white/90 focus:bg-orange-500 focus:text-white data-[highlighted]:bg-orange-500 data-[highlighted]:text-white">GPT-4O Mini (2024-07-18)</SelectItem>
-                  <SelectItem value="gpt-4-turbo" className="text-white/90 focus:bg-orange-500 focus:text-white data-[highlighted]:bg-orange-500 data-[highlighted]:text-white">GPT-4 Turbo</SelectItem>
-                  <SelectItem value="gpt-4-turbo-20240409" className="text-white/90 focus:bg-orange-500 focus:text-white data-[highlighted]:bg-orange-500 data-[highlighted]:text-white">GPT-4 Turbo (2024-04-09)</SelectItem>
-                  <SelectItem value="gpt-4-turbo-preview" className="text-white/90 focus:bg-orange-500 focus:text-white data-[highlighted]:bg-orange-500 data-[highlighted]:text-white">GPT-4 Turbo Preview</SelectItem>
-                  <SelectItem value="gpt-40125-preview" className="text-white/90 focus:bg-orange-500 focus:text-white data-[highlighted]:bg-orange-500 data-[highlighted]:text-white">GPT-4 (0125 Preview)</SelectItem>
-                  <SelectItem value="gpt-41106-preview" className="text-white/90 focus:bg-orange-500 focus:text-white data-[highlighted]:bg-orange-500 data-[highlighted]:text-white">GPT-4 (1106 Preview)</SelectItem>
-                  <SelectItem value="gpt-4-vision-preview" className="text-white/90 focus:bg-orange-500 focus:text-white data-[highlighted]:bg-orange-500 data-[highlighted]:text-white">GPT-4 Vision Preview</SelectItem>
-                  <SelectItem value="gpt-41106-vision-preview" className="text-white/90 focus:bg-orange-500 focus:text-white data-[highlighted]:bg-orange-500 data-[highlighted]:text-white">GPT-4 (1106 Vision Preview)</SelectItem>
-                  <SelectItem value="gpt-40314" className="text-white/90 focus:bg-orange-500 focus:text-white data-[highlighted]:bg-orange-500 data-[highlighted]:text-white">GPT-4 (0314)</SelectItem>
-                  <SelectItem value="gpt-40613" className="text-white/90 focus:bg-orange-500 focus:text-white data-[highlighted]:bg-orange-500 data-[highlighted]:text-white">GPT-4 (0613)</SelectItem>
-                  <SelectItem value="gpt-432k" className="text-white/90 focus:bg-orange-500 focus:text-white data-[highlighted]:bg-orange-500 data-[highlighted]:text-white">GPT-4 32K</SelectItem>
-                  <SelectItem value="gpt-432k-0314" className="text-white/90 focus:bg-orange-500 focus:text-white data-[highlighted]:bg-orange-500 data-[highlighted]:text-white">GPT-4 32K (0314)</SelectItem>
-                  <SelectItem value="gpt-432k-0613" className="text-white/90 focus:bg-orange-500 focus:text-white data-[highlighted]:bg-orange-500 data-[highlighted]:text-white">GPT-4 32K (0613)</SelectItem>
-                  <SelectItem value="gpt-3.5-turbo" className="text-white/90 focus:bg-orange-500 focus:text-white data-[highlighted]:bg-orange-500 data-[highlighted]:text-white">GPT-3.5 Turbo</SelectItem>
-                  <SelectItem value="gpt-3.5-turbo-16k" className="text-white/90 focus:bg-orange-500 focus:text-white data-[highlighted]:bg-orange-500 data-[highlighted]:text-white">GPT-3.5 Turbo 16K</SelectItem>
-                  <SelectItem value="gpt-3.5-turbo-0301" className="text-white/90 focus:bg-orange-500 focus:text-white data-[highlighted]:bg-orange-500 data-[highlighted]:text-white">GPT-3.5 Turbo (0301)</SelectItem>
-                  <SelectItem value="gpt-3.5-turbo-0613" className="text-white/90 focus:bg-orange-500 focus:text-white data-[highlighted]:bg-orange-500 data-[highlighted]:text-white">GPT-3.5 Turbo (0613)</SelectItem>
-                  <SelectItem value="gpt-3.5-turbo-1106" className="text-white/90 focus:bg-orange-500 focus:text-white data-[highlighted]:bg-orange-500 data-[highlighted]:text-white">GPT-3.5 Turbo (1106)</SelectItem>
-                  <SelectItem value="gpt-3.5-turbo-16k-0613" className="text-white/90 focus:bg-orange-500 focus:text-white data-[highlighted]:bg-orange-500 data-[highlighted]:text-white">GPT-3.5 Turbo 16K (0613)</SelectItem>
+                  {
+                    GPT_MODELS.map((model) => (
+                      <SelectItem key={model.value} value={model.value} className="text-white/90 focus:bg-orange-500 focus:text-white data-[highlighted]:bg-orange-500 data-[highlighted]:text-white">
+                        {model.label}
+                      </SelectItem>
+                    ))
+                  }
                 </SelectContent>
               </Select>
             </div>
@@ -240,7 +224,7 @@ export function ModelConfig({agentConfig, setAgentConfig}: {agentConfig: ModelCo
                   min={0}
                   max={1}
                   step={0.1}
-                  value={[agentConfig.llm_options?.temperature || 0.7]}
+                  value={[agentConfig.llm_options?.temperature || agentConfig?.temperature || 0.7]}
                   onValueChange={(value) => {
                     const newConfig = {
                       ...agentConfig,
@@ -254,7 +238,7 @@ export function ModelConfig({agentConfig, setAgentConfig}: {agentConfig: ModelCo
                   className="flex-1"
                 />
                 <span className="text-white/90 text-sm min-w-[3ch]">
-                  {(agentConfig.llm_options?.temperature || 0.7).toFixed(1)}
+                  {(agentConfig.llm_options?.temperature || agentConfig?.temperature || 0.7).toFixed(1)}
                 </span>
               </div>
             </div>

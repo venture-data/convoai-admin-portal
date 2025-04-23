@@ -846,3 +846,100 @@ export const voices = [
     updated_at: "2025-02-25T07:27:44.445648",
   },
 ];
+
+
+export const GPT_MODELS = [
+  {
+    value: "gpt-4",
+    label: "GPT-4",
+  },
+  {
+    value: "gpt-4o",
+    label: "GPT-4O",
+  },
+  {
+    value: "gpt-4o-20240513",
+    label: "GPT-4O (2024-05-13)",
+  },
+  {
+    value: "gpt-4o-mini",
+    label: "GPT-4O Mini",
+  },
+  {
+    value: "gpt-4o-mini-20240718",
+    label: "GPT-4O Mini (2024-07-18)",
+  },
+  {
+    value: "gpt-4-turbo",
+    label: "GPT-4 Turbo",
+  },
+  {
+    value: "gpt-4-turbo-20240409",
+    label: "GPT-4 Turbo (2024-04-09)",
+  },
+  {
+    value: "gpt-4-turbo-preview",
+    label: "GPT-4 Turbo Preview",
+  },
+  {
+    value: "gpt-40125-preview",
+    label: "GPT-4 (0125 Preview)",
+  },
+  {
+    value: "gpt-41106-preview",
+    label: "GPT-4 (1106 Preview)",
+  },
+  {
+    value: "gpt-4-vision-preview",
+    label: "GPT-4 Vision Preview",
+  },
+  {
+    value: "gpt-41106-vision-preview",
+    label: "GPT-4 (1106 Vision Preview)",
+  },
+  {
+    value: "gpt-40314",
+    label: "GPT-4 (0314)",
+  },
+  {
+    value: "gpt-40613",
+    label: "GPT-4 (0613)",
+  },
+  {
+    value: "gpt-432k",
+    label: "GPT-4 32K",
+  },
+  {
+    value: "gpt-432k-0314",
+    label: "GPT-4 32K (0314)",
+  },
+  {
+    value: "gpt-432k-0613",
+    label: "GPT-4 32K (0613)",
+  },
+  {
+    value: "gpt-3.5-turbo",
+    label: "GPT-3.5 Turbo",
+  },
+  {
+    value: "gpt-3.5-turbo-16k",
+    label: "GPT-3.5 Turbo 16K",
+  },
+  {
+    value: "gpt-3.5-turbo-0301",
+    label: "GPT-3.5 Turbo (0301)",
+  },
+  {
+    value: "gpt-3.5-turbo-0613",
+    label: "GPT-3.5 Turbo (0613)",
+  },
+  {
+    value: "gpt-3.5-turbo-1106",
+    label: "GPT-3.5 Turbo (1106)",
+  },
+  {
+    value: "gpt-3.5-turbo-16k-0613",
+    label: "GPT-3.5 Turbo 16K (0613)",
+  }
+];
+
