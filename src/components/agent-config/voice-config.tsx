@@ -184,7 +184,7 @@ export function VoiceConfig({ provider, agentConfig, setAgentConfig }: VoiceConf
         </div>
 
       </div>
-      {provider === "openai" &&        <div className="p-4 rounded-lg bg-gradient-to-br from-[#1A1D25]/80 via-[#1A1D25]/60 to-orange-950/10 border border-orange-500/20 shadow-[0_0_15px_rgba(249,115,22,0.05)]">
+      {(provider === "openai" || provider === 'elevenlabs') &&<div className="p-4 rounded-lg bg-gradient-to-br from-[#1A1D25]/80 via-[#1A1D25]/60 to-orange-950/10 border border-orange-500/20 shadow-[0_0_15px_rgba(249,115,22,0.05)]">
           <h4 className="text-sm font-medium text-orange-400 mb-4 flex items-center gap-2">
             <Info className="h-4 w-4" />
             Speech Speed
