@@ -49,6 +49,8 @@ export function ModelConfig({agentConfig, setAgentConfig}: {agentConfig: ModelCo
     setAgentConfig(newConfig);
   }
 
+  console.log("agentconfig",agentConfig)
+
   return (
     <div className="space-y-8 text-white/90 w-full">
       <div className="flex items-center justify-between pb-4 border-b border-white/10">
@@ -226,14 +228,7 @@ export function ModelConfig({agentConfig, setAgentConfig}: {agentConfig: ModelCo
                   step={0.1}
                   value={[agentConfig.llm_options?.temperature || agentConfig?.temperature || 0.7]}
                   onValueChange={(value) => {
-                    const newConfig = {
-                      ...agentConfig,
-                      llm_options: {
-                        ...(agentConfig.llm_options || {}),
-                        temperature: value[0]
-                      }
-                    };
-                    setAgentConfig(newConfig);
+                    onAgentConfigChange("temperature",value[0])
                   }}
                   className="flex-1"
                 />
