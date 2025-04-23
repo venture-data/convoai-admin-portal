@@ -4,6 +4,13 @@ import { useState } from "react"
 import { Input } from "@/components/ui/input"
 import { ModelConfig } from "@/app/dashboard/new_agents/types"
 import { Mic, FileText, Sliders, Clock } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 type SttProvider = "deepgram" | "google" | "openai";
 type DeepgramModel = "nova-general" | "nova-phonecall" | "nova-meeting" | "nova-2-general" | "nova-2-meeting" | 
@@ -83,8 +90,8 @@ const telephonyModelOptions: Record<SttProvider, Array<{ value: TelephonyModel; 
 export function TranscriberConfig({ agentConfig, setAgentConfig }: TranscriberConfigProps) {
   const [sttProvider, setSttProvider] = useState<SttProvider>(agentConfig.stt_provider || "deepgram");
 
-  const handleProviderChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const newProvider = event.target.value as SttProvider;
+  const handleProviderChange = (value: string) => {
+    const newProvider = value as SttProvider;
     setSttProvider(newProvider);
     
     const defaultModel = modelOptions[newProvider][0].value;
@@ -127,23 +134,25 @@ export function TranscriberConfig({ agentConfig, setAgentConfig }: TranscriberCo
         </h4>
         
         <div className="relative">
-          <select
-            value={sttProvider}
-            onChange={handleProviderChange}
-            className="bg-[#1A1D25] border border-white/10 text-white/90 text-sm rounded-md p-2.5 pl-9 w-full focus:outline-none focus:border-orange-500/50 focus:ring-1 focus:ring-orange-500/20 transition-all appearance-none"
-          >
-            {sttProviders.map(provider => (
-              <option key={provider.value} value={provider.value}>
-                {provider.label}
-              </option>
-            ))}
-          </select>
-          <Mic className="h-4 w-4 text-white/40 absolute left-3 top-1/2 transform -translate-y-1/2 pointer-events-none" />
-          <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-            <svg className="h-4 w-4 text-white/40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-            </svg>
-          </div>
+          <Select value={sttProvider} onValueChange={handleProviderChange}>
+            <SelectTrigger className="w-full bg-[#1A1D25] border-white/10 text-white">
+              <div className="flex items-center">
+                <Mic className="w-4 h-4 mr-2 text-orange-400" />
+                <SelectValue placeholder="Select provider" />
+              </div>
+            </SelectTrigger>
+            <SelectContent className="bg-[#1A1D25] border-white/10">
+              {sttProviders.map(provider => (
+                <SelectItem 
+                  key={provider.value} 
+                  value={provider.value}
+                  className="text-white/90 focus:bg-orange-500 focus:text-white data-[highlighted]:bg-orange-500 data-[highlighted]:text-white"
+                >
+                  {provider.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
       </div>
 
@@ -165,23 +174,28 @@ export function TranscriberConfig({ agentConfig, setAgentConfig }: TranscriberCo
               </span>
             </label>
             <div className="relative">
-              <select
+              <Select 
                 value={agentConfig.stt_options?.model || agentConfig?.stt_model || modelOptions[sttProvider][0].value}
-                onChange={(e) => handleModelChange("model", e.target.value)}
-                className="bg-[#1A1D25] border border-white/10 text-white/90 text-sm rounded-md p-2.5 pl-9 w-full focus:outline-none focus:border-orange-500/50 focus:ring-1 focus:ring-orange-500/20 transition-all appearance-none"
+                onValueChange={(value) => handleModelChange("model", value)}
               >
-                {modelOptions[sttProvider].map(model => (
-                  <option key={model.value} value={model.value}>
-                    {model.label}
-                  </option>
-                ))}
-              </select>
-              <FileText className="h-4 w-4 text-white/40 absolute left-3 top-1/2 transform -translate-y-1/2 pointer-events-none" />
-              <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                <svg className="h-4 w-4 text-white/40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </div>
+                <SelectTrigger className="w-full bg-[#1A1D25] border-white/10 text-white">
+                  <div className="flex items-center">
+                    <FileText className="w-4 h-4 mr-2 text-orange-400" />
+                    <SelectValue placeholder="Select model" />
+                  </div>
+                </SelectTrigger>
+                <SelectContent className="bg-[#1A1D25] border-white/10">
+                  {modelOptions[sttProvider].map(model => (
+                    <SelectItem 
+                      key={model.value} 
+                      value={model.value}
+                      className="text-white/90 focus:bg-orange-500 focus:text-white data-[highlighted]:bg-orange-500 data-[highlighted]:text-white"
+                    >
+                      {model.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
 
@@ -197,23 +211,28 @@ export function TranscriberConfig({ agentConfig, setAgentConfig }: TranscriberCo
                 </span>
               </label>
               <div className="relative">
-                <select
+                <Select 
                   value={agentConfig.stt_options?.model_telephony || agentConfig?.stt_model_telephony || telephonyModelOptions[sttProvider][0].value}
-                  onChange={(e) => handleModelChange("model_telephony", e.target.value)}
-                  className="bg-[#1A1D25] border border-white/10 text-white/90 text-sm rounded-md p-2.5 pl-9 w-full focus:outline-none focus:border-orange-500/50 focus:ring-1 focus:ring-orange-500/20 transition-all appearance-none"
+                  onValueChange={(value) => handleModelChange("model_telephony", value)}
                 >
-                  {telephonyModelOptions[sttProvider].map(model => (
-                    <option key={model.value} value={model.value}>
-                      {model.label}
-                    </option>
-                  ))}
-                </select>
-                <FileText className="h-4 w-4 text-white/40 absolute left-3 top-1/2 transform -translate-y-1/2 pointer-events-none" />
-                <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                  <svg className="h-4 w-4 text-white/40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </div>
+                  <SelectTrigger className="w-full bg-[#1A1D25] border-white/10 text-white">
+                    <div className="flex items-center">
+                      <FileText className="w-4 h-4 mr-2 text-orange-400" />
+                      <SelectValue placeholder="Select telephony model" />
+                    </div>
+                  </SelectTrigger>
+                  <SelectContent className="bg-[#1A1D25] border-white/10">
+                    {telephonyModelOptions[sttProvider].map(model => (
+                      <SelectItem 
+                        key={model.value} 
+                        value={model.value}
+                        className="text-white/90 focus:bg-orange-500 focus:text-white data-[highlighted]:bg-orange-500 data-[highlighted]:text-white"
+                      >
+                        {model.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
           )}
