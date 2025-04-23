@@ -13,6 +13,32 @@ import {
   SelectTrigger, 
   SelectValue 
 } from "@/components/ui/select";
+import { Slider } from "@/components/ui/slider";
+
+type GPTModel = 
+  | "gpt-4o" 
+  | "gpt-4o-20240513" 
+  | "gpt-4o-mini" 
+  | "gpt-4o-mini-20240718" 
+  | "gpt-4-turbo" 
+  | "gpt-4-turbo-20240409" 
+  | "gpt-4-turbo-preview" 
+  | "gpt-40125-preview" 
+  | "gpt-41106-preview" 
+  | "gpt-4-vision-preview" 
+  | "gpt-41106-vision-preview" 
+  | "gpt-4" 
+  | "gpt-40314" 
+  | "gpt-40613" 
+  | "gpt-432k" 
+  | "gpt-432k-0314" 
+  | "gpt-432k-0613" 
+  | "gpt-3.5-turbo" 
+  | "gpt-3.5-turbo-16k" 
+  | "gpt-3.5-turbo-0301" 
+  | "gpt-3.5-turbo-0613" 
+  | "gpt-3.5-turbo-1106" 
+  | "gpt-3.5-turbo-16k-0613";
 
 export function ModelConfig({agentConfig, setAgentConfig}: {agentConfig: ModelConfigType, setAgentConfig: (config: ModelConfigType) => void}) {
   const [errors] = useState<{ [key: string]: boolean }>({});
@@ -21,6 +47,7 @@ export function ModelConfig({agentConfig, setAgentConfig}: {agentConfig: ModelCo
     const newConfig = { ...agentConfig, [key]: value };
     setAgentConfig(newConfig);
   }
+
   
   return (
     <div className="space-y-8 text-white/90 w-full">
@@ -128,12 +155,110 @@ export function ModelConfig({agentConfig, setAgentConfig}: {agentConfig: ModelCo
                 <SelectItem value="openai" className="text-white/90 focus:bg-orange-500 focus:text-white data-[highlighted]:bg-orange-500 data-[highlighted]:text-white">OpenAI</SelectItem>
                 <SelectItem value="elevenlabs" className="text-white/90 focus:bg-orange-500 focus:text-white data-[highlighted]:bg-orange-500 data-[highlighted]:text-white">ElevenLabs</SelectItem>
                 <SelectItem value="google" className="text-white/90 focus:bg-orange-500 focus:text-white data-[highlighted]:bg-orange-500 data-[highlighted]:text-white">Google</SelectItem>
-                <SelectItem value="anthropic" className="text-white/90 focus:bg-orange-500 focus:text-white data-[highlighted]:bg-orange-500 data-[highlighted]:text-white">Anthropic</SelectItem>
-                <SelectItem value="uplift" className="text-white/90 focus:bg-orange-500 focus:text-white data-[highlighted]:bg-orange-500 data-[highlighted]:text-white">Uplift</SelectItem>
-                <SelectItem value="cartesia" className="text-white/90 focus:bg-orange-500 focus:text-white data-[highlighted]:bg-orange-500 data-[highlighted]:text-white">Cartesia</SelectItem>
               </SelectContent>
             </Select>
           </div>
+
+          {agentConfig.provider === 'openai' && (
+            <div className="space-y-2">
+              <Label htmlFor="model-type" className="flex items-center text-white/90 text-sm">
+                Model Type
+                <span
+                  className="ml-1 text-white/60 hover:cursor-help"
+                  title="Select the specific GPT model"
+                >
+                  ⓘ
+                </span>
+              </Label>
+              <Select 
+                value={agentConfig?.llm_options?.model || agentConfig.model || "gpt-4"} 
+                onValueChange={(value) => {
+                  
+                  const newConfig = {
+                    ...agentConfig,
+                    llm_options: {
+                      ...(agentConfig.llm_options || {}),
+                      model: value as GPTModel
+                    }
+                  };
+                  setAgentConfig(newConfig);
+                  onAgentConfigChange("model", newConfig.llm_options?.model);
+                }}
+              >
+                <SelectTrigger 
+                  className="w-full bg-[#1A1D25] border-white/10 text-white placeholder:text-white/60 focus:border-orange-500/50 focus:ring-orange-500/20"
+                  id="model-type"
+                >
+                  <div className="flex items-center">
+                    <Sparkles className="w-4 h-4 mr-2 text-orange-400" />
+                    <SelectValue placeholder="Select model" />
+                  </div>
+                </SelectTrigger>
+                <SelectContent className="bg-[#1A1D25] border-white/10 max-h-[300px] overflow-y-auto">
+                  <SelectItem value="gpt-4" className="text-white/90 focus:bg-orange-500 focus:text-white data-[highlighted]:bg-orange-500 data-[highlighted]:text-white">GPT-4</SelectItem>
+                  <SelectItem value="gpt-4o" className="text-white/90 focus:bg-orange-500 focus:text-white data-[highlighted]:bg-orange-500 data-[highlighted]:text-white">GPT-4O</SelectItem>
+                  <SelectItem value="gpt-4o-20240513" className="text-white/90 focus:bg-orange-500 focus:text-white data-[highlighted]:bg-orange-500 data-[highlighted]:text-white">GPT-4O (2024-05-13)</SelectItem>
+                  <SelectItem value="gpt-4o-mini" className="text-white/90 focus:bg-orange-500 focus:text-white data-[highlighted]:bg-orange-500 data-[highlighted]:text-white">GPT-4O Mini</SelectItem>
+                  <SelectItem value="gpt-4o-mini-20240718" className="text-white/90 focus:bg-orange-500 focus:text-white data-[highlighted]:bg-orange-500 data-[highlighted]:text-white">GPT-4O Mini (2024-07-18)</SelectItem>
+                  <SelectItem value="gpt-4-turbo" className="text-white/90 focus:bg-orange-500 focus:text-white data-[highlighted]:bg-orange-500 data-[highlighted]:text-white">GPT-4 Turbo</SelectItem>
+                  <SelectItem value="gpt-4-turbo-20240409" className="text-white/90 focus:bg-orange-500 focus:text-white data-[highlighted]:bg-orange-500 data-[highlighted]:text-white">GPT-4 Turbo (2024-04-09)</SelectItem>
+                  <SelectItem value="gpt-4-turbo-preview" className="text-white/90 focus:bg-orange-500 focus:text-white data-[highlighted]:bg-orange-500 data-[highlighted]:text-white">GPT-4 Turbo Preview</SelectItem>
+                  <SelectItem value="gpt-40125-preview" className="text-white/90 focus:bg-orange-500 focus:text-white data-[highlighted]:bg-orange-500 data-[highlighted]:text-white">GPT-4 (0125 Preview)</SelectItem>
+                  <SelectItem value="gpt-41106-preview" className="text-white/90 focus:bg-orange-500 focus:text-white data-[highlighted]:bg-orange-500 data-[highlighted]:text-white">GPT-4 (1106 Preview)</SelectItem>
+                  <SelectItem value="gpt-4-vision-preview" className="text-white/90 focus:bg-orange-500 focus:text-white data-[highlighted]:bg-orange-500 data-[highlighted]:text-white">GPT-4 Vision Preview</SelectItem>
+                  <SelectItem value="gpt-41106-vision-preview" className="text-white/90 focus:bg-orange-500 focus:text-white data-[highlighted]:bg-orange-500 data-[highlighted]:text-white">GPT-4 (1106 Vision Preview)</SelectItem>
+                  <SelectItem value="gpt-40314" className="text-white/90 focus:bg-orange-500 focus:text-white data-[highlighted]:bg-orange-500 data-[highlighted]:text-white">GPT-4 (0314)</SelectItem>
+                  <SelectItem value="gpt-40613" className="text-white/90 focus:bg-orange-500 focus:text-white data-[highlighted]:bg-orange-500 data-[highlighted]:text-white">GPT-4 (0613)</SelectItem>
+                  <SelectItem value="gpt-432k" className="text-white/90 focus:bg-orange-500 focus:text-white data-[highlighted]:bg-orange-500 data-[highlighted]:text-white">GPT-4 32K</SelectItem>
+                  <SelectItem value="gpt-432k-0314" className="text-white/90 focus:bg-orange-500 focus:text-white data-[highlighted]:bg-orange-500 data-[highlighted]:text-white">GPT-4 32K (0314)</SelectItem>
+                  <SelectItem value="gpt-432k-0613" className="text-white/90 focus:bg-orange-500 focus:text-white data-[highlighted]:bg-orange-500 data-[highlighted]:text-white">GPT-4 32K (0613)</SelectItem>
+                  <SelectItem value="gpt-3.5-turbo" className="text-white/90 focus:bg-orange-500 focus:text-white data-[highlighted]:bg-orange-500 data-[highlighted]:text-white">GPT-3.5 Turbo</SelectItem>
+                  <SelectItem value="gpt-3.5-turbo-16k" className="text-white/90 focus:bg-orange-500 focus:text-white data-[highlighted]:bg-orange-500 data-[highlighted]:text-white">GPT-3.5 Turbo 16K</SelectItem>
+                  <SelectItem value="gpt-3.5-turbo-0301" className="text-white/90 focus:bg-orange-500 focus:text-white data-[highlighted]:bg-orange-500 data-[highlighted]:text-white">GPT-3.5 Turbo (0301)</SelectItem>
+                  <SelectItem value="gpt-3.5-turbo-0613" className="text-white/90 focus:bg-orange-500 focus:text-white data-[highlighted]:bg-orange-500 data-[highlighted]:text-white">GPT-3.5 Turbo (0613)</SelectItem>
+                  <SelectItem value="gpt-3.5-turbo-1106" className="text-white/90 focus:bg-orange-500 focus:text-white data-[highlighted]:bg-orange-500 data-[highlighted]:text-white">GPT-3.5 Turbo (1106)</SelectItem>
+                  <SelectItem value="gpt-3.5-turbo-16k-0613" className="text-white/90 focus:bg-orange-500 focus:text-white data-[highlighted]:bg-orange-500 data-[highlighted]:text-white">GPT-3.5 Turbo 16K (0613)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
+          {agentConfig.provider === 'openai' && (
+            <div className="space-y-2">
+              <Label htmlFor="temperature" className="flex items-center text-white/90 text-sm">
+                Temperature
+                <span
+                  className="ml-1 text-white/60 hover:cursor-help"
+                  title="Controls randomness in responses (0 = deterministic, 1 = creative)"
+                >
+                  ⓘ
+                </span>
+              </Label>
+              <div className="flex items-center gap-4">
+                <Slider
+                  id="temperature"
+                  min={0}
+                  max={1}
+                  step={0.1}
+                  value={[agentConfig.llm_options?.temperature || 0.7]}
+                  onValueChange={(value) => {
+                    const newConfig = {
+                      ...agentConfig,
+                      llm_options: {
+                        ...(agentConfig.llm_options || {}),
+                        temperature: value[0]
+                      }
+                    };
+                    setAgentConfig(newConfig);
+                  }}
+                  className="flex-1"
+                />
+                <span className="text-white/90 text-sm min-w-[3ch]">
+                  {(agentConfig.llm_options?.temperature || 0.7).toFixed(1)}
+                </span>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 

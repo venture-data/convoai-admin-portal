@@ -158,7 +158,7 @@ export default function NewAgentPage() {
           tts_provider: agentConfig.voice?.provider || "openai",
           stt_provider: agentConfig.model.stt_provider || "deepgram",
           llm_options: {
-            model: agentConfig.model.model || "gpt-4",
+            model: agentConfig.model.model || "gpt-4o-mini",
             temperature: Number(agentConfig.model.temperature || 0.7)
           },
           tts_options: {
