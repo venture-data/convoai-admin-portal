@@ -135,7 +135,7 @@ function AgentConfigs({
               onClick={handleTalkNow}
               size="sm"
               variant="outline"
-              className="bg-gradient-to-r from-orange-500 to-red-500 border-gray-500/30 text-white"
+              className="bg-gradient-to-r from-orange-500 to-red-500 border-gray-500/30 text-white hover:bg-gradient-to-r hover:from-orange-600 hover:to-red-600 transition-all duration-300 hover:shadow-lg hover:shadow-orange-500/20"
             >
               <Phone className="w-4 h-4 mr-2 text-white" />
               Talk to Assistant
@@ -271,7 +271,7 @@ function AgentConfigs({
                   <Button 
                     onClick={handleCreateAgent} 
                     disabled={!isFormValid || isSaving}
-                    className="bg-gradient-to-r from-orange-500 to-red-500 text-white hover:bg-orange-600"
+                    className="bg-gradient-to-r from-orange-500 to-red-500 text-white hover:bg-gradient-to-r hover:from-orange-600 hover:to-red-600 transition-all duration-300 hover:shadow-lg hover:shadow-orange-500/20"
                   >
                     {isSaving ? (
                       <>

@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import { CircleHelpIcon } from "lucide-react";
 import { useIsMobile } from "@/app/hooks/use-mobile";
 import { useMobileMenu } from "@/store/use-mobile-menu";
+import Image from "next/image";
 
 export default function Sidebar() {
   const pathname = usePathname();
@@ -30,10 +31,15 @@ export default function Sidebar() {
         ) : 'translate-x-0',
         "transition-transform duration-300 ease-in-out"
       )}>
-        <div className="px-5 py-4 border-b border-white/10">
-          <h1 className="text-base font-bold bg-gradient-to-r from-[#F97316] to-[#EF4444] bg-clip-text text-transparent">
-            ConvoiAI
-          </h1>
+        <div className="px-5 py-4 border-b border-white/10 flex items-center justify-start">
+          <Image 
+            className="object-contain" 
+            src="/cvai logo latest.png" 
+            alt="CVAI Logo" 
+            width={100} 
+            height={32}
+            loading="lazy"
+          />
         </div>
         <div className="flex-1 overflow-y-auto py-2 px-3 scrollbar-thin">
           <style jsx global>{`

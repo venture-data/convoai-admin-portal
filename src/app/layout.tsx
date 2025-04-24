@@ -8,11 +8,13 @@ import SessionProviderWrapper from "@/components/ui/sessionProviderWrapper";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Convoi AI",
-  icons:{
-    icon:"https://i.ibb.co/02BCrLx/HDkxcf1.png",
+  title: "Convoi AI - Admin Dashboard",
+  icons: {
+    icon: "/cvai fevicon.png",
+    shortcut: "/cvai fevicon.png",
+    apple: "/cvai fevicon.png",
   },
-  description: "Voice assistant configuration",
+  description: "Convoi AI - Admin Dashboard",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

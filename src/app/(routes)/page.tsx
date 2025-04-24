@@ -49,6 +49,7 @@ export default function Page() {
             title: 'Error',
             description: res.error,
           });
+          setIsLoading(false);
         } else {
           toast({
             variant: 'default',
@@ -59,7 +60,6 @@ export default function Page() {
         }
       } catch (error) {
         console.error('Error during sign-in:', error);
-      } finally {
         setIsLoading(false);
       }
     }

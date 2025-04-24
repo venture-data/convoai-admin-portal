@@ -59,6 +59,7 @@ export default function SignUpPage() {
             title: "Error",
             description: res.error,
           });
+          setIsLoading(false);
         }
         else{
           router.push("/dashboard");
@@ -69,9 +70,6 @@ export default function SignUpPage() {
           title: "Error",
           description: "An unexpected error occurred",
         });
-
-        
-      } finally {
         setIsLoading(false);
       }
     }

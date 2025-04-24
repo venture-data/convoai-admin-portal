@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { ReactNode } from "react";
 
 interface AuthLayoutProps {
@@ -14,7 +15,7 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
 
       <div className="w-full max-w-[420px] mx-4 backdrop-blur-xl bg-[#1A1D25]/70 rounded-2xl p-8 shadow-2xl border border-white/10">
         <div className="flex flex-col items-center justify-center">
-          <h1 className="text-2xl font-bold text-white mb-2">ConvoiAI</h1>
+          <Image className="mb-0" src="/cvai logo latest.png" alt="CVAI Logo" width={200} height={50} />
           {children}
         </div>
       </div>
