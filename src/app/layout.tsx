@@ -13,6 +13,25 @@ export const metadata: Metadata = {
     icon: "/cvai fevicon.png",
     shortcut: "/cvai fevicon.png",
     apple: "/cvai fevicon.png",
+    other: [
+      {
+        rel: "icon",
+        type: "image/png",
+        sizes: "32x32",
+        url: "/cvai-fevicon.png",
+      },
+      {
+        rel: "icon",
+        type: "image/png",
+        sizes: "16x16",
+        url: "/cvai-fevicon.png",
+      },
+      {
+        rel: "apple-touch-icon",
+        sizes: "180x180",
+        url: "/cvai-fevicon.png",
+      },
+    ],
   },
   description: "Convoi AI - Admin Dashboard",
 };
