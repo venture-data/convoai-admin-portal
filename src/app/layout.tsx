@@ -8,7 +8,7 @@ import SessionProviderWrapper from "@/components/ui/sessionProviderWrapper";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Calls Pro",
+  title: "Convoi AI",
   icons:{
     icon:"https://i.ibb.co/02BCrLx/HDkxcf1.png",
   },
