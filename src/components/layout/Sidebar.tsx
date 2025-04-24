@@ -36,7 +36,7 @@ export default function Sidebar() {
             className="object-contain" 
             src="/cvai logo latest.png" 
             alt="CVAI Logo" 
-            width={100} 
+            width={140} 
             height={32}
             loading="lazy"
           />
