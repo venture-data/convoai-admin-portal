@@ -31,7 +31,7 @@ export default function Sidebar() {
         ) : 'translate-x-0',
         "transition-transform duration-300 ease-in-out"
       )}>
-        <div className="px-5 py-4 border-b border-white/10 flex items-center justify-start">
+        <div className="px-2 py-2 border-b border-white/10 flex items-center justify-start">
           <Image 
             className="object-contain" 
             src="/cvai logo latest.png" 
