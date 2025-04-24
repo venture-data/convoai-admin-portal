@@ -107,7 +107,7 @@ export default function Sidebar() {
               </span>
             </div>
             <div className="ml-2">
-              <p className="text-[12px] text-white">{session?.user?.name}</p>
+              <p className="text-[12px] text-white">{session?.user?.name || 'User'}</p>
               <p className="text-[10px] text-gray-500">Admin</p>
               <Link href='#' onClick={async () => {
                   await signOut({ callbackUrl: "/" });
