@@ -10,27 +10,24 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "Convoi AI - Admin Dashboard",
   icons: {
-    icon: "/cvai-fevicon.png",
-    shortcut: "/cvai-fevicon.png",
-    apple: "/cvai-fevicon.png",
-    other: [
+    icon: [
       {
-        rel: "icon",
-        type: "image/png",
-        sizes: "32x32",
         url: "/cvai-fevicon.png",
-      },
-      {
-        rel: "icon",
         type: "image/png",
-        sizes: "16x16",
-        url: "/cvai-fevicon.png",
-      },
+      }
+    ],
+    shortcut: [
       {
-        rel: "apple-touch-icon",
+        url: "/cvai-fevicon.png",
+        type: "image/png",
+      }
+    ],
+    apple: [
+      {
+        url: "/cvai-fevicon.png",
         sizes: "180x180",
-        url: "/cvai-fevicon.png",
-      },
+        type: "image/png",
+      }
     ],
   },
   description: "Convoi AI - Admin Dashboard",
