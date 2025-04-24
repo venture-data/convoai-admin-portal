@@ -10,9 +10,9 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "Convoi AI - Admin Dashboard",
   icons: {
-    icon: "/cvai fevicon.png",
-    shortcut: "/cvai fevicon.png",
-    apple: "/cvai fevicon.png",
+    icon: "/cvai-fevicon.png",
+    shortcut: "/cvai-fevicon.png",
+    apple: "/cvai-fevicon.png",
     other: [
       {
         rel: "icon",
