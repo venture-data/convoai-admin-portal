@@ -8,7 +8,15 @@ interface SessionProviderWrapperProps {
 }
 
 const SessionProviderWrapper: React.FC<SessionProviderWrapperProps> = ({ children }) => {
-  return <SessionProvider>{children}</SessionProvider>;
+  return (
+    <SessionProvider
+      refetchOnWindowFocus={true}
+      refetchInterval={0}
+      refetchWhenOffline={false}
+    >
+      {children}
+    </SessionProvider>
+  );
 };
 
 export default SessionProviderWrapper;
