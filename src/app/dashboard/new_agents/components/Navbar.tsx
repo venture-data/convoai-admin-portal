@@ -18,8 +18,6 @@ function Navbar({toggleMobileMenu}: NavbarProps) {
         </button>
         <h1 className="text-xl font-semibold text-white hidden md:block">Assistants</h1>
       </div>
-      <div></div>
-      {/* "Talk with Assistant" button moved to AgentConfigs component */}
     </div>
   </header>
   )
