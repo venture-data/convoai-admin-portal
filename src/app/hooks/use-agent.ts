@@ -303,7 +303,10 @@ export function useAgent() {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to fetch agents');
+        if (response.status === 401) {
+          throw new Error('Unauthorized - session expired, please login again');
+        }
+        throw new Error('Something went wrong, please try again or refresh the page');
       }
       const data = await response.json();
       return {

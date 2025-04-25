@@ -61,15 +61,6 @@ function LiveKitConnection({
         onConnected={() => setIsLiveKitConnected(true)}
         className="grid grid-rows-[1fr_auto] h-full top-0 rounded-sm !bg-transparent"
         data-lk-theme="default"
-        options={{
-          publishDefaults: {
-            dtx: true,
-            red: true,
-            simulcast: false
-          },
-          adaptiveStream: true,
-          dynacast: true
-        }}
       >
         <MiniVoiceVisualizer agentState={agentState} />
         <MiniControlBar 
