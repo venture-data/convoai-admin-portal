@@ -1,9 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import { Input } from "@/components/ui/input"
 import { ModelConfig } from "@/app/dashboard/new_agents/types"
-import { Mic, FileText, Sliders, Clock } from "lucide-react";
+import { Mic, FileText, Sliders } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -239,76 +238,6 @@ export function TranscriberConfig({ agentConfig, setAgentConfig }: TranscriberCo
         </div>
       </div>
 
-      <div className="p-4 rounded-lg bg-gradient-to-br from-[#1A1D25]/80 to-[#1A1D25]/60 border border-white/10">
-        <h4 className="text-sm font-medium text-orange-400 mb-4 flex items-center gap-2">
-          <Clock className="h-4 w-4" />
-          Timing Settings
-        </h4>
-        
-        <div className="space-y-5">
-          <div className="space-y-3">
-            <div className="flex justify-between items-center">
-              <label className="text-sm font-medium text-white/90 flex items-center">
-                Minimum Endpointing Delay
-                <span
-                  className="ml-1 text-white/60 hover:cursor-help"
-                  title="Minimum delay before considering speech ended"
-                >
-                  ⓘ
-                </span>
-              </label>
-              <span className="text-sm text-orange-400 font-medium">{agentConfig.min_endpointing_delay || 0.5}s</span>
-            </div>
-            <div className="relative">
-              <Input
-                type="number"
-                min="0.1"
-                max="2"
-                step="0.1"
-                value={agentConfig.min_endpointing_delay || 0.5}
-                onChange={(e) => setAgentConfig({
-                  ...agentConfig,
-                  min_endpointing_delay: parseFloat(e.target.value)
-                })}
-                className="bg-[#1A1D25] border-white/10 text-white/90 text-sm pl-9 focus:border-orange-500/50 focus:ring-1 focus:ring-orange-500/20 transition-all"
-              />
-              <Clock className="h-4 w-4 text-white/40 absolute left-3 top-1/2 transform -translate-y-1/2" />
-            </div>
-            <p className="text-xs text-white/50 italic">Shorter delays mean quicker responses but may cut off speech</p>
-          </div>
-
-          <div className="space-y-3">
-            <div className="flex justify-between items-center">
-              <label className="text-sm font-medium text-white/90 flex items-center">
-                Maximum Endpointing Delay
-                <span
-                  className="ml-1 text-white/60 hover:cursor-help"
-                  title="Maximum delay before considering speech ended"
-                >
-                  ⓘ
-                </span>
-              </label>
-              <span className="text-sm text-orange-400 font-medium">{agentConfig.max_endpointing_delay || 6.0}s</span>
-            </div>
-            <div className="relative">
-              <Input
-                type="number"
-                min="1"
-                max="10"
-                step="0.5"
-                value={agentConfig.max_endpointing_delay || 6.0}
-                onChange={(e) => setAgentConfig({
-                  ...agentConfig,
-                  max_endpointing_delay: parseFloat(e.target.value)
-                })}
-                className="bg-[#1A1D25] border-white/10 text-white/90 text-sm pl-9 focus:border-orange-500/50 focus:ring-1 focus:ring-orange-500/20 transition-all"
-              />
-              <Clock className="h-4 w-4 text-white/40 absolute left-3 top-1/2 transform -translate-y-1/2" />
-            </div>
-            <p className="text-xs text-white/50 italic">Longer delays prevent premature responses during pauses</p>
-          </div>
-        </div>
-      </div>
     </div>
   );
 } 
