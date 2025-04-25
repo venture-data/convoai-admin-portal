@@ -111,14 +111,6 @@ export const agentConfigSchema = z.object({
   knowledge: z.lazy(() => knowledgeConfigSchema).optional()
 }).transform(data => ({
   ...data,
-  profile_options: data.voice?.profile_options || {
-    background_audio: {
-      loop: true,
-      volume: 0.3,
-      enabled: false,
-      audio_path: "office-ambience.mp3"
-    }
-  },
   voice: data.voice || {
     id: "",
     name: "alloy",
@@ -127,6 +119,14 @@ export const agentConfigSchema = z.object({
       voice: "",
       voice_name: "",
       speed: 1.0
+    },
+    profile_options: data.voice?.profile_options || {
+      background_audio: {
+        loop: true,
+        volume: 0.3,
+        enabled: false,
+        audio_path: "office-ambience.mp3"
+      }
     },
     details: {
       name: "",

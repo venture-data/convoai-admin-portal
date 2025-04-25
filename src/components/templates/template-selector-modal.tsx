@@ -101,11 +101,19 @@ export function TemplateSelectorModal({ isOpen, onClose, onSelectTemplate }: Tem
             high_quality_base_model_ids: [],
             preview_url: "",
             labels: [],
+          },
+          profile_options: {
+            background_audio: {
+              loop: true,
+              volume: 0.3,
+              enabled: true,
+              audio_path: "office-ambience.mp3"
+            }
           }
         },
         knowledge: {
           files: []
-        }
+        },
       });
     } else {
       onSelectTemplate(assistantTemplates[templateKey as keyof typeof assistantTemplates]);

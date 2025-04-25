@@ -45,14 +45,6 @@ export const assistantTemplates: { [key: string]: AgentConfig } = {
     knowledge: {
       files: []
     },
-    profile_options: {
-      background_audio: {
-        loop: true,
-        volume: 0.3,
-        enabled: true,
-        audio_path: "office-ambience.mp3"
-      }
-    }
   },
   "support-bot": {
     model: {
@@ -98,14 +90,6 @@ export const assistantTemplates: { [key: string]: AgentConfig } = {
     knowledge: {
       files: []
     },
-    profile_options: {
-      background_audio: {
-        loop: true,
-        volume: 0.3,
-        enabled: true,
-        audio_path: "office-ambience.mp3"
-      }
-    }
   },
   "survey-agent": {
     model: {
@@ -151,13 +135,5 @@ export const assistantTemplates: { [key: string]: AgentConfig } = {
     knowledge: {
       files: []
     },
-    profile_options: {
-      background_audio: {
-        loop: true,
-        volume: 0.3,
-        enabled: true,
-        audio_path: "office-ambience.mp3"
-      }
-    }
   }
 }; 

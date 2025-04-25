@@ -59,7 +59,6 @@ export default function NewAgentPage() {
       is_default: false,
       max_nested_function_calls: 1,
     },
-    
     voice: {
       id: "",
       providerId: "alloy",
@@ -71,22 +70,22 @@ export default function NewAgentPage() {
         preview_url: "",
         labels: [],
       },
+      profile_options: {
+        background_audio: {
+          loop: true,
+          volume: 0.3,
+          enabled: false,
+          audio_path: "office-ambience.mp3"
+        }
+      },
       tts_options: {
         voice: "alloy",
         speed: 1.0
-      }
+      },
     },
     knowledge: {
       files: []
     },
-    profile_options: {
-      background_audio: {
-        loop: true,
-        volume: 0.3,
-        enabled: true,
-        audio_path: "office-ambience.mp3"
-      }
-    }
   };
 
   const [agentConfig, setAgentConfig] = useState<AgentConfig>(initialConfig);
@@ -156,14 +155,6 @@ export default function NewAgentPage() {
       knowledge: {
         ...agentConfig.knowledge,
       },
-      profile_options: {
-        background_audio: {
-          loop: agent.profile_options?.background_audio?.loop ?? true,
-          volume: agent.profile_options?.background_audio?.volume ?? 0.3,
-          enabled: agent.profile_options?.background_audio?.enabled ?? true,
-          audio_path: agent.profile_options?.background_audio?.audio_path || "office-ambience.mp3"
-        }
-      }
     });
   };
   
@@ -346,17 +337,17 @@ export default function NewAgentPage() {
                   preview_url: "",
                   labels: [],
                 },
+                profile_options: {
+                  background_audio: {
+                    loop: true,
+                    volume: 0.3,
+                    enabled: false,
+                    audio_path: "office-ambience.mp3"
+                  }
+                },
                 tts_options: {
                   voice: template.voice?.name || "alloy",
                   speed: 1.0
-                }
-              },
-              profile_options: {
-                background_audio: {
-                  loop: true,
-                  volume: 0.3,
-                  enabled: false,
-                  audio_path: "office-ambience.mp3"
                 }
               },
               knowledge: {
