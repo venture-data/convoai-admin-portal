@@ -323,7 +323,7 @@ export default function NewAgentPage() {
                 model: template.model.model || "gpt-4",
                 temperature: template.model.temperature || 0.7,
                 language: "en",
-                type: "inbound" as const,
+                type: "inbound",
                 stt_model: template.model.stt_model || "nova-3-general",
                 stt_model_telephony: template.model.stt_model_telephony || "nova-2-phonecall",
                 allow_interruptions: template.model.allow_interruptions !== false,
