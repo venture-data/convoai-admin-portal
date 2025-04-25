@@ -16,6 +16,14 @@ interface UpdateAgentPayload {
     model: string;
     temperature: number;
   };
+  profile_options: {
+    background_audio: {
+      loop: boolean;
+      volume: number;
+      enabled: boolean;
+      audio_path: string;
+    };
+  };
   tts_options: {
     voice: string;
     speed: number;
@@ -121,9 +129,8 @@ export function useAgent() {
       await queryClient.cancelQueries({ queryKey: ['agents'] });
       const previousAgents = queryClient.getQueryData<AgentsResponse>(['agents']);
 
-      // Create an optimistic agent entry
       const optimisticAgent = {
-        id: Date.now(), // Temporary ID
+        id: Date.now(),
         name: newAgent.model.agentName,
         description: newAgent.model.description || "",
         system_prompt: newAgent.model.systemPrompt,
@@ -207,6 +214,14 @@ export function useAgent() {
                   stt_options: {
                     model: updatedAgent.stt_options.model,
                     model_telephony: updatedAgent.stt_options.model_telephony
+                  },
+                  profile_options: {
+                    background_audio: {
+                      loop: updatedAgent.profile_options.background_audio.loop,
+                      volume: updatedAgent.profile_options.background_audio.volume,
+                      enabled: updatedAgent.profile_options.background_audio.enabled,
+                      audio_path: updatedAgent.profile_options.background_audio.audio_path
+                    }
                   },
                   tts_provider: updatedAgent.tts_provider,
                   tts_options: updatedAgent.tts_options,

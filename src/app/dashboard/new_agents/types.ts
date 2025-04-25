@@ -90,7 +90,15 @@ export const voiceConfigSchema = z.object({
     voice: z.string().optional(),
     voice_name: z.string().optional(),
     speed: z.number().min(0.1).max(2).default(1.0).optional(),
-  }).optional()
+  }).optional(),
+  profile_options: z.object({
+    background_audio: z.object({
+      loop: z.boolean().default(true),
+      volume: z.number().min(0).max(1).default(0.3),
+      enabled: z.boolean().default(true),
+      audio_path: z.string().default("office-ambience.mp3"),
+    }),
+  }).optional(),
 })
 
 export const knowledgeConfigSchema = z.object({
@@ -103,6 +111,14 @@ export const agentConfigSchema = z.object({
   knowledge: z.lazy(() => knowledgeConfigSchema).optional()
 }).transform(data => ({
   ...data,
+  profile_options: data.voice?.profile_options || {
+    background_audio: {
+      loop: true,
+      volume: 0.3,
+      enabled: false,
+      audio_path: "office-ambience.mp3"
+    }
+  },
   voice: data.voice || {
     id: "",
     name: "alloy",
@@ -145,7 +161,15 @@ export interface Agent {
   stt_options: {
     model: string
     model_telephony: string
-  }
+  },
+  profile_options: {
+    background_audio: {
+      loop: boolean
+      volume: number
+      enabled: boolean
+      audio_path: string
+    }
+  },
   allow_interruptions: boolean
   interrupt_speech_duration: number
   interrupt_min_words: number

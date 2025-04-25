@@ -3,8 +3,10 @@
 import { VoiceConfig as VoiceConfigType } from "@/app/dashboard/new_agents/types"
 import { useVoice } from "@/app/hooks/use-voice";
 import { useState, useEffect} from "react";
-import { Volume2, Mic, Speaker, Info } from "lucide-react";
+import { Volume2, Mic, Speaker, Info, Music } from "lucide-react";
 import { Input } from "../ui/input";
+import { Switch } from "../ui/switch";
+import { Slider } from "../ui/slider";
 import {
   Select,
   SelectContent,
@@ -37,11 +39,30 @@ interface VoiceConfigProps {
   provider: string;
   agentConfig: VoiceConfigType;
   setAgentConfig: (config: VoiceConfigType) => void;
+  onSave?: (config: VoiceConfigType) => void;
 }
 
-export function VoiceConfig({ provider, agentConfig, setAgentConfig }: VoiceConfigProps) {
+export function VoiceConfig({ provider, agentConfig, setAgentConfig}: VoiceConfigProps) {
   const [voiceprovider, setvoiceprovider] = useState(provider);
   const { voices, isLoading } = useVoice(voiceprovider);
+
+  useEffect(() => {
+    if (!agentConfig.profile_options?.background_audio) {
+      const updatedConfig = {
+        ...agentConfig,
+        profile_options: {
+          ...agentConfig.profile_options,
+          background_audio: {
+            loop: true,
+            volume: 0.3,
+            enabled: true,
+            audio_path: "office-ambience.mp3"
+          }
+        }
+      };
+      setAgentConfig(updatedConfig);
+    }
+  }, []);
 
   useEffect(() => {
     if (agentConfig.tts_options?.voice && !agentConfig.details?.name && voices?.items) {
@@ -112,6 +133,58 @@ export function VoiceConfig({ provider, agentConfig, setAgentConfig }: VoiceConf
     });
   };
 
+  const handleBackgroundAudioToggle = (enabled: boolean) => {
+    const updatedConfig = {
+      ...agentConfig,
+      profile_options: {
+        ...agentConfig.profile_options,
+        background_audio: {
+          ...(agentConfig.profile_options?.background_audio || {}),
+          loop: true,
+          volume: agentConfig.profile_options?.background_audio?.volume || 0.3,
+          enabled: enabled,
+          audio_path: agentConfig.profile_options?.background_audio?.audio_path || "office-ambience.mp3"
+        }
+      }
+    };
+    setAgentConfig(updatedConfig);
+  };
+
+  const handleVolumeChange = (value: number[]) => {
+    const updatedConfig = {
+      ...agentConfig,
+      profile_options: {
+        ...agentConfig.profile_options,
+        background_audio: {
+          ...(agentConfig.profile_options?.background_audio || {}),
+          loop: true,
+          volume: value[0],
+          enabled: agentConfig.profile_options?.background_audio?.enabled ?? true,
+          audio_path: agentConfig.profile_options?.background_audio?.audio_path || "office-ambience.mp3"
+        }
+      }
+    };
+    setAgentConfig(updatedConfig);
+  };
+
+  const handleSoundTypeChange = (soundType: string) => {
+    const updatedConfig = {
+      ...agentConfig,
+      profile_options: {
+        ...agentConfig.profile_options,
+        background_audio: {
+          ...(agentConfig.profile_options?.background_audio || {}),
+          loop: true,
+          volume: agentConfig.profile_options?.background_audio?.volume || 0.3,
+          enabled: agentConfig.profile_options?.background_audio?.enabled ?? true,
+          audio_path: soundType
+        }
+      }
+    };
+    setAgentConfig(updatedConfig);
+  };
+
+  console.log(agentConfig.profile_options?.background_audio)
   return (
     <div className="space-y-8 text-white/90">
       <style jsx global>{globalStyles}</style>
@@ -221,6 +294,62 @@ export function VoiceConfig({ provider, agentConfig, setAgentConfig }: VoiceConf
               <p className="text-xs text-white/70">Selected voice: <span className="text-orange-400 font-medium">{agentConfig?.tts_options?.voice_name}</span></p>
             </div>
           )}
+
+      <div className="p-4 rounded-lg bg-gradient-to-br from-[#1A1D25]/80 via-[#1A1D25]/60 to-orange-950/10 border border-orange-500/20 shadow-[0_0_15px_rgba(249,115,22,0.05)]">
+        <h4 className="text-sm font-medium text-orange-400 mb-4 flex items-center gap-2">
+          <Music className="h-4 w-4" />
+          Background Noise
+        </h4>
+        
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <label className="text-sm text-white/70">Enable Background Noise</label>
+            <Switch
+              checked={agentConfig.profile_options?.background_audio?.enabled ?? true}
+              onCheckedChange={handleBackgroundAudioToggle}
+            />
+          </div>
+
+          {agentConfig.profile_options?.background_audio?.enabled && (
+            <>
+              <div className="space-y-2">
+                <label className="text-sm text-white/70">Volume</label>
+                <Slider
+                  defaultValue={[agentConfig.profile_options?.background_audio?.volume ?? 0.3]}
+                  max={1}
+                  step={0.1}
+                  onValueChange={handleVolumeChange}
+                  className="py-2"
+                />
+                <div className="flex justify-between text-xs text-white/50">
+                  <span>0</span>
+                  <span>1.0</span>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm text-white/70">Sound Type</label>
+                <Select 
+                  value={agentConfig.profile_options?.background_audio?.audio_path || "office-ambience.mp3"}
+                  onValueChange={handleSoundTypeChange}
+                >
+                  <SelectTrigger className="w-full bg-[#1A1D25] border-white/10">
+                    <SelectValue placeholder="Select sound type" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-[#1A1D25] border-white/10">
+                    <SelectItem 
+                      value="office-ambience.mp3" 
+                      className="text-white/90 focus:bg-orange-500 focus:text-white data-[highlighted]:bg-orange-500 data-[highlighted]:text-white"
+                    >
+                      Office Ambience
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
     </div>
   );
 } 

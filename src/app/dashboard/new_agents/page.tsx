@@ -78,6 +78,14 @@ export default function NewAgentPage() {
     },
     knowledge: {
       files: []
+    },
+    profile_options: {
+      background_audio: {
+        loop: true,
+        volume: 0.3,
+        enabled: true,
+        audio_path: "office-ambience.mp3"
+      }
     }
   };
 
@@ -131,6 +139,14 @@ export default function NewAgentPage() {
           preview_url: "",
           labels: [],
         },
+        profile_options: {
+          background_audio: {
+            loop: agent.profile_options?.background_audio?.loop ?? true,
+            volume: agent.profile_options?.background_audio?.volume ?? 0.3,
+            enabled: agent.profile_options?.background_audio?.enabled ?? true,
+            audio_path: agent.profile_options?.background_audio?.audio_path || "office-ambience.mp3"
+          }
+        },
         tts_options: {
           voice: agent.tts_options?.voice || "",
           voice_name: agent.tts_options?.voice_name || "",
@@ -139,6 +155,14 @@ export default function NewAgentPage() {
       },
       knowledge: {
         ...agentConfig.knowledge,
+      },
+      profile_options: {
+        background_audio: {
+          loop: agent.profile_options?.background_audio?.loop ?? true,
+          volume: agent.profile_options?.background_audio?.volume ?? 0.3,
+          enabled: agent.profile_options?.background_audio?.enabled ?? true,
+          audio_path: agent.profile_options?.background_audio?.audio_path || "office-ambience.mp3"
+        }
       }
     });
   };
@@ -161,14 +185,22 @@ export default function NewAgentPage() {
             model: agentConfig.model.model || "gpt-4o-mini",
             temperature: Number(agentConfig.model.temperature || 0.7)
           },
+          profile_options: {
+            background_audio: {
+              loop: true,
+              volume: agentConfig.voice?.profile_options?.background_audio?.volume ?? 0.3,
+              enabled: agentConfig.voice?.profile_options?.background_audio?.enabled ?? true,
+              audio_path: agentConfig.voice?.profile_options?.background_audio?.audio_path || "office-ambience.mp3"
+            }
+          },
           tts_options: {
             voice: agentConfig.voice?.tts_options?.voice || "alloy",
             voice_name: agentConfig.voice?.tts_options?.voice_name || "alloy",
             speed: Number(agentConfig.voice?.tts_options?.speed || 1.0)
           },
           stt_options: {
-            model: agentConfig.model.stt_options?.model || "nova-3-general",
-            model_telephony: agentConfig.model.stt_options?.model_telephony || "nova-2-phonecall"
+            model: agentConfig.model.stt_model || "nova-3-general",
+            model_telephony: agentConfig.model.stt_model_telephony || "nova-2-phonecall"
           },
           allow_interruptions: Boolean(agentConfig.model.allow_interruptions),
           interrupt_speech_duration: Number(agentConfig.model.interrupt_speech_duration || 0.5),
@@ -182,7 +214,20 @@ export default function NewAgentPage() {
 
         await updateAgent.mutateAsync(data);
       } else {
-        const createdAgent = await createAgent.mutateAsync(agentConfig);
+        const createdAgent = await createAgent.mutateAsync({
+          ...agentConfig,
+          voice: {
+            ...agentConfig.voice,
+            profile_options: {
+              background_audio: {
+                loop: true,
+                volume: agentConfig.voice?.profile_options?.background_audio?.volume ?? 0.3,
+                enabled: agentConfig.voice?.profile_options?.background_audio?.enabled ?? true,
+                audio_path: agentConfig.voice?.profile_options?.background_audio?.audio_path || "office-ambience.mp3"
+              }
+            }
+          }
+        });
         if (createdAgent) {
           setSelectedAgentId(createdAgent.id);
         }
@@ -304,6 +349,14 @@ export default function NewAgentPage() {
                 tts_options: {
                   voice: template.voice?.name || "alloy",
                   speed: 1.0
+                }
+              },
+              profile_options: {
+                background_audio: {
+                  loop: true,
+                  volume: 0.3,
+                  enabled: false,
+                  audio_path: "office-ambience.mp3"
                 }
               },
               knowledge: {
