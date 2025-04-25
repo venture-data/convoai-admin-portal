@@ -287,13 +287,14 @@ export function VoiceConfig({ provider, agentConfig, setAgentConfig}: VoiceConfi
               </div>
             </div>
           </div>
-          
-        </div> }
-        {agentConfig.tts_options?.voice_name && (
+          {agentConfig.tts_options?.voice_name && (
             <div className="mt-4 p-3 rounded bg-[#1A1D25]/50 border border-white/5">
               <p className="text-xs text-white/70">Selected voice: <span className="text-orange-400 font-medium">{agentConfig?.tts_options?.voice_name}</span></p>
             </div>
           )}
+          
+        </div> }
+    
 
       <div className="p-4 rounded-lg bg-gradient-to-br from-[#1A1D25]/80 via-[#1A1D25]/60 to-orange-950/10 border border-orange-500/20 shadow-[0_0_15px_rgba(249,115,22,0.05)]">
         <h4 className="text-sm font-medium text-orange-400 mb-4 flex items-center gap-2">
