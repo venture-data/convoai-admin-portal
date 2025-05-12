@@ -170,7 +170,6 @@ export function useAgent() {
       if (data?.id) {
         queryClient.invalidateQueries({ queryKey: ['agents', data.id.toString()] });
       }
-      // Still invalidate the list since we added a new item
       queryClient.invalidateQueries({ queryKey: ['agents'] });
     }
   });
