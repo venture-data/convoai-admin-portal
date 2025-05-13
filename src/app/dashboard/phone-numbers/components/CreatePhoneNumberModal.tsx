@@ -44,17 +44,17 @@ export function CreatePhoneNumberModal({ isOpen, onClose, onSubmit }: CreatePhon
     setError(null);
     try {
       setIsLoading(true);
-      await onSubmit(formData);
+      const response = await onSubmit(formData);
+      console.log("response", response);
+      
       onClose();
     } catch (err) {
       console.error("Failed to create phone number:", err);
-      // Parse and format the error message
       let errorMessage = "Failed to create phone number";
       if (err instanceof Error) {
         try {
           const errorData = JSON.parse(err.message);
           if (errorData.detail) {
-            // Extract the specific error about conflicting numbers
             if (errorData.detail.includes("Conflicting inbound SIP Trunks")) {
               const phoneNumber = formData.phone_number;
               errorMessage = `Phone number ${phoneNumber} is already in use. Please use a different phone number.`;
@@ -120,12 +120,12 @@ export function CreatePhoneNumberModal({ isOpen, onClose, onSubmit }: CreatePhon
             <div className="space-y-2">
               <Label>Phone Number (E.164 format)</Label>
               <Input
-                placeholder="+12185857512"
+                placeholder="12185857512"
                 value={formData.phone_number}
+                maxLength={11}
                 onChange={(e) => setFormData({ ...formData, phone_number: e.target.value })}
                 className="bg-[#1A1D25]/70 border-white/10 text-white placeholder:text-white/60 focus:border-orange-500/50 focus:ring-orange-500/20"
                 required
-                // pattern="^\+[1-9]\d{1,14}$"
                 title="Please enter a valid E.164 phone number (e.g. +12185857512)"
               />
             </div>

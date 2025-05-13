@@ -53,6 +53,8 @@ export default function SignUpPage() {
           redirect: false,
           mode:'register',
         });
+        console.log("res")
+        console.log(res);
         if(res?.error){
           toast({
             variant: "destructive",
