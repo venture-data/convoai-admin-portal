@@ -206,60 +206,57 @@ export default function PhoneNumberConfig({ phoneNumber, onUpdate }: PhoneNumber
           </div>
         )}
 
-        {/* Assistant Assignment Section for Inbound */}
-        {phoneNumber.trunk_type === 'inbound' && (
-          <div className="p-4 rounded-lg bg-gradient-to-br from-[#1A1D25]/80 via-[#1A1D25]/60 to-orange-950/10 border border-orange-500/20 shadow-[0_0_15px_rgba(249,115,22,0.05)]">
-            <h4 className="text-sm font-medium text-orange-400 mb-4 flex items-center gap-2">
-              <UserSquare2 className="h-4 w-4" />
-              Assistant Assignment
-            </h4>
-            
-            <div className="space-y-5">
-              <div className="space-y-2">
-                <Label>Assistant</Label>
-                {currentMapping && (
-                  <p className="text-sm text-orange-400 mb-2">
-                    This phone number is already assigned to an assistant. Contact support to modify the assignment.
-                  </p>
-                )}
-                <Select 
-                  value={selectedAgentId} 
-                  onValueChange={handleAgentChange}
-                  disabled={isUpdating || !!currentMapping}
-                >
-                  <SelectTrigger className="w-full bg-[#1A1D25]/70 border-white/10 hover:bg-[#1A1D25] focus:ring-orange-500/20 focus:border-orange-500/50 transition-colors">
-                    <SelectValue>
-                      {isLoadingMapping ? (
-                        "Loading assigned assistant..."
-                      ) : selectedAgent ? (
-                        selectedAgent.name
-                      ) : (
-                        "Select Assistant..."
-                      )}
-                    </SelectValue>
-                  </SelectTrigger>
-                  <SelectContent className="bg-[#1A1D25] border-white/10">
-                    {isLoadingAgents ? (
-                      <SelectItem value="loading" disabled className="text-white/60">Loading assistants...</SelectItem>
-                    ) : !agents?.items?.length ? (
-                      <SelectItem value="none" disabled className="text-white/60">No assistants available</SelectItem>
+        <div className="p-4 rounded-lg bg-gradient-to-br from-[#1A1D25]/80 via-[#1A1D25]/60 to-orange-950/10 border border-orange-500/20 shadow-[0_0_15px_rgba(249,115,22,0.05)]">
+          <h4 className="text-sm font-medium text-orange-400 mb-4 flex items-center gap-2">
+            <UserSquare2 className="h-4 w-4" />
+            Assistant Assignment
+          </h4>
+          
+          <div className="space-y-5">
+            <div className="space-y-2">
+              <Label>Assistant</Label>
+              {currentMapping && (
+                <p className="text-sm text-orange-400 mb-2">
+                  This phone number is already assigned to an assistant. Contact support to modify the assignment.
+                </p>
+              )}
+              <Select 
+                value={selectedAgentId} 
+                onValueChange={handleAgentChange}
+                disabled={isUpdating || !!currentMapping}
+              >
+                <SelectTrigger className="w-full bg-[#1A1D25]/70 border-white/10 hover:bg-[#1A1D25] focus:ring-orange-500/20 focus:border-orange-500/50 transition-colors">
+                  <SelectValue>
+                    {isLoadingMapping ? (
+                      "Loading assigned assistant..."
+                    ) : selectedAgent ? (
+                      selectedAgent.name
                     ) : (
-                      agents.items.map((agent) => (
-                        <SelectItem 
-                          key={agent.id} 
-                          value={agent.id.toString()}
-                          className="text-white/90 focus:bg-orange-500 focus:text-white data-[highlighted]:bg-orange-500 data-[highlighted]:text-white"
-                        >
-                          {agent.name}
-                        </SelectItem>
-                      ))
+                      "Select Assistant..."
                     )}
-                  </SelectContent>
-                </Select>
-              </div>
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent className="bg-[#1A1D25] border-white/10">
+                  {isLoadingAgents ? (
+                    <SelectItem value="loading" disabled className="text-white/60">Loading assistants...</SelectItem>
+                  ) : !agents?.items?.length ? (
+                    <SelectItem value="none" disabled className="text-white/60">No assistants available</SelectItem>
+                  ) : (
+                    agents.items.map((agent) => (
+                      <SelectItem 
+                        key={agent.id} 
+                        value={agent.id.toString()}
+                        className="text-white/90 focus:bg-orange-500 focus:text-white data-[highlighted]:bg-orange-500 data-[highlighted]:text-white"
+                      >
+                        {agent.name}
+                      </SelectItem>
+                    ))
+                  )}
+                </SelectContent>
+              </Select>
             </div>
           </div>
-        )}
+        </div>
       </div>
     </div>
   );
