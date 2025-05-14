@@ -22,8 +22,6 @@ interface SidebarProps {
   handleSelectPhoneNumber: (phoneNumber: SipTrunkItem | null) => void;
   handleDeletePhoneNumber: (phoneNumber: SipTrunkItem) => void;
   deletingPhoneNumberId: string | null;
-  searchQuery: string;
-  setSearchQuery: (query: string) => void;
   setIsTemplateModalOpen: (open: boolean) => void;
 }
 
@@ -32,12 +30,11 @@ function Sidebar({
   displayedPhoneNumbers,
   selectedPhoneNumberId,
   handleSelectPhoneNumber,
-  searchQuery,
-  setSearchQuery,
   setIsTemplateModalOpen
 }: SidebarProps) {
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const { deleteSipTrunk } = useSip();
+  const [searchQuery, setSearchQuery] = useState("");
 
   const filteredPhoneNumbers = displayedPhoneNumbers?.items?.filter(phoneNumber => 
     phoneNumber.phone_number.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -81,11 +78,14 @@ function Sidebar({
         <div className="p-4 space-y-4">
           <div className="relative">
             <Input
-              type="text"
+              type="number"
               placeholder="Search phone numbers..."
               className="w-full bg-[#1A1D25]/70 border-white/10 text-white pl-9 rounded-md text-sm placeholder:text-white/60 focus:border-orange-500/50 focus:ring-orange-500/20"
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => {
+                console.log(e.target.value)
+                setSearchQuery(e.target.value)
+              }}
             />
             <PhoneIcon className="h-4 w-4 text-white/40 absolute left-3 top-1/2 transform -translate-y-1/2" />
           </div>

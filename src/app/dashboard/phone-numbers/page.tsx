@@ -64,8 +64,6 @@ export default function PhoneNumbersPage() {
         handleSelectPhoneNumber={setSelectedPhoneNumber} 
         handleDeletePhoneNumber={handleDeletePhoneNumber}
         deletingPhoneNumberId={deletingPhoneNumberId}
-        searchQuery="" 
-        setSearchQuery={() => {}} 
         setIsTemplateModalOpen={setIsModalOpen} 
       />
       <div className="flex-1">
