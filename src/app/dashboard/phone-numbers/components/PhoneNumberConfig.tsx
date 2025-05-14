@@ -14,23 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
-interface SipTrunkConfig {
-  id: string;
-  name: string;
-  description: string | null;
-  trunk_type: 'inbound' | 'outbound';
-  sip_termination_uri: string;
-  phone_number: string;
-  username: string | null;
-  password: string | null;
-  dispatch_rule_id: string | null;
-  config: {
-    [key: string]: unknown;
-  };
-  owner_id: string;
-  trunk_id: string;
-}
+import { SipTrunkItem } from "../types";
 
 interface AgentMapping {
   sip_trunk_id: string;
@@ -39,10 +23,11 @@ interface AgentMapping {
 }
 
 interface PhoneNumberConfigProps {
-  phoneNumber: SipTrunkConfig;
+  phoneNumber: SipTrunkItem;
+  onUpdate: () => void;
 }
 
-export default function PhoneNumberConfig({ phoneNumber }: PhoneNumberConfigProps) {
+export default function PhoneNumberConfig({ phoneNumber, onUpdate }: PhoneNumberConfigProps) {
   const { updateSipTrunk, isUpdating, agentMappings, isLoadingMapping } = useSip();
   const { agents, isLoading: isLoadingAgents } = useAgent();
   const { toast } = useToast();
@@ -51,8 +36,9 @@ export default function PhoneNumberConfig({ phoneNumber }: PhoneNumberConfigProp
     if (phoneNumber.id) {
       updateSipTrunk({
         id: phoneNumber.id,
-        agent_id: phoneNumber.dispatch_rule_id || ""
+        agent_id: selectedAgentId
       });
+      onUpdate();
     }
   };
 
@@ -60,7 +46,7 @@ export default function PhoneNumberConfig({ phoneNumber }: PhoneNumberConfigProp
     mapping => mapping.sip_trunk_id === phoneNumber.id
   );
 
-  const selectedAgentId = currentMapping?.agent_id || phoneNumber.dispatch_rule_id || '';
+  const selectedAgentId = currentMapping?.agent_id || '';
   const selectedAgent = agents?.items?.find(agent => agent.id.toString() === selectedAgentId);
 
   const handleAgentChange = async (value: string) => {

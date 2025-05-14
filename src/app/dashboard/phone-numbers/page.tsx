@@ -13,13 +13,15 @@ interface PhoneNumberFormData {
   sip_termination_uri: string;
   username: string;
   password: string;
+  trunk_type: 'inbound' | 'outbound';
 }
 
 
 export default function PhoneNumbersPage() {
   const [selectedPhoneNumber, setSelectedPhoneNumber] = useState<SipTrunkItem | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { sipTrunks, isLoading, createSipTrunk } = useSip();
+  const { sipTrunks, isLoading, createSipTrunk, deleteSipTrunk } = useSip();
+  const [deletingPhoneNumberId, setDeletingPhoneNumberId] = useState<string | null>(null);
 
   const handleUpdateSettings = () => {
     if (!selectedPhoneNumber) return;
@@ -41,6 +43,18 @@ export default function PhoneNumbersPage() {
     }
   };
 
+  const handleDeletePhoneNumber = async (phoneNumber: SipTrunkItem) => {
+    setDeletingPhoneNumberId(phoneNumber.id);
+    try {
+      await deleteSipTrunk(phoneNumber.id);
+      if (selectedPhoneNumber?.id === phoneNumber.id) {
+        setSelectedPhoneNumber(null);
+      }
+    } finally {
+      setDeletingPhoneNumberId(null);
+    }
+  };
+
   return (
     <div className="flex min-h-[calc(100vh-40px)]">
       <PhoneNumbersSidebar 
@@ -48,8 +62,8 @@ export default function PhoneNumbersPage() {
         displayedPhoneNumbers={sipTrunks as {items: SipTrunkItem[]}} 
         selectedPhoneNumberId={selectedPhoneNumber?.id || null} 
         handleSelectPhoneNumber={setSelectedPhoneNumber} 
-        handleDeletePhoneNumber={() => {}} 
-        deletingPhoneNumberId={null} 
+        handleDeletePhoneNumber={handleDeletePhoneNumber}
+        deletingPhoneNumberId={deletingPhoneNumberId}
         searchQuery="" 
         setSearchQuery={() => {}} 
         setIsTemplateModalOpen={setIsModalOpen} 

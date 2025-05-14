@@ -26,6 +26,7 @@ interface PhoneNumberFormData {
   sip_termination_uri: string;
   username: string;
   password: string;
+  trunk_type: 'inbound' | 'outbound';
 }
 
 export function CreatePhoneNumberModal({ isOpen, onClose, onSubmit }: CreatePhoneNumberModalProps) {
@@ -37,6 +38,7 @@ export function CreatePhoneNumberModal({ isOpen, onClose, onSubmit }: CreatePhon
     sip_termination_uri: "livekit-integration-test.pstn.twilio.com",
     username: "",
     password: "",
+    trunk_type: "inbound"
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -80,6 +82,7 @@ export function CreatePhoneNumberModal({ isOpen, onClose, onSubmit }: CreatePhon
       sip_termination_uri: "livekit-integration-test.pstn.twilio.com",
       username: "",
       password: "",
+      trunk_type: "inbound"
     });
     onClose();
   };

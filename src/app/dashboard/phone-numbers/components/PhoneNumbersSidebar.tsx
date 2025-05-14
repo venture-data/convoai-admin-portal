@@ -20,6 +20,8 @@ interface SidebarProps {
   displayedPhoneNumbers: SipTrunkResponse;
   selectedPhoneNumberId: string | null;
   handleSelectPhoneNumber: (phoneNumber: SipTrunkItem | null) => void;
+  handleDeletePhoneNumber: (phoneNumber: SipTrunkItem) => void;
+  deletingPhoneNumberId: string | null;
   searchQuery: string;
   setSearchQuery: (query: string) => void;
   setIsTemplateModalOpen: (open: boolean) => void;
