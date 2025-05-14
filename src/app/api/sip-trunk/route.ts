@@ -30,6 +30,8 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
+    const { ...apiRequestBody } = body;
+
     const response = await fetch(`${process.env.BASE_URL}/api/v1/sip-trunk`, {
       method: 'POST',
       headers: {
@@ -37,7 +39,7 @@ export async function POST(request: Request) {
         'Cookie': `refresh_token=${refreshToken.value}`,
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(body),
+      body: JSON.stringify(apiRequestBody),
       credentials: 'include'
     });
 

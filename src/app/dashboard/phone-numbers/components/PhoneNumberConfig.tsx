@@ -1,9 +1,10 @@
 "use client"
 
+import { useState } from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { PhoneIncoming, PhoneOutgoing, Save, Phone, Settings2, UserSquare2 } from "lucide-react";
+import { PhoneIncoming, PhoneOutgoing, Save, Phone, Settings2, UserSquare2, PhoneCall } from "lucide-react";
 import { useSip } from "@/app/hooks/use-sip";
 import { useAgent } from "@/app/hooks/use-agent";
 import { useToast } from "@/app/hooks/use-toast";
@@ -15,6 +16,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { SipTrunkItem } from "../types";
+import api from "@/lib/api-instance";
 
 interface AgentMapping {
   sip_trunk_id: string;
@@ -31,6 +33,8 @@ export default function PhoneNumberConfig({ phoneNumber, onUpdate }: PhoneNumber
   const { updateSipTrunk, isUpdating, agentMappings, isLoadingMapping } = useSip();
   const { agents, isLoading: isLoadingAgents } = useAgent();
   const { toast } = useToast();
+  const [outboundNumber, setOutboundNumber] = useState("");
+  const [isCallLoading, setIsCallLoading] = useState(false);
 
   const handleSave = () => {
     if (phoneNumber.id) {
@@ -97,6 +101,50 @@ export default function PhoneNumberConfig({ phoneNumber, onUpdate }: PhoneNumber
         variant: "destructive",
       });
       console.error("Error assigning assistant:", error);
+    }
+  };
+
+  const handleOutboundCall = async () => {
+    if (!selectedAgentId || !outboundNumber) return;
+    
+    setIsCallLoading(true);
+    try {
+      const callData = {
+        phone_numbers: [outboundNumber],
+        agent_id: selectedAgentId,
+        attributes: {
+          greeting_type: "sales"
+        },
+        trunk_id: phoneNumber.id
+      };
+
+      const response = await api.post('/api/outbound-call', {
+        body: JSON.stringify(callData),
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        credentials: 'include'
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to initiate call');
+      }
+
+      toast({
+        title: "Success",
+        description: "Outbound call initiated successfully",
+        variant: "default",
+      });
+      setOutboundNumber("");
+    } catch (error) {
+      console.error("Failed to make outbound call:", error);
+      toast({
+        title: "Error",
+        description: "Failed to initiate outbound call",
+        variant: "destructive",
+      });
+    } finally {
+      setIsCallLoading(false);
     }
   };
 
@@ -169,41 +217,80 @@ export default function PhoneNumberConfig({ phoneNumber, onUpdate }: PhoneNumber
           </div>
         </div>
 
-        {/* Authentication Section for Outbound */}
         {phoneNumber.trunk_type === 'outbound' && (
-          <div className="p-4 rounded-lg bg-gradient-to-br from-[#1A1D25]/80 to-[#1A1D25]/60 border border-white/10">
-            <h4 className="text-sm font-medium text-orange-400 mb-4 flex items-center gap-2">
-              <Settings2 className="h-4 w-4" />
-              Authentication Settings
-            </h4>
-            
-            <div className="space-y-5">
-              <div className="space-y-2">
-                <Label>Username</Label>
-                <div className="relative">
-                  <Input
-                    value={phoneNumber.username || ''}
-                    disabled
-                    className="bg-[#1A1D25]/70 border-white/10 text-white/60 pl-9"
-                  />
-                  <UserSquare2 className="h-4 w-4 text-white/40 absolute left-3 top-1/2 transform -translate-y-1/2" />
+          <>
+            <div className="p-4 rounded-lg bg-gradient-to-br from-[#1A1D25]/80 to-[#1A1D25]/60 border border-white/10">
+              <h4 className="text-sm font-medium text-orange-400 mb-4 flex items-center gap-2">
+                <Settings2 className="h-4 w-4" />
+                Authentication Settings
+              </h4>
+              
+              <div className="space-y-5">
+                <div className="space-y-2">
+                  <Label>Username</Label>
+                  <div className="relative">
+                    <Input
+                      value={phoneNumber.username || ''}
+                      disabled
+                      className="bg-[#1A1D25]/70 border-white/10 text-white/60 pl-9"
+                    />
+                    <UserSquare2 className="h-4 w-4 text-white/40 absolute left-3 top-1/2 transform -translate-y-1/2" />
+                  </div>
                 </div>
-              </div>
 
-              <div className="space-y-2">
-                <Label>Password</Label>
-                <div className="relative">
-                  <Input
-                    type="password"
-                    value={phoneNumber.password || ''}
-                    disabled
-                    className="bg-[#1A1D25]/70 border-white/10 text-white/60 pl-9"
-                  />
-                  <UserSquare2 className="h-4 w-4 text-white/40 absolute left-3 top-1/2 transform -translate-y-1/2" />
+                <div className="space-y-2">
+                  <Label>Password</Label>
+                  <div className="relative">
+                    <Input
+                      type="password"
+                      value={phoneNumber.password || ''}
+                      disabled
+                      className="bg-[#1A1D25]/70 border-white/10 text-white/60 pl-9"
+                    />
+                    <UserSquare2 className="h-4 w-4 text-white/40 absolute left-3 top-1/2 transform -translate-y-1/2" />
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+
+            <div className="p-4 rounded-lg bg-gradient-to-br from-[#1A1D25]/80 to-[#1A1D25]/60 border border-white/10">
+              <h4 className="text-sm font-medium text-orange-400 mb-4 flex items-center gap-2">
+                <PhoneCall className="h-4 w-4" />
+                Make Outbound Call
+              </h4>
+              
+              <div className="space-y-5">
+                <div className="space-y-2">
+                  <Label>Phone Number (E.164 format)</Label>
+                  <div className="flex gap-2">
+                    <Input
+                      placeholder="+18312738884"
+                      value={outboundNumber}
+                      onChange={(e) => setOutboundNumber(e.target.value)}
+                      className="bg-[#1A1D25]/70 border-white/10 text-white placeholder:text-white/60 focus:border-orange-500/50 focus:ring-orange-500/20"
+                    />
+                    <Button
+                      onClick={handleOutboundCall}
+                      disabled={isCallLoading || !selectedAgentId || !outboundNumber}
+                      className="bg-orange-500 hover:bg-orange-600 text-white min-w-[100px]"
+                    >
+                      {isCallLoading ? (
+                        "Calling..."
+                      ) : (
+                        <>
+                          <PhoneCall className="w-4 h-4 mr-2" />
+                          Call
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                  {!selectedAgentId && (
+                    <p className="text-sm text-orange-400">Please select an assistant before making a call</p>
+                  )}
+                </div>
+              </div>
+            </div>
+          </>
         )}
 
         <div className="p-4 rounded-lg bg-gradient-to-br from-[#1A1D25]/80 via-[#1A1D25]/60 to-orange-950/10 border border-orange-500/20 shadow-[0_0_15px_rgba(249,115,22,0.05)]">

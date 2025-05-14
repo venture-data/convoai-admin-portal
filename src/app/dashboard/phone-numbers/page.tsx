@@ -35,7 +35,13 @@ export default function PhoneNumbersPage() {
 
   const handleCreatePhoneNumber = async (formData: PhoneNumberFormData) => {
     try {
-      await createSipTrunk(formData);
+      await createSipTrunk({
+        name: formData.name,
+        phone_number: formData.phone_number,
+        sip_termination_uri: formData.sip_termination_uri,
+        username: formData.username,
+        password: formData.password,
+      });
       setIsModalOpen(false);
     } catch (error) {
       console.error("Failed to create phone number:", error);

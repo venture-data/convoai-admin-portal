@@ -10,7 +10,6 @@ interface PhoneNumberFormData {
 
 interface CreateSipTrunkData {
   name: string;
-  trunk_type: 'inbound' | 'outbound';
   phone_number: string;
   sip_termination_uri: string;
   username?: string;
