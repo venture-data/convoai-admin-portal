@@ -125,7 +125,7 @@ export function CreatePhoneNumberModal({ isOpen, onClose, onSubmit }: CreatePhon
               <Input
                 placeholder="12185857512"
                 value={formData.phone_number}
-                maxLength={11}
+                maxLength={12}
                 onChange={(e) => setFormData({ ...formData, phone_number: e.target.value })}
                 className="bg-[#1A1D25]/70 border-white/10 text-white placeholder:text-white/60 focus:border-orange-500/50 focus:ring-orange-500/20"
                 required
