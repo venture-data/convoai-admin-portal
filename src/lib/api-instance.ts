@@ -100,7 +100,8 @@ async function fetchWithAuth(url: string, options: RequestInit = {}) {
       isRefreshing = false;
     }
   }
-
+  console.log("response");
+  console.log(response);
   return response;
 }
 

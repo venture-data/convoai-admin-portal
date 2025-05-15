@@ -130,6 +130,11 @@ export default function PhoneNumberConfig({ phoneNumber, onUpdate }: PhoneNumber
         throw new Error('Failed to initiate call');
       }
 
+      const data = await response.json();
+      if (data.errors) {
+        throw new Error(Object.values(data.errors)[0] as string);
+      }
+
       toast({
         title: "Success",
         description: "Outbound call initiated successfully",
@@ -137,10 +142,9 @@ export default function PhoneNumberConfig({ phoneNumber, onUpdate }: PhoneNumber
       });
       setOutboundNumber("");
     } catch (error) {
-      console.error("Failed to make outbound call:", error);
       toast({
         title: "Error",
-        description: "Failed to initiate outbound call",
+        description: error instanceof Error ? error.message : 'Failed to initiate outbound call',
         variant: "destructive",
       });
     } finally {

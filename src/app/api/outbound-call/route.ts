@@ -46,6 +46,9 @@ export async function POST(request: Request) {
       console.error("Outbound call error:", errorText);
       throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
     }
+ 
+    console.log("response inside route");
+    console.log(response);
 
     const data = await response.json();
     return NextResponse.json(data);
