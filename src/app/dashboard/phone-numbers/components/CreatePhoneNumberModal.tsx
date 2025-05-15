@@ -13,13 +13,6 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Phone, Server, AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
 interface CreatePhoneNumberModalProps {
   isOpen: boolean;
@@ -149,24 +142,6 @@ export function CreatePhoneNumberModal({ isOpen, onClose, onSubmit }: CreatePhon
                 required
               />
               <p className="text-xs text-white/60">The SIP URI where calls will be terminated</p>
-            </div>
-
-            <div className="space-y-2">
-              <Label>Trunk Type</Label>
-              <Select
-                value={formData.trunk_type}
-                onValueChange={(value: 'inbound' | 'outbound') => 
-                  setFormData({ ...formData, trunk_type: value })
-                }
-              >
-                <SelectTrigger className="bg-[#1A1D25]/70 border-white/10 text-white">
-                  <SelectValue placeholder="Select trunk type" />
-                </SelectTrigger>
-                <SelectContent className="bg-[#1A1D25] border-white/10">
-                  <SelectItem value="inbound" className="text-white">Inbound</SelectItem>
-                  <SelectItem value="outbound" className="text-white">Outbound</SelectItem>
-                </SelectContent>
-              </Select>
             </div>
 
             <div className="grid grid-cols-2 gap-4">

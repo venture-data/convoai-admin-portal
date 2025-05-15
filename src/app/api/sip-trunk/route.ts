@@ -165,9 +165,6 @@ export async function PUT(request: Request) {
 export async function DELETE(request: Request) {
   try {
     const authHeader = request.headers.get('authorization');
-    const cookieStore = await cookies();
-    const refreshToken = cookieStore.get('refresh_token');
-
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return NextResponse.json(
         { error: 'Unauthorized - No valid token provided' },
@@ -183,17 +180,17 @@ export async function DELETE(request: Request) {
       );
     }
 
-    // Get the ID from the URL
-    const url = new URL(request.url);
-    const pathParts = url.pathname.split('/');
-    const id = pathParts[pathParts.length - 1];
+    const body = await request.json();
+    console.log("body");
+    console.log(body);
+    const { id } = body;
 
+    console.log("deleting sip trunk");
+    console.log(`${process.env.BASE_URL}/api/v1/sip-trunk/${id}`)
     const response = await fetch(`${process.env.BASE_URL}/api/v1/sip-trunk/${id}`, {
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${token}`,
-        'Cookie': `refresh_token=${refreshToken.value}`,
-        'Content-Type': 'application/json'
       },
       credentials: 'include'
     });

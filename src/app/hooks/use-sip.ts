@@ -104,7 +104,11 @@ export function useSip() {
 
   const deleteSipTrunk = useMutation({
     mutationFn: async (id: string) => {
-      const response = await api.delete(`/api/sip-trunk/${id}`, {
+      const response = await api.delete(`/api/sip-trunk`, {
+        body: JSON.stringify({ id }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
         credentials: 'include'
       });
 
