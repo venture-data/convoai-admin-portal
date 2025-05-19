@@ -120,7 +120,7 @@ export function useSip() {
       return response;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['sip-agent-mappings'] });
+      queryClient.invalidateQueries({ queryKey: ['sip-trunks'] });
     }
   });
 
