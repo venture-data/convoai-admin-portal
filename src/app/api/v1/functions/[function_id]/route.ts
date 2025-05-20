@@ -1,10 +1,11 @@
 import { NextResponse } from 'next/server';
 import { headers } from 'next/headers';
+import { NextRequest } from 'next/server';
 
 export async function GET(
-  request: Request,
+  request: NextRequest,
   { params }: { params: { function_id: string } }
-): Promise<Response> {
+): Promise<NextResponse> {
   try {
     const headersList = await headers();
     const authHeader = headersList.get('Authorization');
@@ -59,9 +60,9 @@ export async function GET(
 }
 
 export async function PUT(
-  request: Request,
+  request: NextRequest,
   { params }: { params: { function_id: string } }
-): Promise<Response> {
+): Promise<NextResponse> {
   try {
     const headersList = await headers();
     const authHeader = headersList.get('Authorization');
@@ -121,9 +122,9 @@ export async function PUT(
 }
 
 export async function DELETE(
-  request: Request,
+  request: NextRequest,
   { params }: { params: { function_id: string } }
-): Promise<Response> {
+): Promise<NextResponse> {
   try {
     const headersList = await headers();
     const authHeader = headersList.get('Authorization');
