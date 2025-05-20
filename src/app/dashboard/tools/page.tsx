@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { PlusIcon, Wrench } from "lucide-react";
 import { useToast } from "@/app/hooks/use-toast";
-import { useFunctions } from "@/app/hooks/use-functions";
+import { useFunctions, FunctionData } from "@/app/hooks/use-functions";
 
 import FunctionSidebar from "./components/FunctionSidebar";
 import FunctionConfiguration from "./components/FunctionConfiguration";
@@ -13,6 +13,51 @@ interface Header {
   id: string;
   name: string;
   value: string;
+}
+
+interface ApiFunctionData {
+  id?: string;
+  name: string;
+  function_name: string;
+  description: string;
+  base_url: string;
+  endpoint_path: string; 
+  http_method: string;
+  headers: Record<string, string>;
+  parameter_schema: {
+    type: string;
+    properties: Record<string, unknown>;
+    required?: string[];
+  };
+  request_template: Record<string, unknown>;
+  async?: boolean;
+  auth_required: boolean;
+  response_mapping: Record<string, string>;
+  error_mapping: Record<string, string>;
+  active: boolean;
+  is_public: boolean;
+}
+
+interface FunctionComponentData {
+  id?: string;
+  name?: string;
+  functionName?: string;
+  description?: string;
+  url?: string;
+  method?: string;
+  headers?: Header[];
+  parameterSchema?: {
+    type: string;
+    properties?: Record<string, unknown>;
+    required?: string[];
+  };
+  requestTemplate?: Record<string, unknown>;
+  async?: boolean;
+  auth_required?: boolean;
+  response_mapping?: Record<string, string>;
+  error_mapping?: Record<string, string>;
+  active?: boolean;
+  is_public?: boolean;
 }
 
 export default function ToolsPage() {
@@ -62,7 +107,7 @@ export default function ToolsPage() {
     func.function_name === selectedFunction
   ) || null;
 
-  const transformToComponentFormat = (apiFunction: any) => {
+  const transformToComponentFormat = (apiFunction: ApiFunctionData | null): FunctionComponentData | null => {
     if (!apiFunction) return null;
     
     return {
@@ -136,24 +181,30 @@ export default function ToolsPage() {
     }
   };
 
-  const handleSaveFunctionData = async (updatedData: Record<string, any>) => {
+  const handleSaveFunctionData = async (updatedData: FunctionComponentData) => {
     try {
       if (selectedFunction) {
-        const apiData = {
-          function_id: updatedData.id,
-          name: updatedData.name,
-          description: updatedData.description,
-          function_name: updatedData.functionName,
-          function_description: updatedData.description,
+        const parameterSchema = {
+          type: updatedData.parameterSchema?.type || 'object',
+          properties: updatedData.parameterSchema?.properties || {},
+          required: updatedData.parameterSchema?.required
+        };
+        
+        const apiData: FunctionData & { function_id: string } = {
+          function_id: updatedData.id || selectedFunction,
+          name: updatedData.name || '',
+          description: updatedData.description || '',
+          function_name: updatedData.functionName || '',
+          function_description: updatedData.description || '',
           base_url: updatedData.url ? new URL(updatedData.url).origin : '',
           endpoint_path: updatedData.url ? new URL(updatedData.url).pathname.replace(/^\//, '') : '',
-          http_method: updatedData.method,
+          http_method: updatedData.method || 'GET',
           headers: updatedData.headers?.reduce((obj: Record<string, string>, header: Header) => {
             obj[header.name] = header.value;
             return obj;
-          }, {}),
-          parameter_schema: updatedData.parameterSchema,
-          request_template: updatedData.requestTemplate,
+          }, {}) || {},
+          parameter_schema: parameterSchema,
+          request_template: updatedData.requestTemplate || {},
           auth_required: updatedData.auth_required || false,
           response_mapping: updatedData.response_mapping || { success: "status" },
           error_mapping: updatedData.error_mapping || { "400": "Bad request format", "500": "Server error" },
@@ -161,10 +212,7 @@ export default function ToolsPage() {
           is_public: updatedData.is_public || false
         };
         
-        await updateFunction.mutateAsync({
-          ...apiData,
-          function_id: updatedData.id || selectedFunction
-        });
+        await updateFunction.mutateAsync(apiData);
         
         toast({
           title: "Success",

@@ -3,7 +3,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/api-instance";
 
-interface FunctionData {
+export interface FunctionData {
   name: string;
   description: string;
   base_url: string;
@@ -29,7 +29,6 @@ interface FunctionsResponse {
   items: Array<FunctionData>;
 }
 
-// Custom hook to fetch a single function
 export function useFunction(function_id: string) {
   return useQuery({
     queryKey: ['functions', function_id],
