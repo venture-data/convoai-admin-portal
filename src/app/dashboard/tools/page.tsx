@@ -92,7 +92,7 @@ export default function ToolsPage() {
   }, [error, toast]);
   
   const availableFunctions = functions?.items?.map(func => ({
-    id: func.function_name,
+    id: func.id || func.function_name,
     name: func.name || "Unnamed Function",
     method: func.http_method || "GET",
     url: `${func.base_url}/${func.endpoint_path}` || ""
@@ -241,8 +241,9 @@ export default function ToolsPage() {
     try {
       await deleteFunction.mutateAsync(functionId);
       
-      if (selectedFunction === functionId) {
-        const otherFunction = functions?.items?.find(f => f.function_name !== functionId);
+      const deletedFunction = functions?.items?.find(f => f.id === functionId || f.function_name === functionId);
+      if (deletedFunction && selectedFunction === deletedFunction.function_name) {
+        const otherFunction = functions?.items?.find(f => f.function_name !== deletedFunction.function_name);
         if (otherFunction) {
           setSelectedFunction(otherFunction.function_name);
         } else {

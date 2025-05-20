@@ -150,17 +150,17 @@ export default function FunctionConfiguration({
   };
 
   const addHeader = () => {
-    const newHeader = {
-      id: Date.now().toString(),
-      name: newHeaderName.trim(),
-      value: newHeaderValue.trim()
-    };
+      const newHeader = {
+        id: Date.now().toString(),
+        name: newHeaderName.trim(),
+        value: newHeaderValue.trim()
+      };
     
     const updatedHeaders = [...(functionState.headers || []), newHeader];
     updateField('headers', updatedHeaders);
     
-    setNewHeaderName("");
-    setNewHeaderValue("");
+      setNewHeaderName("");
+      setNewHeaderValue("");
   };
 
   const removeHeader = (id: string) => {
@@ -348,7 +348,7 @@ export default function FunctionConfiguration({
                 Basic Function Information
               </h4>
               <p className="text-sm text-white/60 mb-6">Define how the LLM will understand and use this function</p>
-
+            
               <div className="space-y-4">
                 <div>
                   <Label htmlFor="name" className="text-white/80">Display Name</Label>
@@ -364,8 +364,8 @@ export default function FunctionConfiguration({
 
                 <div>
                   <Label htmlFor="functionName" className="text-white/80">Function Name</Label>
-                  <Input
-                    id="functionName"
+                  <Input 
+                    id="functionName" 
                     placeholder="new_blank_function"
                     value={functionState.functionName}
                     onChange={(e) => updateField('functionName', e.target.value)}
@@ -373,7 +373,7 @@ export default function FunctionConfiguration({
                   />
                   <p className="text-xs text-white/40 mt-1">Between 5 and 100 characters, alphanumeric with underscores</p>
                 </div>
-
+                
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="requestType" className="text-white/80">Request Type</Label>
@@ -389,11 +389,11 @@ export default function FunctionConfiguration({
                       <option value="DELETE">DELETE</option>
                     </select>
                   </div>
-
+                  
                   <div className="flex items-end">
                     <div className="flex items-center space-x-2 h-10">
-                      <Switch
-                        id="async-mode"
+                      <Switch 
+                        id="async-mode" 
                         checked={!!functionState.async}
                         onCheckedChange={(checked) => updateField('async', checked)}
                         className="data-[state=checked]:bg-gradient-to-r data-[state=checked]:from-orange-500 data-[state=checked]:to-red-500"
@@ -402,11 +402,11 @@ export default function FunctionConfiguration({
                     </div>
                   </div>
                 </div>
-
+                
                 <div>
                   <Label htmlFor="url" className="text-white/80">URL</Label>
-                  <Input
-                    id="url"
+                  <Input 
+                    id="url" 
                     placeholder="https://api.example.com/new"
                     value={functionState.url}
                     onChange={(e) => updateField('url', e.target.value)}
@@ -414,11 +414,11 @@ export default function FunctionConfiguration({
                   />
                   <p className="text-xs text-white/40 mt-1">Complete URL with path parameter placeholders (e.g., https://api.example.com/users/{'id'})</p>
                 </div>
-
+                
                 <div>
                   <Label htmlFor="description" className="text-white/80">Description</Label>
-                  <Textarea
-                    id="description"
+                  <Textarea 
+                    id="description" 
                     placeholder="A new function starting from scratch."
                     value={functionState.description}
                     onChange={(e) => updateField('description', e.target.value)}
@@ -428,7 +428,7 @@ export default function FunctionConfiguration({
                 </div>
               </div>
             </div>
-
+            
             <div className="p-4 rounded-lg bg-gradient-to-br from-[#1A1D25]/80 to-[#1A1D25]/60 border border-white/10">
               <h4 className="text-sm font-medium text-orange-400 mb-4 flex items-center gap-2">
                 <Wrench className="h-4 w-4" />
@@ -436,10 +436,10 @@ export default function FunctionConfiguration({
               </h4>
               <div className="flex justify-between items-center mb-4">
                 <h4 className="font-medium text-white/80">Headers</h4>
-                <Button
+                <Button 
                   onClick={addHeader}
-                  variant="outline"
-                  size="sm"
+                  variant="outline" 
+                  size="sm" 
                   className="flex items-center gap-1 border-white/10 text-white/80 hover:text-white hover:bg-white/10"
                 >
                   <PlusIcon className="h-3 w-3" />
@@ -447,33 +447,33 @@ export default function FunctionConfiguration({
                 </Button>
               </div>
               <p className="text-sm text-white/60 mb-4">Add custom headers to be sent with the request, like Authentication tokens</p>
-
+              
               <div className="space-y-4">
                 {functionState.headers?.map((header) => (
                   <div key={header.id} className="grid grid-cols-[1fr_1fr_auto] gap-2">
-                    <Input
+                    <Input 
                       value={header.name}
                       onChange={(e) => updateField('headers', (functionState.headers || []).map(h => h.id === header.id ? { ...h, name: e.target.value } : h))}
                       className="bg-[#1A1D25]/70 border-white/10 text-white focus:border-orange-500/50 focus:ring-orange-500/20"
                       placeholder="Header Name"
                     />
-                    <Input
+                    <Input 
                       value={header.value}
                       onChange={(e) => updateField('headers', (functionState.headers || []).map(h => h.id === header.id ? { ...h, value: e.target.value } : h))}
                       className="bg-[#1A1D25]/70 border-white/10 text-white focus:border-orange-500/50 focus:ring-orange-500/20"
                       placeholder="Value"
                     />
-                    <Button
+                    <Button 
                       onClick={() => removeHeader(header.id)}
-                      variant="ghost"
-                      size="icon"
+                      variant="ghost" 
+                      size="icon" 
                       className="text-red-400 hover:text-red-500 hover:bg-red-500/10"
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
                 ))}
-
+                
                 <div className="grid grid-cols-[1fr_1fr_auto] gap-2 mt-2">
                   <Input
                     value={newHeaderName}
@@ -501,7 +501,7 @@ export default function FunctionConfiguration({
             </div>
           </div>
         )}
-
+        
         {activeTab === "apiParameters" && (
           <div className="p-4 rounded-lg bg-gradient-to-br from-[#1A1D25]/80 to-[#1A1D25]/60 border border-white/10">
             <h4 className="text-sm font-medium text-orange-400 mb-4 flex items-center gap-2">
@@ -526,7 +526,7 @@ export default function FunctionConfiguration({
             )}
           </div>
         )}
-
+        
         {activeTab === "requestBody" && (
           <div className="p-4 rounded-lg bg-gradient-to-br from-[#1A1D25]/80 to-[#1A1D25]/60 border border-white/10">
             <h4 className="text-sm font-medium text-orange-400 mb-4 flex items-center gap-2">
@@ -755,7 +755,7 @@ export default function FunctionConfiguration({
             </div>
           </div>
         )}
-
+        
         {activeTab === "testPreview" && (
           <div className="p-4 rounded-lg bg-gradient-to-br from-[#1A1D25]/80 to-[#1A1D25]/60 border border-white/10">
             <h4 className="text-sm font-medium text-orange-400 mb-4 flex items-center gap-2">
@@ -799,7 +799,7 @@ export default function FunctionConfiguration({
       </div>
     </div>
   );
-}
+} 
 
 const PropertyVisualization = ({ name, schema, required, level = 0 }: { name: string, schema: SchemaProperty, required?: boolean, level: number }) => {
   const isObject = schema.type === 'object';
