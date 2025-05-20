@@ -1,4 +1,4 @@
-import { Loader2, Phone, Mic } from "lucide-react";
+import { Loader2, Phone, Mic, Wrench } from "lucide-react";
 import { BotIcon, Settings2, Brain, Volume2, FileText, Eye } from "lucide-react";
 import { Agent, AgentConfig, ModelConfig as ModelConfigType, KnowledgeConfig as KnowledgeConfigType, VoiceConfig as VoiceConfigType } from "../types";
 import { Button } from "@/components/ui/button";
@@ -12,11 +12,12 @@ import TransitionEffect from "@/components/ui/transitioneffect";
 import { useState, useCallback, useRef } from "react";
 import MiniCallInterface from "./MiniCallInterface";
 import { useLiveKit } from "@/app/hooks/use-livekit";
+import { ToolsConfig } from "./ToolsConfig";
 
 interface AgentConfigsProps {
   selectedAgent: Agent | undefined;
-  activeTab: string;
-  setActiveTab: (tab: string) => void;
+  activeTab: "model" | "voice" | "transcriber" | "interaction" | "knowledge" | "tools" | "review";
+  setActiveTab: (tab: "model" | "voice" | "transcriber" | "interaction" | "knowledge" | "tools" | "review") => void;
   agentConfig: AgentConfig;
   handleAgentConfigChange: (key: string, config: ModelConfigType | KnowledgeConfigType | VoiceConfigType) => void;
   isLoading: boolean;
@@ -57,6 +58,12 @@ const tabs = [
     title: "Knowledge",
     description: "Upload and manage training materials",
     icon: FileText
+  },
+  {
+    id: "tools",
+    title: "Tools",
+    description: "Configure tools and functions the agent can use",
+    icon: Wrench
   },
   {
     id: "review",
@@ -150,7 +157,7 @@ function AgentConfigs({
             {tabs.map((tab) => (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id as "model" | "voice" | "transcriber" | "interaction" | "knowledge" | "review")}
+                onClick={() => setActiveTab(tab.id as "model" | "voice" | "transcriber" | "interaction" | "knowledge" | "tools" | "review")}
                 className={`px-4 py-2 text-sm font-medium transition-all grid grid-flow-col gap-2 items-center ${
                   activeTab === tab.id
                     ? "text-[#F97316] border-b-2 border-[#F97316]"
@@ -257,6 +264,12 @@ function AgentConfigs({
                     agentConfig={agentConfig.knowledge} 
                     setAgentConfig={(config) => handleAgentConfigChange("knowledge", config)} 
                   />
+                </TransitionEffect>
+              )}
+              
+              {activeTab === "tools" && selectedAgent && (
+                <TransitionEffect>
+                  <ToolsConfig agentId={selectedAgent.id} />
                 </TransitionEffect>
               )}
 

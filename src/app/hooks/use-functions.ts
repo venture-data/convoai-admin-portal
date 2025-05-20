@@ -202,20 +202,13 @@ export function useFunctions() {
 
   const deleteFunction = useMutation({
     mutationFn: async (function_id: string) => {
-      console.log("function_id", function_id);
       const functionsData = queryClient.getQueryData<FunctionsResponse>(['functions']);
-      console.log("functionsData", functionsData);
       let functionItem = functionsData?.items.find(f => f.function_name === function_id);
       if (!functionItem) {
         functionItem = functionsData?.items.find(f => f.id === function_id);
       }
       
-      console.log("functionItem", functionItem);
-      
-      // If we found a function, use its id; otherwise use what was passed
       const actualId = functionItem?.id || function_id;
-      console.log("function_id", function_id);
-      console.log("actualId", actualId);
       
       const response = await api.delete(`api/v1/functions/${actualId}`, {
         credentials: 'include'

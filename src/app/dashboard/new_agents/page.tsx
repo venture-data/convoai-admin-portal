@@ -14,7 +14,7 @@ import { AgentConfig, ModelConfig as ModelConfigType, KnowledgeConfig as Knowled
 export default function NewAgentPage() {
   const { toast } = useToast()
   const { toggle: toggleMobileMenu } = useMobileMenu()
-  const [activeTab, setActiveTab] = useState("model")
+  const [activeTab, setActiveTab] = useState<"model" | "voice" | "transcriber" | "interaction" | "knowledge" | "tools" | "review">("model")
   const [searchQuery, setSearchQuery] = useState("")
   const [isTemplateModalOpen, setIsTemplateModalOpen] = useState(false)
   const [selectedAgentId, setSelectedAgentId] = useState<string | null>(null)
