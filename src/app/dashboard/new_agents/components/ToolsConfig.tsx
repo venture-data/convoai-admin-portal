@@ -1,49 +1,80 @@
 "use client"
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useFunctions } from '@/app/hooks/use-functions';
 import { useAgentFunctions } from '@/app/hooks/use-agent-functions';
 import { MultiSelect } from './MultiSelect';
 import { Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useQueryClient } from '@tanstack/react-query';
+import { useToast } from '@/app/hooks/use-toast';
 
 interface ToolsConfigProps {
   agentId: string;
 }
+
+
+const isValidUUID = (id: string): boolean => {
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  return uuidRegex.test(id);
+};
 
 export function ToolsConfig({ agentId }: ToolsConfigProps) {
   const { functions, isLoading: functionsLoading } = useFunctions();
   const { agentFunctions, isLoading: agentFunctionsLoading, updateAgentFunctions } = useAgentFunctions(agentId);
   const [selectedFunctionIds, setSelectedFunctionIds] = useState<string[]>([]);
   const [isSaving, setIsSaving] = useState(false);
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
   
   useEffect(() => {
     if (agentFunctions && agentFunctions.items) {
-      const functionIds = agentFunctions.items.map(func => func.id || '').filter(Boolean);
+      const functionIds = agentFunctions.items
+        .map(func => func.id || '')
+        .filter(id => Boolean(id) && isValidUUID(id));
       setSelectedFunctionIds(functionIds);
     }
   }, [agentFunctions]);
 
+  useEffect(() => {
+    if (functions?.items) {
+      queryClient.invalidateQueries({ queryKey: ['agent-functions', agentId] });
+    }
+  }, [functions, agentId, queryClient]);
   const functionOptions = functions?.items
-    ? functions.items.map(func => ({
-        id: func.id || '',
-        label: func.name,
-        description: func.description
-      })).filter(option => option.id)
+    ? functions.items
+        .filter(func => func.id && isValidUUID(func.id))
+        .map(func => ({
+          id: func.id || '',
+          label: func.name,
+          description: func.description
+        }))
     : [];
 
-  const handleSave = async () => {
+  const handleSave = useCallback(async () => {
     if (!agentId) return;
     
     try {
       setIsSaving(true);
-      await updateAgentFunctions.mutateAsync(selectedFunctionIds);
+      const validFunctionIds = selectedFunctionIds.filter(isValidUUID);
+      await updateAgentFunctions.mutateAsync(validFunctionIds);
+      await queryClient.invalidateQueries({ queryKey: ['agent-functions', agentId] });
+      
+      toast({
+        title: "Success",
+        description: "Agent tools updated successfully",
+      });
     } catch (error) {
       console.error('Error updating agent functions:', error);
+      toast({
+        title: "Error", 
+        description: error instanceof Error ? error.message : "Failed to update tools",
+        variant: "destructive"
+      });
     } finally {
       setIsSaving(false);
     }
-  };
+  }, [agentId, selectedFunctionIds, updateAgentFunctions, queryClient, toast]);
 
   if (functionsLoading || agentFunctionsLoading) {
     return (

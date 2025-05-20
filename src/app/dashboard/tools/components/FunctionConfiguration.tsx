@@ -138,7 +138,6 @@ export default function FunctionConfiguration({
     { id: "apiParameters", label: "API Parameters" },
     { id: "requestBody", label: "Request Body" },
     { id: "advancedSettings", label: "Advanced Settings" },
-    { id: "testPreview", label: "Test & Preview" }
   ];
 
 
@@ -752,47 +751,6 @@ export default function FunctionConfiguration({
                   </Button>
                 </div>
               </div>
-            </div>
-          </div>
-        )}
-        
-        {activeTab === "testPreview" && (
-          <div className="p-4 rounded-lg bg-gradient-to-br from-[#1A1D25]/80 to-[#1A1D25]/60 border border-white/10">
-            <h4 className="text-sm font-medium text-orange-400 mb-4 flex items-center gap-2">
-              <Wrench className="h-4 w-4" />
-              Test & Preview
-            </h4>
-            <p className="text-sm text-white/60 mb-6">Test your function by providing parameter values</p>
-
-            <div className="space-y-4">
-              {functionState.parameterSchema?.properties && Object.keys(functionState.parameterSchema.properties).length > 0 && (
-                <div className="p-4 rounded-lg bg-[#1A1D25]/50 border border-white/10">
-                  <h3 className="text-sm font-medium text-white mb-4">Test Parameters</h3>
-                  
-                  {Object.entries(functionState.parameterSchema.properties).map(([name, schema]: [string, SchemaProperty]) => (
-                    <div key={name} className="mb-3">
-                      <Label htmlFor={`param-${name}`} className="text-white/80">
-                        {name}
-                        {functionState.parameterSchema?.required?.includes(name) && (
-                          <span className="ml-2 text-xs text-orange-500">required</span>
-                        )}
-                      </Label>
-                      <Input 
-                        id={`param-${name}`}
-                        placeholder={schema.description || name}
-                        className="mt-1 bg-[#1A1D25]/70 border-white/10 text-white placeholder:text-white/40 focus:border-orange-500/50 focus:ring-orange-500/20"
-                      />
-                      {schema.description && (
-                        <p className="text-xs text-white/40 mt-1">{schema.description}</p>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              <Button className="w-full bg-gradient-to-r from-orange-500 to-red-500 text-white hover:bg-gradient-to-r hover:from-orange-600 hover:to-red-600 transition-all">
-                Test Function
-              </Button>
             </div>
           </div>
         )}
