@@ -136,11 +136,20 @@ export default function ToolsPage() {
   const handleCreateFunction = async () => {
     setIsCreating(true);
     try {
-      const timestamp = Date.now();
-      const newFunctionId = `new_function_${timestamp}`;
+      let randomId;
+      if (typeof window !== 'undefined' && window.crypto) {
+        const array = new Uint8Array(8);
+        window.crypto.getRandomValues(array);
+        randomId = Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
+      } else {
+        randomId = Math.random().toString(36).substring(2, 10) + 
+                  Date.now().toString(36).substring(2, 10);
+      }
+      
+      const newFunctionId = `function_${randomId}`;
       
       const newFunction = {
-        name: `New Function ${availableFunctions.length + 1}`,
+        name:newFunctionId,
         description: "A new function created from scratch",
         function_name: newFunctionId,
         function_description: "A new function created from scratch",

@@ -219,35 +219,29 @@ export default function FunctionConfiguration({
   const handleSchemaChange = (properties: RequestBodyProperty[]) => {
     setCurrentBuilderSchema(properties);
 
-    // Get required field names
     const requiredFields = properties
       .filter(prop => prop.required)
       .map(prop => prop.name);
 
-    // Convert properties to schema format
     const propertiesSchema = convertPropertiesToSchema(properties);
 
-    // Create updated parameter schema
     const updatedSchema: ParameterSchema = {
       type: 'object',
       properties: propertiesSchema,
       required: requiredFields.length > 0 ? requiredFields : undefined
     };
 
-    // Update the centralized state
     updateField('parameterSchema', updatedSchema);
   };
   
-  // Save all changes
+
   const handleSave = () => {
     if (onSave) {
-      // Convert headers from array of objects with id to object of key-value pairs
       const headersObject = functionState.headers?.reduce((obj, header) => {
         obj[header.name] = header.value;
         return obj;
       }, {} as Record<string, string>) || {};
 
-      // Split the URL into base_url and endpoint_path
       let base_url = '';
       let endpoint_path = '';
       
@@ -257,7 +251,6 @@ export default function FunctionConfiguration({
         endpoint_path = url.pathname.startsWith('/') ? url.pathname.substring(1) : url.pathname;
       }
 
-      // Format the data according to the required schema
       const formattedData = {
         id: functionState.id,
         name: functionState.name,
