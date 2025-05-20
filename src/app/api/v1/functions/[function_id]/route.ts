@@ -2,14 +2,20 @@ import { NextResponse } from 'next/server';
 import { headers } from 'next/headers';
 import { NextRequest } from 'next/server';
 
+type RouteParams = {
+  params: {
+    function_id: string;
+  };
+};
+
 export async function GET(
   request: NextRequest,
-  { params }: { params: { function_id: string } }
+  context: RouteParams
 ): Promise<NextResponse> {
   try {
     const headersList = await headers();
     const authHeader = headersList.get('Authorization');
-    const function_id = params.function_id;
+    const function_id = context.params.function_id;
   
     const token = authHeader?.split(' ')[1];
     if (!token) {
@@ -61,12 +67,12 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { function_id: string } }
+  context: RouteParams
 ): Promise<NextResponse> {
   try {
     const headersList = await headers();
     const authHeader = headersList.get('Authorization');
-    const function_id = params.function_id;
+    const function_id = context.params.function_id;
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return NextResponse.json(
@@ -123,12 +129,12 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { function_id: string } }
+  context: RouteParams
 ): Promise<NextResponse> {
   try {
     const headersList = await headers();
     const authHeader = headersList.get('Authorization');
-    const function_id = params.function_id;
+    const function_id = context.params.function_id;
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return NextResponse.json(
