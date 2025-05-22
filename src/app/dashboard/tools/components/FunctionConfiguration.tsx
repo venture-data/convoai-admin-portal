@@ -45,6 +45,7 @@ interface FunctionConfigurationProps {
   setActiveTab: (tab: string) => void;
   functionData?: FunctionData | null;
   onSave?: (updatedData: FunctionData) => void;
+  onUpdateState: (newState: Partial<FunctionData>) => void;
 }
 
 interface Header {
@@ -57,9 +58,20 @@ export default function FunctionConfiguration({
   activeTab,
   setActiveTab,
   functionData,
-  onSave
+  onSave,
+  onUpdateState
 }: FunctionConfigurationProps) {
-  const [functionState, setFunctionState] = useState<FunctionData>({
+  const [newHeaderName, setNewHeaderName] = useState("");
+  const [newHeaderValue, setNewHeaderValue] = useState("");
+  const [currentBuilderSchema, setCurrentBuilderSchema] = useState<RequestBodyProperty[]>([]);
+  const initialSchemaRef = useRef<RequestBodyProperty[]>([]);
+  const hasInitialized = useRef(false);
+  
+  const [newErrorCode, setNewErrorCode] = useState("");
+  const [newErrorMessage, setNewErrorMessage] = useState("");
+
+  // Default values for form fields
+  const defaultValues = {
     name: "",
     functionName: "",
     description: "",
@@ -78,40 +90,15 @@ export default function FunctionConfiguration({
     error_mapping: { "400": "Bad request format", "500": "Server error" },
     active: true,
     is_public: false
-  });
-  
-  const [newHeaderName, setNewHeaderName] = useState("");
-  const [newHeaderValue, setNewHeaderValue] = useState("");
-  const [currentBuilderSchema, setCurrentBuilderSchema] = useState<RequestBodyProperty[]>([]);
-  const initialSchemaRef = useRef<RequestBodyProperty[]>([]);
-  const hasInitialized = useRef(false);
-  
-  const [newErrorCode, setNewErrorCode] = useState("");
-  const [newErrorMessage, setNewErrorMessage] = useState("");
+  };
+
+  const formValues = {
+    ...defaultValues,
+    ...functionData
+  };
+
   useEffect(() => {
-    if (functionData) {
-      setFunctionState({
-        id: functionData.id || "",
-        name: functionData.name || "",
-        functionName: functionData.functionName || "",
-        description: functionData.description || "",
-        url: functionData.url || "",
-        method: functionData.method || "GET",
-        headers: functionData.headers || [],
-        parameterSchema: functionData.parameterSchema || {
-          type: "object",
-          properties: {},
-          required: []
-        },
-        requestTemplate: functionData.requestTemplate || {},
-        async: functionData.async || false,
-        auth_required: functionData.auth_required || false,
-        response_mapping: functionData.response_mapping || { success: "status" },
-        error_mapping: functionData.error_mapping || { "400": "Bad request format", "500": "Server error" },
-        active: functionData.active !== undefined ? functionData.active : true,
-        is_public: functionData.is_public || false
-      });
-      
+    if (functionData && !hasInitialized.current) {
       if (functionData.parameterSchema?.properties) {
         const initialSchema = Object.entries(functionData.parameterSchema.properties).map(
           ([name, schema]: [string, SchemaProperty]) => ({
@@ -140,30 +127,29 @@ export default function FunctionConfiguration({
     { id: "advancedSettings", label: "Advanced Settings" },
   ];
 
-
   const updateField = (field: keyof FunctionData, value: unknown) => {
-    setFunctionState(prev => ({
-      ...prev,
-      [field]: value
-    }));
+    onUpdateState({ [field]: value });
   };
 
   const addHeader = () => {
-      const newHeader = {
-        id: Date.now().toString(),
-        name: newHeaderName.trim(),
-        value: newHeaderValue.trim()
-      };
+    if (!functionData) return;
     
-    const updatedHeaders = [...(functionState.headers || []), newHeader];
+    const newHeader = {
+      id: Date.now().toString(),
+      name: newHeaderName.trim(),
+      value: newHeaderValue.trim()
+    };
+  
+    const updatedHeaders = [...(functionData.headers || []), newHeader];
     updateField('headers', updatedHeaders);
-    
-      setNewHeaderName("");
-      setNewHeaderValue("");
+  
+    setNewHeaderName("");
+    setNewHeaderValue("");
   };
 
   const removeHeader = (id: string) => {
-    const updatedHeaders = (functionState.headers || []).filter(header => header.id !== id);
+    if (!functionData) return;
+    const updatedHeaders = (functionData.headers || []).filter(header => header.id !== id);
     updateField('headers', updatedHeaders);
   };
 
@@ -235,49 +221,8 @@ export default function FunctionConfiguration({
   
 
   const handleSave = () => {
-    if (onSave) {
-      const headersObject = functionState.headers?.reduce((obj, header) => {
-        obj[header.name] = header.value;
-        return obj;
-      }, {} as Record<string, string>) || {};
-
-      let base_url = '';
-      let endpoint_path = '';
-      
-      if (functionState.url) {
-        const url = new URL(functionState.url);
-        base_url = `${url.protocol}//${url.hostname}`;
-        endpoint_path = url.pathname.startsWith('/') ? url.pathname.substring(1) : url.pathname;
-      }
-
-      const formattedData = {
-        id: functionState.id,
-        name: functionState.name,
-        description: functionState.description,
-        base_url,
-        endpoint_path,
-        function_name: functionState.functionName,
-        function_description: functionState.description, 
-        http_method: functionState.method,
-        headers: headersObject,
-        parameter_schema: functionState.parameterSchema,
-        request_template: functionState.requestTemplate,
-        auth_required: functionState.auth_required || false,
-        response_mapping: functionState.response_mapping || { success: "status" },
-        error_mapping: functionState.error_mapping || { 
-          "400": "Bad request format", 
-          "500": "Server error in Make.com" 
-        },
-        active: functionState.active !== undefined ? functionState.active : true,
-        is_public: functionState.is_public || false
-      };
-
-      console.log("Formatted data for API:", formattedData);
-      const internalFormat = {
-        ...functionState,
-      };
-
-      onSave(internalFormat);
+    if (onSave && functionData) {
+      onSave(functionData);
     }
   };
 
@@ -354,7 +299,7 @@ export default function FunctionConfiguration({
                   <Input
                     id="name"
                     placeholder="Add Patient Record"
-                    value={functionState.name}
+                    value={formValues.name}
                     onChange={(e) => updateField('name', e.target.value)}
                     className="mt-1 bg-[#1A1D25]/70 border-white/10 text-white placeholder:text-white/40 focus:border-orange-500/50 focus:ring-orange-500/20"
                   />
@@ -366,7 +311,7 @@ export default function FunctionConfiguration({
                   <Input 
                     id="functionName" 
                     placeholder="new_blank_function"
-                    value={functionState.functionName}
+                    value={formValues.functionName}
                     onChange={(e) => updateField('functionName', e.target.value)}
                     className="mt-1 bg-[#1A1D25]/70 border-white/10 text-white placeholder:text-white/40 focus:border-orange-500/50 focus:ring-orange-500/20"
                   />
@@ -378,7 +323,7 @@ export default function FunctionConfiguration({
                     <Label htmlFor="requestType" className="text-white/80">Request Type</Label>
                     <select
                       id="requestType"
-                      value={functionState.method}
+                      value={formValues.method}
                       onChange={(e) => updateField('method', e.target.value)}
                       className="mt-1 flex h-10 w-full rounded-md border border-white/10 bg-[#1A1D25]/70 px-3 py-2 text-white ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500/30 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                     >
@@ -393,7 +338,7 @@ export default function FunctionConfiguration({
                     <div className="flex items-center space-x-2 h-10">
                       <Switch 
                         id="async-mode" 
-                        checked={!!functionState.async}
+                        checked={formValues.async}
                         onCheckedChange={(checked) => updateField('async', checked)}
                         className="data-[state=checked]:bg-gradient-to-r data-[state=checked]:from-orange-500 data-[state=checked]:to-red-500"
                       />
@@ -407,7 +352,7 @@ export default function FunctionConfiguration({
                   <Input 
                     id="url" 
                     placeholder="https://api.example.com/new"
-                    value={functionState.url}
+                    value={formValues.url}
                     onChange={(e) => updateField('url', e.target.value)}
                     className="mt-1 bg-[#1A1D25]/70 border-white/10 text-white placeholder:text-white/40 focus:border-orange-500/50 focus:ring-orange-500/20"
                   />
@@ -419,7 +364,7 @@ export default function FunctionConfiguration({
                   <Textarea 
                     id="description" 
                     placeholder="A new function starting from scratch."
-                    value={functionState.description}
+                    value={formValues.description}
                     onChange={(e) => updateField('description', e.target.value)}
                     className="mt-1 min-h-[100px] bg-[#1A1D25]/70 border-white/10 text-white placeholder:text-white/40 focus:border-orange-500/50 focus:ring-orange-500/20"
                   />
@@ -448,17 +393,17 @@ export default function FunctionConfiguration({
               <p className="text-sm text-white/60 mb-4">Add custom headers to be sent with the request, like Authentication tokens</p>
               
               <div className="space-y-4">
-                {functionState.headers?.map((header) => (
+                {functionData?.headers?.map((header) => (
                   <div key={header.id} className="grid grid-cols-[1fr_1fr_auto] gap-2">
                     <Input 
                       value={header.name}
-                      onChange={(e) => updateField('headers', (functionState.headers || []).map(h => h.id === header.id ? { ...h, name: e.target.value } : h))}
+                      onChange={(e) => updateField('headers', (functionData.headers || []).map(h => h.id === header.id ? { ...h, name: e.target.value } : h))}
                       className="bg-[#1A1D25]/70 border-white/10 text-white focus:border-orange-500/50 focus:ring-orange-500/20"
                       placeholder="Header Name"
                     />
                     <Input 
                       value={header.value}
-                      onChange={(e) => updateField('headers', (functionState.headers || []).map(h => h.id === header.id ? { ...h, value: e.target.value } : h))}
+                      onChange={(e) => updateField('headers', (functionData.headers || []).map(h => h.id === header.id ? { ...h, value: e.target.value } : h))}
                       className="bg-[#1A1D25]/70 border-white/10 text-white focus:border-orange-500/50 focus:ring-orange-500/20"
                       placeholder="Value"
                     />
@@ -509,12 +454,12 @@ export default function FunctionConfiguration({
             </h4>
             <p className="text-sm text-white/60 mb-6">Configure the parameters for this API endpoint</p>
 
-            {functionState.parameterSchema && (
+            {functionData?.parameterSchema && (
               <div className="space-y-4">
                 <div>
                   <h3 className="text-sm font-medium text-white mb-2">Required Parameters</h3>
                   <div className="flex flex-wrap gap-2">
-                    {functionState.parameterSchema.required?.map((param: string) => (
+                    {functionData.parameterSchema.required?.map((param: string) => (
                       <div key={param} className="px-2 py-1 bg-orange-500/20 border border-orange-500/30 rounded text-xs text-orange-300">
                         {param}
                       </div>
@@ -538,12 +483,12 @@ export default function FunctionConfiguration({
               onSchemaChange={handleSchemaChange}
             />
 
-            {functionState.parameterSchema && (
+            {functionData?.parameterSchema && (
               <div className="mt-6 p-4 rounded-md border border-white/10 bg-white/5">
                 <h3 className="text-sm font-medium text-white mb-2">Generated Parameter Schema</h3>
                 <p className="text-xs text-white/60 mb-3">This schema will be used for the API request body</p>
                 <pre className="text-xs text-white/70 overflow-auto max-h-[200px] p-2 bg-black/20 rounded">
-                  {JSON.stringify(functionState.parameterSchema, null, 2)}
+                  {JSON.stringify(functionData.parameterSchema, null, 2)}
                 </pre>
               </div>
             )}
@@ -565,11 +510,11 @@ export default function FunctionConfiguration({
                   <div className="flex items-center space-x-2">
                     <Switch
                       id="active"
-                      checked={!!functionState.active}
+                      checked={!!functionData?.active}
                       onCheckedChange={(checked) => updateField('active', checked)}
                       className="data-[state=checked]:bg-gradient-to-r data-[state=checked]:from-orange-500 data-[state=checked]:to-red-500"
                     />
-                    <Label htmlFor="active" className="text-white/80">{functionState.active ? "Active" : "Inactive"}</Label>
+                    <Label htmlFor="active" className="text-white/80">{functionData?.active ? "Active" : "Inactive"}</Label>
                   </div>
                 </div>
 
@@ -578,11 +523,11 @@ export default function FunctionConfiguration({
                   <div className="flex items-center space-x-2">
                     <Switch
                       id="is_public"
-                      checked={!!functionState.is_public}
+                      checked={!!functionData?.is_public}
                       onCheckedChange={(checked) => updateField('is_public', checked)}
                       className="data-[state=checked]:bg-gradient-to-r data-[state=checked]:from-orange-500 data-[state=checked]:to-red-500"
                     />
-                    <Label htmlFor="is_public" className="text-white/80">{functionState.is_public ? "Public" : "Private"}</Label>
+                    <Label htmlFor="is_public" className="text-white/80">{functionData?.is_public ? "Public" : "Private"}</Label>
                   </div>
                 </div>
               </div>
@@ -601,11 +546,11 @@ export default function FunctionConfiguration({
                   <div className="flex items-center space-x-2">
                     <Switch
                       id="auth_required"
-                      checked={!!functionState.auth_required}
+                      checked={!!functionData?.auth_required}
                       onCheckedChange={(checked) => updateField('auth_required', checked)}
                       className="data-[state=checked]:bg-gradient-to-r data-[state=checked]:from-orange-500 data-[state=checked]:to-red-500"
                     />
-                    <Label htmlFor="auth_required" className="text-white/80">{functionState.auth_required ? "Required" : "Not Required"}</Label>
+                    <Label htmlFor="auth_required" className="text-white/80">{functionData?.auth_required ? "Required" : "Not Required"}</Label>
                   </div>
                 </div>
               </div>
@@ -619,12 +564,12 @@ export default function FunctionConfiguration({
               <p className="text-sm text-white/60 mb-6">Define how to map API responses to your function results</p>
 
               <div className="space-y-4">
-                {Object.entries(functionState.response_mapping || {}).map(([key, value], index) => (
+                {Object.entries(functionData?.response_mapping || {}).map(([key, value], index) => (
                   <div key={index} className="grid grid-cols-[1fr_1fr_auto] gap-2">
                     <Input
                       value={key}
                       onChange={(e) => {
-                        const newMapping = { ...functionState.response_mapping };
+                        const newMapping = { ...functionData.response_mapping };
                         const oldKey = key;
                         delete newMapping[oldKey];
                         newMapping[e.target.value] = value;
@@ -636,7 +581,7 @@ export default function FunctionConfiguration({
                     <Input
                       value={value}
                       onChange={(e) => {
-                        const newMapping = { ...functionState.response_mapping };
+                        const newMapping = { ...functionData.response_mapping };
                         newMapping[key] = e.target.value;
                         updateField('response_mapping', newMapping);
                       }}
@@ -645,7 +590,7 @@ export default function FunctionConfiguration({
                     />
                     <Button
                       onClick={() => {
-                        const newMapping = { ...functionState.response_mapping };
+                        const newMapping = { ...functionData.response_mapping };
                         delete newMapping[key];
                         updateField('response_mapping', newMapping);
                       }}
@@ -660,7 +605,7 @@ export default function FunctionConfiguration({
 
                 <Button
                   onClick={() => {
-                    const newMapping = { ...functionState.response_mapping, '': '' };
+                    const newMapping = { ...functionData.response_mapping, '': '' };
                     updateField('response_mapping', newMapping);
                   }}
                   variant="outline"
@@ -681,12 +626,12 @@ export default function FunctionConfiguration({
               <p className="text-sm text-white/60 mb-6">Define error messages for different HTTP status codes</p>
 
               <div className="space-y-4">
-                {Object.entries(functionState.error_mapping || {}).map(([code, message], index) => (
+                {Object.entries(functionData?.error_mapping || {}).map(([code, message], index) => (
                   <div key={index} className="grid grid-cols-[1fr_1fr_auto] gap-2">
                     <Input
                       value={code}
                       onChange={(e) => {
-                        const newMapping = { ...functionState.error_mapping };
+                        const newMapping = { ...functionData.error_mapping };
                         const oldCode = code;
                         delete newMapping[oldCode];
                         newMapping[e.target.value] = message;
@@ -698,7 +643,7 @@ export default function FunctionConfiguration({
                     <Input
                       value={message}
                       onChange={(e) => {
-                        const newMapping = { ...functionState.error_mapping };
+                        const newMapping = { ...functionData.error_mapping };
                         newMapping[code] = e.target.value;
                         updateField('error_mapping', newMapping);
                       }}
@@ -707,7 +652,7 @@ export default function FunctionConfiguration({
                     />
                     <Button
                       onClick={() => {
-                        const newMapping = { ...functionState.error_mapping };
+                        const newMapping = { ...functionData.error_mapping };
                         delete newMapping[code];
                         updateField('error_mapping', newMapping);
                       }}
@@ -736,7 +681,7 @@ export default function FunctionConfiguration({
                   <Button
                     onClick={() => {
                       if (newErrorCode.trim() && newErrorMessage.trim()) {
-                        const newMapping = { ...functionState.error_mapping, [newErrorCode.trim()]: newErrorMessage.trim() };
+                        const newMapping = { ...functionData.error_mapping, [newErrorCode.trim()]: newErrorMessage.trim() };
                         updateField('error_mapping', newMapping);
                         setNewErrorCode('');
                         setNewErrorMessage('');

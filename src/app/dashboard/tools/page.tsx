@@ -65,6 +65,7 @@ export default function ToolsPage() {
   const [selectedFunction, setSelectedFunction] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState("basicInfo");
   const [isCreating, setIsCreating] = useState(false);
+  const [functionStates, setFunctionStates] = useState<Record<string, FunctionComponentData>>({});
 
   const { 
     functions, 
@@ -90,6 +91,19 @@ export default function ToolsPage() {
       });
     }
   }, [error, toast]);
+
+  useEffect(() => {
+    if (functions?.items) {
+      const states = functions.items.reduce((acc, func) => {
+        const componentFormat = transformToComponentFormat(func);
+        if (componentFormat) {
+          acc[func.function_name] = componentFormat;
+        }
+        return acc;
+      }, {} as Record<string, FunctionComponentData>);
+      setFunctionStates(states);
+    }
+  }, [functions]);
   
   const availableFunctions = functions?.items?.map(func => ({
     id: func.id || func.function_name,
@@ -103,9 +117,17 @@ export default function ToolsPage() {
     setActiveTab("basicInfo");
   };
 
-  const selectedFunctionData = functions?.items?.find(func => 
-    func.function_name === selectedFunction
-  ) || null;
+  const selectedFunctionData = selectedFunction ? functionStates[selectedFunction] : null;
+
+  const updateFunctionState = (id: string, newState: Partial<FunctionComponentData>) => {
+    setFunctionStates(prev => ({
+      ...prev,
+      [id]: {
+        ...prev[id],
+        ...newState
+      }
+    }));
+  };
 
   const transformToComponentFormat = (apiFunction: ApiFunctionData | null): FunctionComponentData | null => {
     if (!apiFunction) return null;
@@ -315,8 +337,9 @@ export default function ToolsPage() {
             <FunctionConfiguration 
               activeTab={activeTab}
               setActiveTab={setActiveTab}
-              functionData={transformToComponentFormat(selectedFunctionData)}
+              functionData={selectedFunctionData}
               onSave={handleSaveFunctionData}
+              onUpdateState={(newState) => selectedFunction && updateFunctionState(selectedFunction, newState)}
             />
           )}
         </div>

@@ -49,6 +49,7 @@ export default function FunctionSidebar({
           <h3 className="text-xl font-bold text-white">Tools</h3>
         </div>
       </div>
+      
 
       <div className="p-4 top-0 z-10 backdrop-blur-sm bg-[#1A1D25]/80 border-b border-white/10">
         <Button 
