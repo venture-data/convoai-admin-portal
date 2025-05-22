@@ -265,52 +265,23 @@ export default function ToolsPage() {
   };
 
   return (
-    <div className="min-h-screen grid grid-rows-[auto_1fr] relative">
-      <div className="absolute inset-0">
-        <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-gradient-to-r from-[#F97316]/40 to-[#EF4444]/30 blur-[100px] rounded-full"></div>
-      </div>
+    <div className="grid grid-cols-[350px_1fr]">
+      <FunctionSidebar 
+        functions={availableFunctions}
+        selectedFunction={selectedFunction}
+        onSelectFunction={handleSelectFunction}
+        onDeleteFunction={handleDeleteFunction}
+        onCreateFunction={handleCreateFunction}
+        isCreating={isCreating || createFunction.isPending}
+        isLoading={isLoading}
+      />
       
-      <div className="p-6 space-y-4 relative z-10">
-        <div>
-          <h1 className="text-2xl font-semibold text-white">Function Configurations</h1>
-          <p className="text-white/60">Manage API function configurations and endpoints for your voice agents</p>
+      <div className="p-8 backdrop-blur-xl bg-[#1A1D25]/70 rounded-lg">
+        <div className="absolute inset-0">
+          <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-gradient-to-r from-[#F97316]/40 to-[#EF4444]/30 blur-[100px] rounded-full"></div>
         </div>
-      </div>
-      
-      <main className="grid grid-cols-[350px_1fr] gap-6 px-6 pb-6 relative z-10">
-        <div className="backdrop-blur-xl bg-[#1A1D25]/70 rounded-lg border border-white/10 flex flex-col">
-          <div className="p-4 sticky top-0 z-10 backdrop-blur-sm bg-[#1A1D25]/80 border-b border-white/10">
-            <Button 
-              className="w-full flex items-center gap-2 bg-gradient-to-r from-orange-500 to-red-500 text-white hover:bg-gradient-to-r hover:from-orange-600 hover:to-red-600 border-none"
-              onClick={handleCreateFunction}
-              disabled={isCreating || createFunction.isPending}
-            >
-              {(isCreating || createFunction.isPending) ? (
-                <>Creating...</>
-              ) : (
-                <>
-                  <PlusIcon className="h-4 w-4" />
-                  Create New Function
-                </>
-              )}
-            </Button>
-          </div>
-          
-          {isLoading ? (
-            <div className="flex items-center justify-center h-40 text-white/60">
-              Loading functions...
-            </div>
-          ) : (
-            <FunctionSidebar 
-              functions={availableFunctions}
-              selectedFunction={selectedFunction}
-              onSelectFunction={handleSelectFunction}
-              onDeleteFunction={handleDeleteFunction}
-            />
-          )}
-        </div>
-        
-        <div className="backdrop-blur-xl bg-[#1A1D25]/70 rounded-lg border border-white/10">
+
+        <div className="relative z-10">
           {isLoading ? (
             <div className="flex items-center justify-center h-96 text-white/60">
               Loading function details...
@@ -349,7 +320,7 @@ export default function ToolsPage() {
             />
           )}
         </div>
-      </main>
+      </div>
     </div>
   );
 } 

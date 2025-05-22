@@ -33,7 +33,7 @@ export default function PhoneNumberConfig({ phoneNumber, onUpdate }: PhoneNumber
   const { updateSipTrunk, isUpdating, agentMappings, isLoadingMapping } = useSip();
   const { agents, isLoading: isLoadingAgents } = useAgent();
   const { toast } = useToast();
-  const [outboundNumber, setOutboundNumber] = useState("");
+  const [outboundNumbers, setOutboundNumbers] = useState<string[]>([""]);
   const [isCallLoading, setIsCallLoading] = useState(false);
 
   const handleSave = () => {
@@ -105,12 +105,12 @@ export default function PhoneNumberConfig({ phoneNumber, onUpdate }: PhoneNumber
   };
 
   const handleOutboundCall = async () => {
-    if (!selectedAgentId || !outboundNumber) return;
+    if (!selectedAgentId || outboundNumbers.some(num => !num)) return;
     
     setIsCallLoading(true);
     try {
       const callData = {
-        phone_numbers: [outboundNumber],
+        phone_numbers: outboundNumbers.filter(num => num.trim()),
         agent_id: selectedAgentId,
         attributes: {
           greeting_type: "sales"
@@ -127,29 +127,71 @@ export default function PhoneNumberConfig({ phoneNumber, onUpdate }: PhoneNumber
       });
 
       if (!response.ok) {
-        throw new Error('Failed to initiate call');
+        throw new Error('Did not get any response');
       }
 
       const data = await response.json();
-      if (data.errors) {
-        throw new Error(Object.values(data.errors)[0] as string);
+      
+      if (!data?.success) {
+        const errors = data.errors || {};
+        const busyNumbers: string[] = [];
+        const actualErrors: string[] = [];
+
+        Object.entries(errors).forEach(([phoneNum, errorMsg]) => {
+          if (typeof errorMsg === 'string' && errorMsg.includes('BUSY_HERE')) {
+            busyNumbers.push(phoneNum);
+          } else {
+            actualErrors.push(`${phoneNum}: ${String(errorMsg)}`);
+          }
+        });
+
+        if (actualErrors.length > 0) {
+          throw new Error(actualErrors.join(', '));
+        }
+        if (busyNumbers.length > 0) {
+          toast({
+            title: "Call Status",
+            description: `Call(s) made but recipient(s) were unavailable: ${busyNumbers.join(', ')}`,
+            variant: "default",
+          });
+          setOutboundNumbers([""]);
+          return;
+        }
       }
 
       toast({
         title: "Success",
-        description: "Outbound call initiated successfully",
+        description: `Outbound calls initiated successfully to ${outboundNumbers.length} number(s)`,
         variant: "default",
       });
-      setOutboundNumber("");
+      setOutboundNumbers([""]);
     } catch (error) {
       toast({
         title: "Error",
-        description: error instanceof Error ? error.message : 'Failed to initiate outbound call',
+        description: error instanceof Error ? error.message : 'Failed to initiate outbound calls',
         variant: "destructive",
       });
     } finally {
       setIsCallLoading(false);
     }
+  };
+
+  const addPhoneNumber = () => {
+    setOutboundNumbers([...outboundNumbers, ""]);
+  };
+
+  const removePhoneNumber = (index: number) => {
+    if (outboundNumbers.length > 1) {
+      const newNumbers = [...outboundNumbers];
+      newNumbers.splice(index, 1);
+      setOutboundNumbers(newNumbers);
+    }
+  };
+
+  const updatePhoneNumber = (index: number, value: string) => {
+    const newNumbers = [...outboundNumbers];
+    newNumbers[index] = value;
+    setOutboundNumbers(newNumbers);
   };
 
   return (
@@ -265,17 +307,37 @@ export default function PhoneNumberConfig({ phoneNumber, onUpdate }: PhoneNumber
               
               <div className="space-y-5">
                 <div className="space-y-2">
-                  <Label>Phone Number (E.164 format)</Label>
-                  <div className="flex gap-2">
-                    <Input
-                      placeholder="+18312738884"
-                      value={outboundNumber}
-                      onChange={(e) => setOutboundNumber(e.target.value)}
-                      className="bg-[#1A1D25]/70 border-white/10 text-white placeholder:text-white/60 focus:border-orange-500/50 focus:ring-orange-500/20"
-                    />
+                  <Label>Phone Numbers (E.164 format)</Label>
+                  {outboundNumbers.map((number, index) => (
+                    <div key={index} className="flex gap-2">
+                      <Input
+                        placeholder="+18312738884"
+                        value={number}
+                        onChange={(e) => updatePhoneNumber(index, e.target.value)}
+                        className="bg-[#1A1D25]/70 border-white/10 text-white placeholder:text-white/60 focus:border-orange-500/50 focus:ring-orange-500/20"
+                      />
+                      {outboundNumbers.length > 1 && (
+                        <Button
+                          onClick={() => removePhoneNumber(index)}
+                          variant="ghost"
+                          className="px-3 hover:bg-red-500/20 hover:text-red-400"
+                        >
+                          ×
+                        </Button>
+                      )}
+                    </div>
+                  ))}
+                  <div className="flex justify-between items-center mt-2">
+                    <Button
+                      onClick={addPhoneNumber}
+                      variant="ghost"
+                      className="text-orange-400 hover:text-orange-500 hover:bg-orange-500/20"
+                    >
+                      + Add another number
+                    </Button>
                     <Button
                       onClick={handleOutboundCall}
-                      disabled={isCallLoading || !selectedAgentId || !outboundNumber}
+                      disabled={isCallLoading || !selectedAgentId || outboundNumbers.some(num => !num)}
                       className="bg-orange-500 hover:bg-orange-600 text-white min-w-[100px]"
                     >
                       {isCallLoading ? (
@@ -283,7 +345,7 @@ export default function PhoneNumberConfig({ phoneNumber, onUpdate }: PhoneNumber
                       ) : (
                         <>
                           <PhoneCall className="w-4 h-4 mr-2" />
-                          Call
+                          Call {outboundNumbers.filter(num => num.trim()).length} number(s)
                         </>
                       )}
                     </Button>
