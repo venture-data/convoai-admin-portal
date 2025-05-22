@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Wrench, Trash2, PlusIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -29,6 +29,18 @@ export default function FunctionSidebar({
   isCreating,
   isLoading
 }: FunctionSidebarProps) {
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+
+  const handleDelete = async (e: React.MouseEvent, id: string) => {
+    e.stopPropagation();
+    setDeletingId(id);
+    try {
+      await onDeleteFunction?.(id);
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
   return (
     <div className="sticky top-0 h-[100vh]  flex-shrink-0 bg-[#1A1D25] border-r border-white/10">
       <div className="flex items-center justify-between p-4 border-b border-white/10">
@@ -96,17 +108,17 @@ export default function FunctionSidebar({
                   </div>
                   {onDeleteFunction && (
                     <Button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        if (window.confirm(`Are you sure you want to delete "${func.name}"?`)) {
-                          onDeleteFunction(func.id);
-                        }
-                      }}
+                      onClick={(e) => handleDelete(e, func.id)}
                       variant="ghost"
                       size="icon"
-                      className="opacity-0 group-hover:opacity-100 text-white/60 hover:text-red-400 hover:bg-red-500/10 h-6 w-6 ml-2"
+                      disabled={deletingId === func.id}
+                      className="text-red-500 hover:text-red-600 group-hover:opacity-100 hover:bg-red-500/10 h-6 w-6 ml-2"
                     >
-                      <Trash2 className="h-3.5 w-3.5" />
+                      {deletingId === func.id ? (
+                        <div className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white/60 border-t-transparent" />
+                      ) : (
+                        <Trash2 className="h-3.5 w-3.5" />
+                      )}
                     </Button>
                   )}
                 </div>
