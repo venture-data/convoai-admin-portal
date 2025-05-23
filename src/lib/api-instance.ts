@@ -22,6 +22,16 @@ const processQueue = (error: Error | null) => {
   failedQueue = [];
 };
 
+const handleSessionTimeout = async () => {
+  useAuthStore.getState().setCreds({
+    token: '',
+    isAuth: false
+  });
+  await signOut({ 
+    callbackUrl: '/?error=Session expired. Please login again.' 
+  });
+};
+
 async function fetchWithAuth(url: string, options: RequestInit = {}) {
   const token = useAuthStore.getState().token;
   const headers = new Headers(options.headers || {});
@@ -50,8 +60,8 @@ async function fetchWithAuth(url: string, options: RequestInit = {}) {
         });
       } catch (error) {
         console.error("Queue error:", error);
-        await signOut({ callbackUrl: '/' });
-        throw error;
+        await handleSessionTimeout();
+        return new Response(null, { status: 401 });
       }
     }
 
@@ -69,12 +79,14 @@ async function fetchWithAuth(url: string, options: RequestInit = {}) {
 
       if (!refreshResponse.ok) {
         console.error("Refresh failed:", await refreshResponse.text());
-        throw new Error('Token refresh failed');
+        await handleSessionTimeout();
+        return new Response(null, { status: 401 });
       }
 
       const data = await refreshResponse.json();
       if (!data.access_token) {
-        throw new Error('No access token in refresh response');
+        await handleSessionTimeout();
+        return new Response(null, { status: 401 });
       }
 
       useAuthStore.getState().setCreds({
@@ -95,7 +107,8 @@ async function fetchWithAuth(url: string, options: RequestInit = {}) {
     } catch (error) {
       console.error("Refresh error:", error);
       processQueue(error instanceof Error ? error : new Error('Token refresh failed'));
-      throw error;
+      await handleSessionTimeout();
+      return new Response(null, { status: 401 });
     } finally {
       isRefreshing = false;
     }

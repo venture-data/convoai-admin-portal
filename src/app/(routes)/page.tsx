@@ -1,7 +1,7 @@
 'use client';
 
 import { signIn } from 'next-auth/react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Loader } from 'lucide-react';
 import { useAuthStore } from '../hooks/useAuth';
@@ -11,7 +11,7 @@ import { FormField } from '@/components/auth/forms/FormField';
 import { z } from 'zod';
 import { FieldValues, UseFormRegister } from 'react-hook-form';
 import { toast } from '@/app/hooks/use-toast';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 
 const formSchema = z.object({
@@ -26,6 +26,18 @@ export default function Page() {
   const [isLoading, setIsLoading] = useState(false);
   // const [googleLoading, setGoogleLoading] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const error = searchParams.get('error');
+    if (error) {
+      toast({
+        variant: 'destructive',
+        title: 'Session Expired',
+        description: error
+      });
+    }
+  }, [searchParams]);
 
   const { register, errors, onSubmitHandler } = useDynamicForm<FormValues>(
     formSchema,
