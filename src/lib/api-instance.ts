@@ -105,7 +105,6 @@ async function fetchWithAuth(url: string, options: RequestInit = {}) {
       
       return newResponse;
     } catch (error) {
-      console.error("Refresh error:", error);
       processQueue(error instanceof Error ? error : new Error('Token refresh failed'));
       await handleSessionTimeout();
       return new Response(null, { status: 401 });
