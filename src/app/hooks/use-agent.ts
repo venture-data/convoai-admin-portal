@@ -3,8 +3,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AgentConfig } from "@/app/dashboard/new_agents/types";
 import api from "@/lib/api-instance";
-import { useAuthStore } from "./useAuth";
-import { useToast } from "@/app/hooks/use-toast";
 
 interface UpdateAgentPayload {
   name: string;
@@ -54,10 +52,8 @@ interface AgentsResponse {
 
 export function useAgent() {
   const queryClient = useQueryClient()
-  const { toast } = useToast();
   const createAgent = useMutation({
     mutationFn: async (agentConfig: AgentConfig) => {
-      // Check if token is available
       if (!api.isTokenAvailable()) {
         throw new Error("Agent not created because token is not in local storage. Please refresh the page or log in again.");
       }
