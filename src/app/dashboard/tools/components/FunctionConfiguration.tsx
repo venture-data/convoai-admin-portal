@@ -97,20 +97,56 @@ export default function FunctionConfiguration({
     ...functionData
   };
 
+  const generateRequestTemplate = (propertiesSchema: Record<string, SchemaProperty>): Record<string, string> => {
+    return Object.keys(propertiesSchema).reduce((template, key) => {
+      template[key] = `\${${key}}`;
+      return template;
+    }, {} as Record<string, string>);
+  };
+
   useEffect(() => {
+    if (functionData?.functionName && hasInitialized.current) {
+      hasInitialized.current = false;
+    }
+    
     if (functionData && !hasInitialized.current) {
       if (functionData.parameterSchema?.properties) {
-        const initialSchema = Object.entries(functionData.parameterSchema.properties).map(
-          ([name, schema]: [string, SchemaProperty]) => ({
-            name,
-            type: schema.type || 'string',
-            description: schema.description || '',
-            required: functionData.parameterSchema?.required?.includes(name) || false,
-            properties: []
-          })
-        );
+        const processProperties = (properties: Record<string, SchemaProperty>): RequestBodyProperty[] => {
+          return Object.entries(properties).map(([name, schema]) => {
+            const prop: RequestBodyProperty = {
+              name,
+              type: schema.type || 'string',
+              description: schema.description || '',
+              required: functionData.parameterSchema?.required?.includes(name) || false,
+              properties: []
+            };
+
+            if (schema.type === 'object' && schema.properties) {
+              prop.properties = processProperties(schema.properties);
+            }
+          
+            if (schema.type === 'array' && schema.items?.type === 'object' && schema.items.properties) {
+              const arrayItemProp: RequestBodyProperty = {
+                name: 'item',
+                type: 'object',
+                required: false,
+                properties: processProperties(schema.items.properties)
+              };
+              prop.properties = [arrayItemProp];
+            }
+            
+            return prop;
+          });
+        };
+        
+        const initialSchema = processProperties(functionData.parameterSchema.properties);
         initialSchemaRef.current = initialSchema;
         setCurrentBuilderSchema(initialSchema);
+        
+        if (!functionData.requestTemplate || Object.keys(functionData.requestTemplate).length === 0) {
+          const requestTemplate = generateRequestTemplate(functionData.parameterSchema.properties);
+          updateField('requestTemplate', requestTemplate);
+        }
       } else {
         initialSchemaRef.current = [];
         setCurrentBuilderSchema([]);
@@ -216,7 +252,11 @@ export default function FunctionConfiguration({
       required: requiredFields.length > 0 ? requiredFields : undefined
     };
 
+    // Generate request template with placeholder variables
+    const requestTemplate = generateRequestTemplate(propertiesSchema);
+
     updateField('parameterSchema', updatedSchema);
+    updateField('requestTemplate', requestTemplate);
   };
   
 
@@ -479,6 +519,7 @@ export default function FunctionConfiguration({
             </h4>
 
             <RequestBodyBuilder
+              key={`request-body-${functionData?.functionName || 'new'}`}
               initialSchema={currentBuilderSchema}
               onSchemaChange={handleSchemaChange}
             />
@@ -489,6 +530,31 @@ export default function FunctionConfiguration({
                 <p className="text-xs text-white/60 mb-3">This schema will be used for the API request body</p>
                 <pre className="text-xs text-white/70 overflow-auto max-h-[200px] p-2 bg-black/20 rounded">
                   {JSON.stringify(functionData.parameterSchema, null, 2)}
+                </pre>
+              </div>
+            )}
+            
+            {functionData?.requestTemplate && Object.keys(functionData.requestTemplate).length > 0 && (
+              <div className="mt-6 p-4 rounded-md border border-white/10 bg-white/5">
+                <div className="flex justify-between items-center mb-2">
+                  <h3 className="text-sm font-medium text-white">Generated Request Template</h3>
+                  <Button
+                    onClick={() => {
+                      if (functionData?.parameterSchema?.properties) {
+                        const requestTemplate = generateRequestTemplate(functionData.parameterSchema.properties);
+                        updateField('requestTemplate', requestTemplate);
+                      }
+                    }}
+                    variant="outline"
+                    size="sm"
+                    className="text-xs flex items-center gap-1 border-white/10 text-white/80 hover:text-white hover:bg-white/10"
+                  >
+                    Regenerate Template
+                  </Button>
+                </div>
+                <p className="text-xs text-white/60 mb-3">This template will be used when making API calls with this function</p>
+                <pre className="text-xs text-white/70 overflow-auto max-h-[200px] p-2 bg-black/20 rounded">
+                  {JSON.stringify(functionData.requestTemplate, null, 2)}
                 </pre>
               </div>
             )}

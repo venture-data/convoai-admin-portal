@@ -30,6 +30,7 @@ function RequestBodyBuilder({ initialSchema = [], onSchemaChange }: RequestBodyB
       lastInitialSchemaJSON.current = currentInitialSchemaJSON;
       isUpdatingFromProps.current = true;
       setProperties(initialSchema);
+      setEnableRequestBody(initialSchema.length > 0);
       
       setTimeout(() => {
         isUpdatingFromProps.current = false;

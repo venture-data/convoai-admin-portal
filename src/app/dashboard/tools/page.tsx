@@ -105,6 +105,28 @@ export default function ToolsPage() {
     }
   }, [functions]);
   
+  useEffect(() => {
+    if (selectedFunction && functionStates[selectedFunction]) {
+      console.log("Selected function:", selectedFunction);
+      console.log("Function data:", functionStates[selectedFunction]);
+    }
+  }, [selectedFunction, functionStates]);
+
+  useEffect(() => {
+    if (functions?.items && selectedFunction) {
+      const func = functions.items.find(f => f.function_name === selectedFunction);
+      if (func) {
+        const freshData = transformToComponentFormat(func);
+        if (freshData) {
+          setFunctionStates(prev => ({
+            ...prev,
+            [func.function_name]: freshData
+          }));
+        }
+      }
+    }
+  }, [functions?.items]);
+
   const availableFunctions = functions?.items?.map(func => ({
     id: func.id || func.function_name,
     name: func.name || "Unnamed Function",
@@ -115,6 +137,14 @@ export default function ToolsPage() {
   const handleSelectFunction = (id: string) => {
     const func = functions?.items?.find(f => f.id === id || f.function_name === id);
     if (func) {
+      const freshData = transformToComponentFormat(func);
+      
+      if (freshData) {
+        setFunctionStates(prev => ({
+          ...prev,
+          [func.function_name]: freshData
+        }));
+      }
       setSelectedFunction(func.function_name);
       setActiveTab("basicInfo");
     }
@@ -232,7 +262,7 @@ export default function ToolsPage() {
       const result = await createFunction.mutateAsync(newFunction);
       
       if (result) {
-        setSelectedFunction(newFunctionId);
+        setSelectedFunction("add_patient_record");
         setActiveTab("basicInfo");
         toast({
           title: "Success",
