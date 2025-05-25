@@ -32,8 +32,52 @@ const handleSessionTimeout = async () => {
   });
 };
 
-async function fetchWithAuth(url: string, options: RequestInit = {}) {
+const isTokenAvailable = (): boolean => {
   const token = useAuthStore.getState().token;
+  return !!token && token.length > 0;
+};
+
+const waitForToken = async (timeoutMs = 5000, intervalMs = 100): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const startTime = Date.now();
+    
+    const checkToken = () => {
+      const token = useAuthStore.getState().token;
+      
+      if (token && token.length > 0) {
+        resolve(token);
+        return;
+      }
+      
+      if (Date.now() - startTime > timeoutMs) {
+        reject(new Error('Token not available in localStorage after timeout'));
+        return;
+      }
+      
+      setTimeout(checkToken, intervalMs);
+    };
+    
+    checkToken();
+  });
+};
+
+async function fetchWithAuth(url: string, options: RequestInit = {}) {
+  let token = useAuthStore.getState().token;
+
+  if (!token) {
+    try {
+      console.log("Token not found in localStorage, waiting for it to be available...");
+      token = await waitForToken();
+      console.log("Token is now available in localStorage");
+    } catch (error) {
+      console.error("Failed to get token:", error);
+      return new Response(JSON.stringify({ error: 'Authentication token not available. Please refresh the page or log in again.' }), {
+        status: 401,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+  }
+  
   const headers = new Headers(options.headers || {});
   
   if (token) {
@@ -112,8 +156,7 @@ async function fetchWithAuth(url: string, options: RequestInit = {}) {
       isRefreshing = false;
     }
   }
-  console.log("response");
-  console.log(response);
+  
   return response;
 }
 
@@ -132,7 +175,9 @@ const api = {
 
   async delete(url: string, options: RequestInit = {}) {
     return fetchWithAuth(url, { ...options, method: 'DELETE' });
-  }
+  },
+  
+  isTokenAvailable
 };
 
 export default api; 

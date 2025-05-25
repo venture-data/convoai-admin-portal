@@ -368,15 +368,10 @@ export default function PhoneNumberConfig({ phoneNumber, onUpdate }: PhoneNumber
           <div className="space-y-5">
             <div className="space-y-2">
               <Label>Assistant</Label>
-              {currentMapping && (
-                <p className="text-sm text-orange-400 mb-2">
-                  This phone number is already assigned to an assistant. Contact support to modify the assignment.
-                </p>
-              )}
               <Select 
                 value={selectedAgentId} 
                 onValueChange={handleAgentChange}
-                disabled={isUpdating || !!currentMapping}
+                disabled={isUpdating}
               >
                 <SelectTrigger className="w-full bg-[#1A1D25]/70 border-white/10 hover:bg-[#1A1D25] focus:ring-orange-500/20 focus:border-orange-500/50 transition-colors">
                   <SelectValue>

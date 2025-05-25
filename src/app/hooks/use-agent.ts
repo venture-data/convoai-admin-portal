@@ -3,6 +3,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AgentConfig } from "@/app/dashboard/new_agents/types";
 import api from "@/lib/api-instance";
+import { useAuthStore } from "./useAuth";
+import { useToast } from "@/app/hooks/use-toast";
 
 interface UpdateAgentPayload {
   name: string;
@@ -52,8 +54,14 @@ interface AgentsResponse {
 
 export function useAgent() {
   const queryClient = useQueryClient()
+  const { toast } = useToast();
   const createAgent = useMutation({
     mutationFn: async (agentConfig: AgentConfig) => {
+      // Check if token is available
+      if (!api.isTokenAvailable()) {
+        throw new Error("Agent not created because token is not in local storage. Please refresh the page or log in again.");
+      }
+      
       const payload = {
         name: agentConfig.model.agentName,
         description: agentConfig.model.description || null,
@@ -176,6 +184,10 @@ export function useAgent() {
 
   const updateAgent = useMutation({
     mutationFn: async ({ agent_id, ...data }: UpdateAgentPayload & { agent_id: string }) => {
+      if (!api.isTokenAvailable()) {
+        throw new Error("Agent not updated because your session has expired. Please refresh the page or log in again.");
+      }
+      
       const response = await api.put(`api/v1/agent-profile?agent_id=${agent_id}`, {
         body: JSON.stringify(data),
         headers: {
@@ -257,6 +269,11 @@ export function useAgent() {
 
   const deleteAgent = useMutation({
     mutationFn: async (agent_id: string) => {
+      // Check if token is available
+      if (!api.isTokenAvailable()) {
+        throw new Error("Agent not deleted because token is not in local storage. Please refresh the page or log in again.");
+      }
+      
       const response = await api.delete(`api/v1/agent-profile?agent_id=${agent_id}`, {
         credentials: 'include'
       });
