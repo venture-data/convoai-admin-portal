@@ -1,7 +1,7 @@
 'use client';
 
 import { signIn } from 'next-auth/react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { Button } from '@/components/ui/button';
 import { Loader } from 'lucide-react';
 import { useAuthStore } from '../hooks/useAuth';
@@ -21,13 +21,9 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>;
 
-export default function Page() {
-  const authStore = useAuthStore();
-  const [isLoading, setIsLoading] = useState(false);
-  // const [googleLoading, setGoogleLoading] = useState(false);
-  const router = useRouter();
+function ErrorHandler() {
   const searchParams = useSearchParams();
-
+  
   useEffect(() => {
     const error = searchParams.get('error');
     if (error) {
@@ -38,6 +34,15 @@ export default function Page() {
       });
     }
   }, [searchParams]);
+  
+  return null;
+}
+
+export default function Page() {
+  const authStore = useAuthStore();
+  const [isLoading, setIsLoading] = useState(false);
+  // const [googleLoading, setGoogleLoading] = useState(false);
+  const router = useRouter();
 
   const { register, errors, onSubmitHandler } = useDynamicForm<FormValues>(
     formSchema,
@@ -89,7 +94,12 @@ export default function Page() {
   // };
 
   return (
-    <div >
+    <div>
+      {/* Add Suspense boundary for the component that uses useSearchParams */}
+      <Suspense fallback={null}>
+        <ErrorHandler />
+      </Suspense>
+      
       <div className='w-[400px] p-8 space-y-6'>
         <div className="text-center space-y-1">
           <h1 className="text-2xl font-semibold text-white">Welcome back</h1>
