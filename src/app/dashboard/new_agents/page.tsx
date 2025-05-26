@@ -114,9 +114,14 @@ export default function NewAgentPage() {
         model: agent.llm_options?.model || "gpt-4",
         description: agent.description,
         provider: agent.llm_provider,
+        stt_provider: agent.stt_provider as "deepgram" | "google" | "openai",
         temperature: agent.llm_options?.temperature || 0.7,
         stt_model: agent.stt_options?.model || "nova-3-general",
         stt_model_telephony: agent.stt_options?.model_telephony || "nova-2-phonecall",
+        stt_options:{
+          model: (agent.stt_options?.model || "nova-3-general") as "nova-3-general",
+          model_telephony: (agent.stt_options?.model_telephony || "nova-2-phonecall") as "nova-2-phonecall"
+        },
         allow_interruptions: agent.allow_interruptions,
         interrupt_speech_duration: agent.interrupt_speech_duration,
         interrupt_min_words: agent.interrupt_min_words,
@@ -159,10 +164,18 @@ export default function NewAgentPage() {
   };
   
 
+  console.log("agentconfig",agentConfig)
+  
+
   const handleCreateAgent = async () => {
     try {
       setIsSaving(true)
       if (selectedAgentId) {
+        console.log("selectedAgentId", selectedAgentId)
+        console.log("agentConfig", agentConfig)
+        console.log("agentConfig.model.stt_provider", agentConfig.model.stt_provider)
+        console.log("agentConfig.model.stt_model", agentConfig.model.stt_model)
+        console.log("agentConfig.model.stt_model_telephony", agentConfig.model.stt_model_telephony)
         const data = {
           agent_id: selectedAgentId,
           name: agentConfig.model.agentName,
@@ -190,8 +203,8 @@ export default function NewAgentPage() {
             speed: Number(agentConfig.voice?.tts_options?.speed || 1.0)
           },
           stt_options: {
-            model: agentConfig.model.stt_model || "nova-3-general",
-            model_telephony: agentConfig.model.stt_model_telephony || "nova-2-phonecall"
+            model: agentConfig.model.stt_options?.model || agentConfig.model.stt_model || "nova-3-general",
+            model_telephony: agentConfig.model.stt_options?.model_telephony || agentConfig.model.stt_model_telephony || "nova-2-phonecall"
           },
           allow_interruptions: Boolean(agentConfig.model.allow_interruptions),
           interrupt_speech_duration: Number(agentConfig.model.interrupt_speech_duration || 0.5),
@@ -203,6 +216,7 @@ export default function NewAgentPage() {
           max_nested_function_calls: Number(agentConfig.model.max_nested_function_calls || 1)
         };
 
+        console.log("data", data)
         await updateAgent.mutateAsync(data);
       } else {
         const createdAgent = await createAgent.mutateAsync({

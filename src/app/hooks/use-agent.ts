@@ -176,6 +176,7 @@ export function useAgent() {
 
   const updateAgent = useMutation({
     mutationFn: async ({ agent_id, ...data }: UpdateAgentPayload & { agent_id: string }) => {
+      console.log("data", data)
       const response = await api.put(`api/v1/agent-profile?agent_id=${agent_id}`, {
         body: JSON.stringify(data),
         headers: {
