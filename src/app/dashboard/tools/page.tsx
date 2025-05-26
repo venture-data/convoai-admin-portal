@@ -105,6 +105,28 @@ export default function ToolsPage() {
     }
   }, [functions]);
   
+  useEffect(() => {
+    if (selectedFunction && functionStates[selectedFunction]) {
+      console.log("Selected function:", selectedFunction);
+      console.log("Function data:", functionStates[selectedFunction]);
+    }
+  }, [selectedFunction, functionStates]);
+
+  useEffect(() => {
+    if (functions?.items && selectedFunction) {
+      const func = functions.items.find(f => f.function_name === selectedFunction);
+      if (func) {
+        const freshData = transformToComponentFormat(func);
+        if (freshData) {
+          setFunctionStates(prev => ({
+            ...prev,
+            [func.function_name]: freshData
+          }));
+        }
+      }
+    }
+  }, [functions?.items]);
+
   const availableFunctions = functions?.items?.map(func => ({
     id: func.id || func.function_name,
     name: func.name || "Unnamed Function",
@@ -113,8 +135,19 @@ export default function ToolsPage() {
   })) || [];
 
   const handleSelectFunction = (id: string) => {
-    setSelectedFunction(id);
-    setActiveTab("basicInfo");
+    const func = functions?.items?.find(f => f.id === id || f.function_name === id);
+    if (func) {
+      const freshData = transformToComponentFormat(func);
+      
+      if (freshData) {
+        setFunctionStates(prev => ({
+          ...prev,
+          [func.function_name]: freshData
+        }));
+      }
+      setSelectedFunction(func.function_name);
+      setActiveTab("basicInfo");
+    }
   };
 
   const selectedFunctionData = selectedFunction ? functionStates[selectedFunction] : null;
@@ -171,22 +204,57 @@ export default function ToolsPage() {
       const newFunctionId = `function_${randomId}`;
       
       const newFunction = {
-        name:newFunctionId,
-        description: "A new function created from scratch",
-        function_name: newFunctionId,
-        function_description: "A new function created from scratch",
-        base_url: "https://api.example.com",
-        endpoint_path: "new",
-        http_method: "GET",
-        headers: {},
+        name: newFunctionId,
+        description: "Adds a patient record to Google Sheets via Make.com webhook",
+        function_name: "add_patient_record",
+        function_description: "Add a new patient record to the database with their personal details",
+        base_url: "https://hook.eu2.make.com",
+        endpoint_path: "j235dmof2b2faa6hk61bg1r8a413s38y",
+        http_method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
         parameter_schema: {
           type: "object",
-          properties: {},
+          properties: {
+            name: {
+              type: "string",
+              description: "Full name of the patient"
+            },
+            age: {
+              type: "string",
+              description: "Age of the patient"
+            },
+            sex: {
+              type: "string",
+              description: "Gender of the patient (M/F/Other)"
+            },
+            marital_status: {
+              type: "string",
+              description: "Marital status of the patient"
+            },
+            phone_number: {
+              type: "string",
+              description: "Contact phone number with country code"
+            }
+          },
+          required: ["name", "age", "sex", "phone_number"]
         },
-        request_template: {},
+        request_template: {
+          name: "${name}",
+          age: "${age}",
+          sex: "${sex}",
+          marital_status: "${marital_status}",
+          phone_number: "${phone_number}"
+        },
         auth_required: false,
-        response_mapping: { success: "status" },
-        error_mapping: { "400": "Bad request format", "500": "Server error" },
+        response_mapping: {
+          success: "status"
+        },
+        error_mapping: {
+          "400": "Bad request format",
+          "500": "Server error in Make.com"
+        },
         active: true,
         is_public: false
       };
@@ -194,7 +262,7 @@ export default function ToolsPage() {
       const result = await createFunction.mutateAsync(newFunction);
       
       if (result) {
-        setSelectedFunction(newFunctionId);
+        setSelectedFunction("add_patient_record");
         setActiveTab("basicInfo");
         toast({
           title: "Success",

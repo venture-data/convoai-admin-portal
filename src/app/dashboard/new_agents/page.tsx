@@ -4,6 +4,7 @@ import { useToast } from "@/app/hooks/use-toast"
 import { TemplateSelectorModal } from "@/components/templates/template-selector-modal"
 import { useAgent } from "@/app/hooks/use-agent"
 import { useMobileMenu } from "@/store/use-mobile-menu"
+import api from "@/lib/api-instance"
 
 import Navbar  from "./components/Navbar"
 import Sidebar from "./components/Sidebar"
@@ -170,6 +171,15 @@ export default function NewAgentPage() {
   const handleCreateAgent = async () => {
     try {
       setIsSaving(true)
+      if (!api.isTokenAvailable()) {
+        toast({
+          title: "Authentication Error",
+          description: "Authentication token not available. Please refresh the page or log in again.",
+          variant: "destructive",
+        });
+        return;
+      }
+      
       if (selectedAgentId) {
         console.log("selectedAgentId", selectedAgentId)
         console.log("agentConfig", agentConfig)
@@ -317,6 +327,16 @@ export default function NewAgentPage() {
         onClose={() => setIsTemplateModalOpen(false)}
         onSelectTemplate={async (template) => {
           try {
+            // Check if token is available before proceeding
+            if (!api.isTokenAvailable()) {
+              toast({
+                title: "Authentication Error",
+                description: "Authentication token not available. Please refresh the page or log in again.",
+                variant: "destructive",
+              });
+              return;
+            }
+            
             const newAgent: AgentConfig = {
               model: {
                 id:crypto.randomUUID(),

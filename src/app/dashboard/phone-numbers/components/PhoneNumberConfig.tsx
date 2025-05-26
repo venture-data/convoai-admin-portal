@@ -67,9 +67,19 @@ export default function PhoneNumberConfig({ phoneNumber, onUpdate }: PhoneNumber
       });
     } catch (error: unknown) {
       let errorMessage = 'Failed to assign assistant';
+      const errorStr = error instanceof Error ? error.message : String(error);
+      
+      // Check if error is a timeout (504)
+      if (errorStr.includes('504') || errorStr.includes('timeout') || errorStr.includes('timed out')) {
+        toast({
+          title: "Success",
+          description: "Your request has been sent",
+          variant: "default",
+        });
+        return;
+      }
       
       try {
-        const errorStr = error instanceof Error ? error.message : String(error);
         if (errorStr.includes('message:')) {
           const parsedError = JSON.parse(errorStr.split('message: ')[1]);
           if (parsedError.detail) {
@@ -127,6 +137,15 @@ export default function PhoneNumberConfig({ phoneNumber, onUpdate }: PhoneNumber
       });
 
       if (!response.ok) {
+        if (response.status === 504) {
+          toast({
+            title: "Success",
+            description: "Your request has been sent",
+            variant: "default",
+          });
+          setOutboundNumbers([""]);
+          return;
+        }
         throw new Error('Did not get any response');
       }
 
@@ -166,11 +185,23 @@ export default function PhoneNumberConfig({ phoneNumber, onUpdate }: PhoneNumber
       });
       setOutboundNumbers([""]);
     } catch (error) {
-      toast({
-        title: "Error",
-        description: error instanceof Error ? error.message : 'Failed to initiate outbound calls',
-        variant: "destructive",
-      });
+      const errorMessage = error instanceof Error ? error.message : 'Failed to initiate outbound calls';
+      
+      // Check if error is a timeout (504)
+      if (errorMessage.includes('504') || errorMessage.includes('timeout') || errorMessage.includes('timed out')) {
+        toast({
+          title: "Success",
+          description: "Your request has been sent",
+          variant: "default",
+        });
+        setOutboundNumbers([""]);
+      } else {
+        toast({
+          title: "Error",
+          description: errorMessage,
+          variant: "destructive",
+        });
+      }
     } finally {
       setIsCallLoading(false);
     }
@@ -368,15 +399,10 @@ export default function PhoneNumberConfig({ phoneNumber, onUpdate }: PhoneNumber
           <div className="space-y-5">
             <div className="space-y-2">
               <Label>Assistant</Label>
-              {currentMapping && (
-                <p className="text-sm text-orange-400 mb-2">
-                  This phone number is already assigned to an assistant. Contact support to modify the assignment.
-                </p>
-              )}
               <Select 
                 value={selectedAgentId} 
                 onValueChange={handleAgentChange}
-                disabled={isUpdating || !!currentMapping}
+                disabled={isUpdating}
               >
                 <SelectTrigger className="w-full bg-[#1A1D25]/70 border-white/10 hover:bg-[#1A1D25] focus:ring-orange-500/20 focus:border-orange-500/50 transition-colors">
                   <SelectValue>
