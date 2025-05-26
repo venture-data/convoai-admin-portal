@@ -2,7 +2,7 @@
 
 import { VoiceConfig as VoiceConfigType } from "@/app/dashboard/new_agents/types"
 import { useVoice } from "@/app/hooks/use-voice";
-import { useState, useEffect} from "react";
+import { useEffect} from "react";
 import { Volume2, Mic, Speaker, Info, Music } from "lucide-react";
 import { Input } from "../ui/input";
 import { Switch } from "../ui/switch";
@@ -43,7 +43,7 @@ interface VoiceConfigProps {
 }
 
 export function VoiceConfig({ provider, agentConfig, setAgentConfig}: VoiceConfigProps) {
-  const [voiceprovider, setvoiceprovider] = useState(provider);
+  const voiceprovider = (agentConfig.provider || "openai") as "elevenlabs" | "openai" | "uplift";
   const { voices, isLoading } = useVoice(voiceprovider);
 
   useEffect(() => {
@@ -119,7 +119,6 @@ export function VoiceConfig({ provider, agentConfig, setAgentConfig}: VoiceConfi
   };
 
   const handleProviderChange = (newProvider: string) => {
-    setvoiceprovider(newProvider);
     setAgentConfig({
       ...agentConfig,
       id: "",

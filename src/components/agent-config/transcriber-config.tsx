@@ -1,6 +1,5 @@
 "use client"
 
-import { useState } from "react"
 import { ModelConfig } from "@/app/dashboard/new_agents/types"
 import { Mic, FileText, Sliders } from "lucide-react";
 import {
@@ -87,14 +86,13 @@ const telephonyModelOptions: Record<SttProvider, Array<{ value: TelephonyModel; 
 };
 
 export function TranscriberConfig({ agentConfig, setAgentConfig }: TranscriberConfigProps) {
-  const [sttProvider, setSttProvider] = useState<SttProvider>(agentConfig.stt_provider || "deepgram");
+  const currentProvider = (agentConfig.stt_provider || "deepgram") as SttProvider;
 
   const handleProviderChange = (value: string) => {
     const newProvider = value as SttProvider;
-    setSttProvider(newProvider);
     
-    const defaultModel = modelOptions[newProvider][0].value;
-    const defaultTelephonyModel = telephonyModelOptions[newProvider][0]?.value || defaultModel;
+    const defaultModel = (agentConfig.stt_options?.model || agentConfig?.stt_model || modelOptions[newProvider][0].value) as SttModel;
+    const defaultTelephonyModel = (agentConfig.stt_options?.model_telephony || agentConfig?.stt_model_telephony || telephonyModelOptions[newProvider][0]?.value || defaultModel) as TelephonyModel;
     
     setAgentConfig({
       ...agentConfig,
@@ -107,8 +105,11 @@ export function TranscriberConfig({ agentConfig, setAgentConfig }: TranscriberCo
   };
 
   const handleModelChange = (key: "model" | "model_telephony", value: string) => {
-    const currentModel = agentConfig.stt_options?.model || agentConfig?.stt_model || modelOptions[sttProvider][0].value;
-    const currentTelephonyModel = agentConfig.stt_options?.model_telephony || agentConfig?.stt_model_telephony || telephonyModelOptions[sttProvider][0]?.value || currentModel;
+    console.log("key", key)
+    console.log("value", value)
+    console.log("agentConfig", agentConfig)
+    const currentModel = agentConfig.stt_options?.model || agentConfig?.stt_model || modelOptions[currentProvider][0].value;
+    const currentTelephonyModel = agentConfig.stt_options?.model_telephony || agentConfig?.stt_model_telephony || telephonyModelOptions[currentProvider][0]?.value || currentModel;
 
     setAgentConfig({
       ...agentConfig,
@@ -118,6 +119,8 @@ export function TranscriberConfig({ agentConfig, setAgentConfig }: TranscriberCo
       }
     });
   };
+
+  console.log(agentConfig)
 
   return (
     <div className="space-y-8 text-white/90">
@@ -133,7 +136,7 @@ export function TranscriberConfig({ agentConfig, setAgentConfig }: TranscriberCo
         </h4>
         
         <div className="relative">
-          <Select value={sttProvider} onValueChange={handleProviderChange}>
+          <Select value={currentProvider} onValueChange={handleProviderChange}>
             <SelectTrigger className="w-full bg-[#1A1D25] border-white/10 text-white">
               <div className="flex items-center">
                 <Mic className="w-4 h-4 mr-2 text-orange-400" />
@@ -174,7 +177,7 @@ export function TranscriberConfig({ agentConfig, setAgentConfig }: TranscriberCo
             </label>
             <div className="relative">
               <Select 
-                value={agentConfig.stt_options?.model || agentConfig?.stt_model || modelOptions[sttProvider][0].value}
+                value={agentConfig.stt_options?.model || agentConfig?.stt_model || modelOptions[currentProvider][0].value}
                 onValueChange={(value) => handleModelChange("model", value)}
               >
                 <SelectTrigger className="w-full bg-[#1A1D25] border-white/10 text-white">
@@ -184,7 +187,7 @@ export function TranscriberConfig({ agentConfig, setAgentConfig }: TranscriberCo
                   </div>
                 </SelectTrigger>
                 <SelectContent className="bg-[#1A1D25] border-white/10">
-                  {modelOptions[sttProvider].map(model => (
+                  {modelOptions[currentProvider].map(model => (
                     <SelectItem 
                       key={model.value} 
                       value={model.value}
@@ -198,7 +201,7 @@ export function TranscriberConfig({ agentConfig, setAgentConfig }: TranscriberCo
             </div>
           </div>
 
-          {telephonyModelOptions[sttProvider].length > 0 && (
+          {telephonyModelOptions[currentProvider].length > 0 && (
             <div className="space-y-2">
               <label className="text-sm font-medium text-white/90 flex items-center">
                 Telephony Model
@@ -211,7 +214,7 @@ export function TranscriberConfig({ agentConfig, setAgentConfig }: TranscriberCo
               </label>
               <div className="relative">
                 <Select 
-                  value={agentConfig.stt_options?.model_telephony || agentConfig?.stt_model_telephony || telephonyModelOptions[sttProvider][0].value}
+                  value={agentConfig.stt_options?.model_telephony || agentConfig?.stt_model_telephony || telephonyModelOptions[currentProvider][0].value}
                   onValueChange={(value) => handleModelChange("model_telephony", value)}
                 >
                   <SelectTrigger className="w-full bg-[#1A1D25] border-white/10 text-white">
@@ -221,7 +224,7 @@ export function TranscriberConfig({ agentConfig, setAgentConfig }: TranscriberCo
                     </div>
                   </SelectTrigger>
                   <SelectContent className="bg-[#1A1D25] border-white/10">
-                    {telephonyModelOptions[sttProvider].map(model => (
+                    {telephonyModelOptions[currentProvider].map(model => (
                       <SelectItem 
                         key={model.value} 
                         value={model.value}

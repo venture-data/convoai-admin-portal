@@ -12,6 +12,14 @@ import AgentConfigs from "./components/AgentConfigs"
 
 import { AgentConfig, ModelConfig as ModelConfigType, KnowledgeConfig as KnowledgeConfigType, VoiceConfig as VoiceConfigType, Agent } from "./types"
 
+type SttModel = "nova-general" | "nova-phonecall" | "nova-meeting" | "nova-2-general" | "nova-2-meeting" | 
+  "nova-2-phonecall" | "nova-2-finance" | "nova-2-conversationalai" | "nova-2-voicemail" | "nova-2-video" | 
+  "nova-2-medical" | "nova-2-drivethru" | "nova-2-automotive" | "nova-3" | "nova-3-general" | "enhanced-general" | 
+  "enhanced-meeting" | "enhanced-phonecall" | "enhanced-finance" | "base" | "meeting" | "phonecall" | "finance" | 
+  "conversationalai" | "voicemail" | "video" | "whisper-tiny" | "whisper-base" | "whisper-small" | "whisper-medium" | 
+  "whisper-large" | "whisper-1";
+type TelephonyModel = "nova-phonecall" | "nova-2-phonecall" | "enhanced-phonecall" | "phonecall";
+
 export default function NewAgentPage() {
   const { toast } = useToast()
   const { toggle: toggleMobileMenu } = useMobileMenu()
@@ -105,10 +113,13 @@ export default function NewAgentPage() {
   const handleSelectAgent = (agent: Agent) => {
     if (selectedAgentId === agent.id) return;
     
+    const defaultModel = agent.stt_provider === "google" ? "whisper-large" : "nova-3-general";
+    const defaultTelephonyModel = "nova-2-phonecall";
+    
     setSelectedAgentId(agent.id);
+    console.log("agent changing", agent)
     setAgentConfig({
       model: {
-        ...agentConfig.model,
         agentName: agent.name,
         firstMessage: agent.greeting,
         systemPrompt: agent.system_prompt,
@@ -117,11 +128,11 @@ export default function NewAgentPage() {
         provider: agent.llm_provider,
         stt_provider: agent.stt_provider as "deepgram" | "google" | "openai",
         temperature: agent.llm_options?.temperature || 0.7,
-        stt_model: agent.stt_options?.model || "nova-3-general",
-        stt_model_telephony: agent.stt_options?.model_telephony || "nova-2-phonecall",
-        stt_options:{
-          model: (agent.stt_options?.model || "nova-3-general") as "nova-3-general",
-          model_telephony: (agent.stt_options?.model_telephony || "nova-2-phonecall") as "nova-2-phonecall"
+        stt_model: (agent.stt_options?.model || defaultModel) as SttModel,
+        stt_model_telephony: (agent.stt_options?.model_telephony || defaultTelephonyModel) as TelephonyModel,
+        stt_options: {
+          model: (agent.stt_options?.model || defaultModel) as SttModel,
+          model_telephony: (agent.stt_options?.model_telephony || defaultTelephonyModel) as TelephonyModel
         },
         allow_interruptions: agent.allow_interruptions,
         interrupt_speech_duration: agent.interrupt_speech_duration,
@@ -159,7 +170,7 @@ export default function NewAgentPage() {
         }
       },
       knowledge: {
-        ...agentConfig.knowledge,
+        files: []
       },
     });
   };
