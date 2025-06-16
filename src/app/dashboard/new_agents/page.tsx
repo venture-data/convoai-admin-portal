@@ -221,7 +221,8 @@ export default function NewAgentPage() {
           tts_options: {
             voice: agentConfig.voice?.tts_options?.voice || "alloy",
             voice_name: agentConfig.voice?.tts_options?.voice_name || "alloy",
-            speed: Number(agentConfig.voice?.tts_options?.speed || 1.0)
+            speed: Number(agentConfig.voice?.tts_options?.speed || 1.0),
+            model: agentConfig.voice?.tts_options?.model
           },
           stt_options: {
             model: agentConfig.model.stt_options?.model || agentConfig.model.stt_model || "nova-3-general",

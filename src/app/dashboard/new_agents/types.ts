@@ -39,7 +39,7 @@ export const ModelConfig = z.object({
       "eleven_multilingual_v2", "eleven_turbo_v2",
       "eleven_turbo_v2_5", "eleven_flash_v2_5",
       "eleven_flash_v2",
-      "tts-1", "tts-1-hd",
+      "tts-1", "tts-1-hd", "gpt-4o-mini-tts",
       "sonic-english", "sonic-multilingual"
     ]).optional(),
     voice: z.string().optional(),
@@ -48,16 +48,21 @@ export const ModelConfig = z.object({
   }).optional(),
   llm_options: z.object({
     model: z.enum([
-      "gpt-4", "gpt-40314", "gpt-40613",
-      "gpt-432k", "gpt-432k-0314", "gpt-432k-0613",
+      // OpenAI models
+      "gpt-4.1", "gpt-4.1-mini", "gpt-4.1-nano",
+      "gpt-4o", "gpt-4o-2024-05-13", "gpt-4o-mini",
+      "gpt-4o-mini-2024-07-18", "gpt-4-turbo",
+      "gpt-4-turbo-2024-04-09", "gpt-4-turbo-preview",
+      "gpt-4-0125-preview", "gpt-4-1106-preview",
+      "gpt-4-vision-preview", "gpt-4-1106-vision-preview",
+      "gpt-4", "gpt-4-0314", "gpt-4-0613",
+      "gpt-4-32k", "gpt-4-32k-0314", "gpt-4-32k-0613",
       "gpt-3.5-turbo", "gpt-3.5-turbo-16k",
       "gpt-3.5-turbo-0301", "gpt-3.5-turbo-0613",
       "gpt-3.5-turbo-1106", "gpt-3.5-turbo-16k-0613",
-      "gpt-4o", "gpt-4o-20240513", "gpt-4o-mini",
-      "gpt-4o-mini-20240718", "gpt-4-turbo",
-      "gpt-4-turbo-20240409", "gpt-4-turbo-preview",
-      "gpt-40125-preview", "gpt-41106-preview",
-      "gpt-4-vision-preview", "gpt-41106-vision-preview"
+      // Google models
+      "gemini-2.0-flash-001", "gemini-2.0-flash-lite-preview-02-05",
+      "gemini-2.0-pro-exp-02-05", "gemini-1.5-pro"
     ]).optional(),
     temperature: z.number().min(0).max(2).optional()
   }).optional(),
@@ -87,6 +92,14 @@ export const voiceConfigSchema = z.object({
     labels: z.array(z.string()).min(1, "Labels are required").optional(),
   }).optional(),
   tts_options: z.object({
+    model: z.enum([
+      "eleven_monolingual_v1", "eleven_multilingual_v1",
+      "eleven_multilingual_v2", "eleven_turbo_v2",
+      "eleven_turbo_v2_5", "eleven_flash_v2_5",
+      "eleven_flash_v2",
+      "tts-1", "tts-1-hd", "gpt-4o-mini-tts",
+      "sonic-english", "sonic-multilingual"
+    ]).optional(),
     voice: z.string().optional(),
     voice_name: z.string().optional(),
     speed: z.number().min(0.1).max(2).default(1.0).optional(),
@@ -146,7 +159,7 @@ export interface Agent {
   description: string
   system_prompt: string
   greeting: string
-  llm_provider: "elevenlabs" | "openai" | "google"
+  llm_provider: "openai" | "google"
   tts_provider: "elevenlabs" | "openai" | "google"
   stt_provider: string
   llm_options: {

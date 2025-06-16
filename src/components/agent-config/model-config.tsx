@@ -14,32 +14,43 @@ import {
   SelectValue 
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
-import { GPT_MODELS } from "@/constants";
+import { LLMProvider, getProviderConfig, getModelsForProvider, getSupportedProviders } from "@/lib/providers";
 
 type GPTModel = 
+  | "gpt-4.1"
+  | "gpt-4.1-mini"
+  | "gpt-4.1-nano"
   | "gpt-4o" 
-  | "gpt-4o-20240513" 
+  | "gpt-4o-2024-05-13" 
   | "gpt-4o-mini" 
-  | "gpt-4o-mini-20240718" 
+  | "gpt-4o-mini-2024-07-18" 
   | "gpt-4-turbo" 
-  | "gpt-4-turbo-20240409" 
+  | "gpt-4-turbo-2024-04-09" 
   | "gpt-4-turbo-preview" 
-  | "gpt-40125-preview" 
-  | "gpt-41106-preview" 
+  | "gpt-4-0125-preview" 
+  | "gpt-4-1106-preview" 
   | "gpt-4-vision-preview" 
-  | "gpt-41106-vision-preview" 
+  | "gpt-4-1106-vision-preview" 
   | "gpt-4" 
-  | "gpt-40314" 
-  | "gpt-40613" 
-  | "gpt-432k" 
-  | "gpt-432k-0314" 
-  | "gpt-432k-0613" 
+  | "gpt-4-0314" 
+  | "gpt-4-0613" 
+  | "gpt-4-32k" 
+  | "gpt-4-32k-0314" 
+  | "gpt-4-32k-0613" 
   | "gpt-3.5-turbo" 
   | "gpt-3.5-turbo-16k" 
   | "gpt-3.5-turbo-0301" 
   | "gpt-3.5-turbo-0613" 
   | "gpt-3.5-turbo-1106" 
   | "gpt-3.5-turbo-16k-0613";
+
+type GoogleModel = 
+  | "gemini-2.0-flash-001"
+  | "gemini-2.0-flash-lite-preview-02-05"
+  | "gemini-2.0-pro-exp-02-05"
+  | "gemini-1.5-pro";
+
+type LLMModel = GPTModel | GoogleModel;
 
 export function ModelConfig({agentConfig, setAgentConfig}: {agentConfig: ModelConfigType, setAgentConfig: (config: ModelConfigType) => void}) {
   const [errors] = useState<{ [key: string]: boolean }>({});
@@ -48,6 +59,11 @@ export function ModelConfig({agentConfig, setAgentConfig}: {agentConfig: ModelCo
     const newConfig = { ...agentConfig, [key]: value };
     setAgentConfig(newConfig);
   }
+
+  // Get provider configuration for dynamic settings
+  const providerConfig = getProviderConfig(agentConfig.provider as LLMProvider);
+  const supportedProviders = getSupportedProviders();
+  const showModelSection = supportedProviders.includes(agentConfig.provider as LLMProvider);
 
   console.log("agentconfig",agentConfig)
 
@@ -142,7 +158,25 @@ export function ModelConfig({agentConfig, setAgentConfig}: {agentConfig: ModelCo
             </Label>
             <Select 
               value={agentConfig.provider} 
-              onValueChange={(value) => onAgentConfigChange("provider", value)}
+              onValueChange={(value) => {
+                const newProvider = value as LLMProvider;
+                const newProviderConfig = getProviderConfig(newProvider);
+                const defaultModel = newProviderConfig?.defaultModel;
+                const defaultTemperature = newProviderConfig?.defaultTemperature;
+
+                const newConfig = {
+                  ...agentConfig,
+                  provider: newProvider,
+                  model: defaultModel,
+                  temperature: defaultTemperature,
+                  llm_options: {
+                    ...(agentConfig.llm_options || {}),
+                    model: defaultModel,
+                    temperature: defaultTemperature,
+                  },
+                };
+                setAgentConfig(newConfig as ModelConfigType);
+              }}
             >
               <SelectTrigger 
                 className="w-full bg-[#1A1D25] border-white/10 text-white placeholder:text-white/60 focus:border-orange-500/50 focus:ring-orange-500/20"
@@ -155,36 +189,35 @@ export function ModelConfig({agentConfig, setAgentConfig}: {agentConfig: ModelCo
               </SelectTrigger>
               <SelectContent className="bg-[#1A1D25] border-white/10">
                 <SelectItem value="openai" className="text-white/90 focus:bg-orange-500 focus:text-white data-[highlighted]:bg-orange-500 data-[highlighted]:text-white">OpenAI</SelectItem>
-                <SelectItem value="elevenlabs" className="text-white/90 focus:bg-orange-500 focus:text-white data-[highlighted]:bg-orange-500 data-[highlighted]:text-white">ElevenLabs</SelectItem>
                 <SelectItem value="google" className="text-white/90 focus:bg-orange-500 focus:text-white data-[highlighted]:bg-orange-500 data-[highlighted]:text-white">Google</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
-          {agentConfig.provider === 'openai' && (
+          {showModelSection && (
             <div className="space-y-2">
               <Label htmlFor="model-type" className="flex items-center text-white/90 text-sm">
                 Model Type
                 <span
                   className="ml-1 text-white/60 hover:cursor-help"
-                  title="Select the specific GPT model"
+                  title={`Select the specific ${providerConfig?.name || 'LLM'} model`}
                 >
                   ⓘ
                 </span>
               </Label>
-              <Select 
-                value={agentConfig?.llm_options?.model || agentConfig.model || "gpt-4"} 
+              <Select
+                value={agentConfig.model || agentConfig.llm_options?.model}
                 onValueChange={(value) => {
-                  
+                  const newModel = value as LLMModel;
                   const newConfig = {
                     ...agentConfig,
+                    model: newModel,
                     llm_options: {
                       ...(agentConfig.llm_options || {}),
-                      model: value as GPTModel
-                    }
+                      model: newModel,
+                    },
                   };
-                  setAgentConfig(newConfig);
-                  onAgentConfigChange("model", newConfig.llm_options?.model);
+                  setAgentConfig(newConfig as ModelConfigType);
                 }}
               >
                 <SelectTrigger 
@@ -198,7 +231,7 @@ export function ModelConfig({agentConfig, setAgentConfig}: {agentConfig: ModelCo
                 </SelectTrigger>
                 <SelectContent className="bg-[#1A1D25] border-white/10 max-h-[300px] overflow-y-auto">
                   {
-                    GPT_MODELS.map((model) => (
+                    getModelsForProvider(agentConfig.provider as LLMProvider).map((model) => (
                       <SelectItem key={model.value} value={model.value} className="text-white/90 focus:bg-orange-500 focus:text-white data-[highlighted]:bg-orange-500 data-[highlighted]:text-white">
                         {model.label}
                       </SelectItem>
@@ -209,13 +242,13 @@ export function ModelConfig({agentConfig, setAgentConfig}: {agentConfig: ModelCo
             </div>
           )}
 
-          {agentConfig.provider === 'openai' && (
+          {showModelSection && (
             <div className="space-y-2">
               <Label htmlFor="temperature" className="flex items-center text-white/90 text-sm">
                 Temperature
                 <span
                   className="ml-1 text-white/60 hover:cursor-help"
-                  title="Controls randomness in responses (0 = deterministic, 1 = creative)"
+                  title="Controls randomness in responses (0 = deterministic, higher values = more creative)"
                 >
                   ⓘ
                 </span>
@@ -224,16 +257,25 @@ export function ModelConfig({agentConfig, setAgentConfig}: {agentConfig: ModelCo
                 <Slider
                   id="temperature"
                   min={0}
-                  max={1}
+                  max={providerConfig?.maxTemperature || 1}
                   step={0.1}
-                  value={[agentConfig.llm_options?.temperature || agentConfig?.temperature || 0.7]}
+                  value={[agentConfig.llm_options?.temperature || agentConfig?.temperature || providerConfig?.defaultTemperature || 0.7]}
                   onValueChange={(value) => {
-                    onAgentConfigChange("temperature",value[0])
+                    const newTemp = value[0];
+                    const newConfig = {
+                      ...agentConfig,
+                      temperature: newTemp,
+                      llm_options: {
+                        ...(agentConfig.llm_options || {}),
+                        temperature: newTemp
+                      }
+                    }
+                    setAgentConfig(newConfig as ModelConfigType);
                   }}
                   className="flex-1"
                 />
                 <span className="text-white/90 text-sm min-w-[3ch]">
-                  {(agentConfig.llm_options?.temperature || agentConfig?.temperature || 0.7).toFixed(1)}
+                  {(agentConfig.llm_options?.temperature || agentConfig?.temperature || providerConfig?.defaultTemperature || 0.7).toFixed(1)}
                 </span>
               </div>
             </div>

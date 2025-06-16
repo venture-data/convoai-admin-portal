@@ -2,6 +2,7 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AgentConfig } from "@/app/dashboard/new_agents/types";
+import { getProviderConfig, LLMProvider } from "@/lib/providers";
 import api from "@/lib/api-instance";
 
 interface UpdateAgentPayload {
@@ -27,6 +28,8 @@ interface UpdateAgentPayload {
   tts_options: {
     voice: string;
     speed: number;
+    model: string;
+    voice_name?: string;
   };
   stt_options: {
     model: string;
@@ -58,6 +61,8 @@ export function useAgent() {
         throw new Error("Agent not created because token is not in local storage. Please refresh the page or log in again.");
       }
       
+      const providerConfig = getProviderConfig(agentConfig.model.provider as LLMProvider);
+      
       const payload = {
         name: agentConfig.model.agentName,
         description: agentConfig.model.description || null,
@@ -67,12 +72,14 @@ export function useAgent() {
         tts_provider: agentConfig.voice?.provider || "openai",
         stt_provider: "deepgram",  
         llm_options: {
-          model: agentConfig.model.model || "gpt-4o",
-          temperature: agentConfig.model.temperature || 0.7
+          model: agentConfig.model.model || providerConfig?.defaultModel || "gpt-4o",
+          temperature: agentConfig.model.temperature || providerConfig?.defaultTemperature || 0.7
         },
         tts_options: {
           voice: agentConfig.voice?.name || "alloy",
-          speed: 1.0
+          voice_name: agentConfig.voice?.tts_options?.voice_name,
+          speed: agentConfig.voice?.tts_options?.speed || 1.0,
+          model: agentConfig.voice?.tts_options?.model
         },
         allow_interruptions: agentConfig.model.allow_interruptions !== false,
         interrupt_speech_duration: Number(agentConfig.model.interrupt_speech_duration || 0.5),

@@ -850,31 +850,39 @@ export const voices = [
 
 export const GPT_MODELS = [
   {
-    value: "gpt-4",
-    label: "GPT-4",
+    value: "gpt-4.1",
+    label: "GPT-4.1",
+  },
+  {
+    value: "gpt-4.1-mini",
+    label: "GPT-4.1 Mini",
+  },
+  {
+    value: "gpt-4.1-nano",
+    label: "GPT-4.1 Nano",
   },
   {
     value: "gpt-4o",
-    label: "GPT-4O",
+    label: "GPT-4o",
   },
   {
-    value: "gpt-4o-20240513",
-    label: "GPT-4O (2024-05-13)",
+    value: "gpt-4o-2024-05-13",
+    label: "GPT-4o (2024-05-13)",
   },
   {
     value: "gpt-4o-mini",
-    label: "GPT-4O Mini",
+    label: "GPT-4o Mini",
   },
   {
-    value: "gpt-4o-mini-20240718",
-    label: "GPT-4O Mini (2024-07-18)",
+    value: "gpt-4o-mini-2024-07-18",
+    label: "GPT-4o Mini (2024-07-18)",
   },
   {
     value: "gpt-4-turbo",
     label: "GPT-4 Turbo",
   },
   {
-    value: "gpt-4-turbo-20240409",
+    value: "gpt-4-turbo-2024-04-09",
     label: "GPT-4 Turbo (2024-04-09)",
   },
   {
@@ -882,11 +890,11 @@ export const GPT_MODELS = [
     label: "GPT-4 Turbo Preview",
   },
   {
-    value: "gpt-40125-preview",
+    value: "gpt-4-0125-preview",
     label: "GPT-4 (0125 Preview)",
   },
   {
-    value: "gpt-41106-preview",
+    value: "gpt-4-1106-preview",
     label: "GPT-4 (1106 Preview)",
   },
   {
@@ -894,27 +902,31 @@ export const GPT_MODELS = [
     label: "GPT-4 Vision Preview",
   },
   {
-    value: "gpt-41106-vision-preview",
+    value: "gpt-4-1106-vision-preview",
     label: "GPT-4 (1106 Vision Preview)",
   },
   {
-    value: "gpt-40314",
+    value: "gpt-4",
+    label: "GPT-4",
+  },
+  {
+    value: "gpt-4-0314",
     label: "GPT-4 (0314)",
   },
   {
-    value: "gpt-40613",
+    value: "gpt-4-0613",
     label: "GPT-4 (0613)",
   },
   {
-    value: "gpt-432k",
+    value: "gpt-4-32k",
     label: "GPT-4 32K",
   },
   {
-    value: "gpt-432k-0314",
+    value: "gpt-4-32k-0314",
     label: "GPT-4 32K (0314)",
   },
   {
-    value: "gpt-432k-0613",
+    value: "gpt-4-32k-0613",
     label: "GPT-4 32K (0613)",
   },
   {
@@ -942,4 +954,71 @@ export const GPT_MODELS = [
     label: "GPT-3.5 Turbo 16K (0613)",
   }
 ];
+
+export const GOOGLE_MODELS = [
+  {
+    value: "gemini-2.0-flash-001",
+    label: "Gemini 2.0 Flash 001",
+  },
+  {
+    value: "gemini-2.0-flash-lite-preview-02-05",
+    label: "Gemini 2.0 Flash Lite Preview (02-05)",
+  },
+  {
+    value: "gemini-2.0-pro-exp-02-05",
+    label: "Gemini 2.0 Pro Experimental (02-05)",
+  },
+  {
+    value: "gemini-1.5-pro",
+    label: "Gemini 1.5 Pro",
+  },
+];
+
+export const ELEVENLABS_VOICE_MODELS = [
+  {
+    value: "eleven_monolingual_v1",
+    label: "Eleven Monolingual V1",
+  },
+  {
+    value: "eleven_multilingual_v1",
+    label: "Eleven Multilingual V1",
+  },
+  {
+    value: "eleven_multilingual_v2",
+    label: "Eleven Multilingual V2",
+  },
+  {
+    value: "eleven_turbo_v2",
+    label: "Eleven Turbo V2",
+  },
+  {
+    value: "eleven_turbo_v2_5",
+    label: "Eleven Turbo V2.5",
+  },
+  {
+    value: "eleven_flash_v2_5",
+    label: "Eleven Flash V2.5",
+  },
+  {
+    value: "eleven_flash_v2",
+    label: "Eleven Flash V2",
+  },
+];
+
+export const OPENAI_VOICE_MODELS = [
+  {
+    value: "tts-1",
+    label: "TTS-1",
+  },
+  {
+    value: "tts-1-hd",
+    label: "TTS-1 HD",
+  },
+  {
+    value: "gpt-4o-mini-tts",
+    label: "GPT-4o Mini TTS",
+  },
+];
+
+
 
