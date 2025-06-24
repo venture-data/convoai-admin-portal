@@ -39,7 +39,10 @@ export const assistantTemplates: { [key: string]: AgentConfig } = {
           volume: 0.3,
           enabled: true,
           audio_path: "office-ambience.mp3"
-        }
+        },
+        end_call_function: false,
+        end_call_message: "",
+        end_call_phrases: []
       }
     },
     knowledge: {
@@ -84,7 +87,10 @@ export const assistantTemplates: { [key: string]: AgentConfig } = {
           volume: 0.3,
           enabled: true,
           audio_path: "office-ambience.mp3"
-        }
+        },
+        end_call_function: false,
+        end_call_message: "",
+        end_call_phrases: []
       }
     },
     knowledge: {
@@ -129,7 +135,10 @@ export const assistantTemplates: { [key: string]: AgentConfig } = {
           volume: 0.3,
           enabled: true,
           audio_path: "office-ambience.mp3"
-        }
+        },
+        end_call_function: false,
+        end_call_message: "",
+        end_call_phrases: []
       }
     },
     knowledge: {

@@ -24,6 +24,9 @@ interface UpdateAgentPayload {
       enabled: boolean;
       audio_path: string;
     };
+    end_call_function?: boolean;
+    end_call_message?: string;
+    end_call_phrases?: string[];
   };
   tts_options: {
     voice: string;
@@ -80,6 +83,17 @@ export function useAgent() {
           voice_name: agentConfig.voice?.tts_options?.voice_name,
           speed: agentConfig.voice?.tts_options?.speed || 1.0,
           model: agentConfig.voice?.tts_options?.model
+        },
+        profile_options: {
+          background_audio: {
+            loop: agentConfig.voice?.profile_options?.background_audio?.loop ?? true,
+            volume: agentConfig.voice?.profile_options?.background_audio?.volume ?? 0.3,
+            enabled: agentConfig.voice?.profile_options?.background_audio?.enabled ?? false,
+            audio_path: agentConfig.voice?.profile_options?.background_audio?.audio_path || "office-ambience.mp3"
+          },
+          end_call_function: (agentConfig.model as any).profile_options?.end_call_function,
+          end_call_message: (agentConfig.model as any).profile_options?.end_call_message,
+          end_call_phrases: (agentConfig.model as any).profile_options?.end_call_phrases
         },
         allow_interruptions: agentConfig.model.allow_interruptions !== false,
         interrupt_speech_duration: Number(agentConfig.model.interrupt_speech_duration || 0.5),
@@ -234,7 +248,10 @@ export function useAgent() {
                       volume: updatedAgent.profile_options.background_audio.volume,
                       enabled: updatedAgent.profile_options.background_audio.enabled,
                       audio_path: updatedAgent.profile_options.background_audio.audio_path
-                    }
+                    },
+                    end_call_function: updatedAgent.profile_options.end_call_function,
+                    end_call_message: updatedAgent.profile_options.end_call_message,
+                    end_call_phrases: updatedAgent.profile_options.end_call_phrases
                   },
                   tts_provider: updatedAgent.tts_provider,
                   tts_options: updatedAgent.tts_options,

@@ -76,6 +76,17 @@ export const ModelConfig = z.object({
   active: z.boolean().optional(),
   is_default: z.boolean().optional(),
   max_nested_function_calls: z.number().optional(),
+  profile_options: z.object({
+    background_audio: z.object({
+      loop: z.boolean().default(true),
+      volume: z.number().min(0).max(1).default(0.3),
+      enabled: z.boolean().default(true),
+      audio_path: z.string().default("office-ambience.mp3"),
+    }).optional(),
+    end_call_function: z.boolean().optional(),
+    end_call_message: z.string().optional(),
+    end_call_phrases: z.array(z.string()).optional(),
+  }).optional(),
 });
 
 export type ModelConfig = z.infer<typeof ModelConfig>;
@@ -111,6 +122,9 @@ export const voiceConfigSchema = z.object({
       enabled: z.boolean().default(true),
       audio_path: z.string().default("office-ambience.mp3"),
     }),
+    end_call_function: z.boolean().optional(),
+    end_call_message: z.string().optional(),
+    end_call_phrases: z.array(z.string()).optional(),
   }).optional(),
 })
 
@@ -139,7 +153,10 @@ export const agentConfigSchema = z.object({
         volume: 0.3,
         enabled: false,
         audio_path: "office-ambience.mp3"
-      }
+      },
+      end_call_function: false,
+      end_call_message: "",
+      end_call_phrases: []
     },
     details: {
       name: "",
@@ -182,6 +199,9 @@ export interface Agent {
       enabled: boolean
       audio_path: string
     }
+    end_call_function?: boolean
+    end_call_message?: string
+    end_call_phrases?: string[]
   },
   allow_interruptions: boolean
   interrupt_speech_duration: number

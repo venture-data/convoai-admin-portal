@@ -142,6 +142,17 @@ export default function NewAgentPage() {
         active: agent.active,
         is_default: agent.is_default,
         max_nested_function_calls: agent.max_nested_function_calls,
+        profile_options: {
+          background_audio: {
+            loop: agent.profile_options?.background_audio?.loop ?? true,
+            volume: agent.profile_options?.background_audio?.volume ?? 0.3,
+            enabled: agent.profile_options?.background_audio?.enabled ?? true,
+            audio_path: agent.profile_options?.background_audio?.audio_path || "office-ambience.mp3"
+          },
+          end_call_function: agent.profile_options?.end_call_function,
+          end_call_message: agent.profile_options?.end_call_message,
+          end_call_phrases: agent.profile_options?.end_call_phrases
+        },
       },
       voice: {
         ...agentConfig.voice,
@@ -216,7 +227,10 @@ export default function NewAgentPage() {
               volume: agentConfig.voice?.profile_options?.background_audio?.volume ?? 0.3,
               enabled: agentConfig.voice?.profile_options?.background_audio?.enabled ?? true,
               audio_path: agentConfig.voice?.profile_options?.background_audio?.audio_path || "office-ambience.mp3"
-            }
+            },
+            end_call_function: agentConfig.model.profile_options?.end_call_function,
+            end_call_message: agentConfig.model.profile_options?.end_call_message,
+            end_call_phrases: agentConfig.model.profile_options?.end_call_phrases
           },
           tts_options: {
             voice: agentConfig.voice?.tts_options?.voice || "alloy",
@@ -371,6 +385,17 @@ export default function NewAgentPage() {
                 active: template.model.active !== false,
                 is_default: template.model.is_default === true,
                 max_nested_function_calls: template.model.max_nested_function_calls || 1,
+                profile_options: {
+                  background_audio: {
+                    loop: true,
+                    volume: 0.3,
+                    enabled: false,
+                    audio_path: "office-ambience.mp3"
+                  },
+                  end_call_function: false,
+                  end_call_message: "",
+                  end_call_phrases: []
+                },
               },
               voice: {
                 name: template.voice?.name || "alloy",
