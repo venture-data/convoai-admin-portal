@@ -129,7 +129,7 @@ export const voiceConfigSchema = z.object({
 })
 
 export const knowledgeConfigSchema = z.object({
-    files: z.array(z.any()).optional(),
+    knowledgeBaseIds: z.array(z.string()).optional(),
 })
 
 export const agentConfigSchema = z.object({
@@ -165,7 +165,7 @@ export const agentConfigSchema = z.object({
       labels: [],
     }
   },
-  knowledge: data.knowledge || { files: [] }
+  knowledge: data.knowledge || { knowledgeBaseIds: [] }
 }))
 
 

@@ -1,17 +1,82 @@
 "use client"
 
 import { AgentConfig } from "@/app/dashboard/new_agents/types"
-import { CheckCircle2, AlertCircle, ClipboardCheck, BotIcon, Brain, Volume2, Settings2, FileText, Database } from "lucide-react";
-
-interface FileType {
-  name?: string;
-  path?: string;
-  size?: number;
-  type?: string;
-}
+import { CheckCircle2, AlertCircle, ClipboardCheck, BotIcon, Brain, Volume2, Settings2 } from "lucide-react";
+import { useKnowledgeBase } from "@/app/hooks/use-knowledge-base";
 
 interface ReviewConfigProps {
   agentConfig: AgentConfig
+}
+
+function KnowledgeBaseReviewSection({ agentConfig }: { agentConfig: AgentConfig }) {
+  const { knowledgeBases } = useKnowledgeBase();
+  
+  const getStatusIcon = (value: string | boolean | number | undefined | null, required: boolean = false) => {
+    if (!required) return null;
+    
+    return value ? (
+      <CheckCircle2 className="h-4 w-4 text-green-500 ml-1" />
+    ) : (
+      <AlertCircle className="h-4 w-4 text-red-500 ml-1" />
+    );
+  };
+
+  const selectedKnowledgeBases = knowledgeBases?.items?.filter(kb => 
+    agentConfig.knowledge?.knowledgeBaseIds?.includes(kb.id)
+  ) || [];
+
+  return (
+    <div className="p-4 rounded-lg bg-gradient-to-br from-[#1A1D25]/80 to-[#1A1D25]/60 border border-white/10">
+      <h4 className="text-sm font-medium text-orange-400 mb-4 flex items-center gap-2">
+        <Brain className="h-4 w-4" />
+        Knowledge Base
+      </h4>
+      
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <dt className="text-sm text-white/90 flex items-center">
+            Knowledge Bases {getStatusIcon(selectedKnowledgeBases.length, false)}
+          </dt>
+          <dd className={`text-sm font-medium px-2 py-0.5 rounded-full ${
+            selectedKnowledgeBases.length 
+              ? 'bg-green-500/20 text-green-400' 
+              : 'bg-gray-500/20 text-gray-400'
+          }`}>
+            {selectedKnowledgeBases.length} selected
+          </dd>
+        </div>
+        
+        {selectedKnowledgeBases.length > 0 ? (
+          <div className="mt-3 p-3 bg-[#1A1D25]/50 rounded border border-white/5">
+            <h5 className="text-xs font-medium text-white/70 mb-2 flex items-center gap-2">
+              <Brain className="h-3 w-3" />
+              Selected Knowledge Bases
+            </h5>
+            <ul className="space-y-2 max-h-32 overflow-y-auto pr-2">
+              {selectedKnowledgeBases.map((kb) => (
+                <li key={kb.id} className="text-xs text-white/60 flex items-center gap-2">
+                  <span className="w-3 h-3 rounded-full bg-green-500/20 flex items-center justify-center">
+                    <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+                  </span>
+                  <div>
+                    <div className="font-medium text-white/80">{kb.name}</div>
+                    {kb.description && (
+                      <div className="text-white/50">{kb.description}</div>
+                    )}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : (
+          <div className="mt-3 p-3 bg-[#1A1D25]/50 rounded border border-white/5 text-center">
+            <p className="text-xs text-white/60">No knowledge bases selected</p>
+            <p className="text-xs text-white/40">Agent will not have access to any documents</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
 }
 
 export function ReviewConfig({ agentConfig }: ReviewConfigProps) {
@@ -286,46 +351,7 @@ export function ReviewConfig({ agentConfig }: ReviewConfigProps) {
         </dl>
       </div>
 
-      <div className="p-4 rounded-lg bg-gradient-to-br from-[#1A1D25]/80 to-[#1A1D25]/60 border border-white/10">
-        <h4 className="text-sm font-medium text-orange-400 mb-4 flex items-center gap-2">
-          <Database className="h-4 w-4" />
-          Knowledge Base
-        </h4>
-        
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <dt className="text-sm text-white/90 flex items-center">
-              Document Files {getStatusIcon(agentConfig.knowledge?.files?.length, true)}
-            </dt>
-            <dd className={`text-sm font-medium px-2 py-0.5 rounded-full ${
-              agentConfig.knowledge?.files?.length 
-                ? 'bg-green-500/20 text-green-400' 
-                : 'bg-red-500/20 text-red-400'
-            }`}>
-              {agentConfig.knowledge?.files?.length || 0} files
-            </dd>
-          </div>
-          
-          {agentConfig.knowledge?.files && agentConfig.knowledge.files.length > 0 && (
-            <div className="mt-3 p-3 bg-[#1A1D25]/50 rounded border border-white/5">
-              <h5 className="text-xs font-medium text-white/70 mb-2 flex items-center gap-2">
-                <FileText className="h-3 w-3" />
-                Knowledge Files
-              </h5>
-              <ul className="space-y-1 max-h-32 overflow-y-auto pr-2">
-                {agentConfig.knowledge?.files?.map((file: FileType, index: number) => (
-                  <li key={index} className="text-xs text-white/60 flex items-center gap-2">
-                    <span className="w-3 h-3 rounded-full bg-green-500/20 flex items-center justify-center">
-                      <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span>
-                    </span>
-                    {file.name || file.path || `File ${index + 1}`}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </div>
-      </div>
+      <KnowledgeBaseReviewSection agentConfig={agentConfig} />
     </div>
   )
 } 

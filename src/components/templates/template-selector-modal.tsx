@@ -112,7 +112,7 @@ export function TemplateSelectorModal({ isOpen, onClose, onSelectTemplate }: Tem
           }
         },
         knowledge: {
-          files: []
+          knowledgeBaseIds: []
         },
       });
     } else {

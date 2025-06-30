@@ -46,7 +46,7 @@ export const assistantTemplates: { [key: string]: AgentConfig } = {
       }
     },
     knowledge: {
-      files: []
+      knowledgeBaseIds: []
     },
   },
   "support-bot": {
@@ -94,7 +94,7 @@ export const assistantTemplates: { [key: string]: AgentConfig } = {
       }
     },
     knowledge: {
-      files: []
+      knowledgeBaseIds: []
     },
   },
   "survey-agent": {
@@ -142,7 +142,7 @@ export const assistantTemplates: { [key: string]: AgentConfig } = {
       }
     },
     knowledge: {
-      files: []
+      knowledgeBaseIds: []
     },
   }
 }; 

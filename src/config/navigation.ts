@@ -1,4 +1,4 @@
-import { LayoutDashboard, FileText, Phone, Wrench, FolderOpen, Headphones, CreditCard, BarChart, BotIcon } from "lucide-react";
+import { LayoutDashboard, FileText, Phone, Wrench, Brain, Headphones, CreditCard, BarChart, BotIcon } from "lucide-react";
 
 export const navigationItems = [
   {
@@ -30,9 +30,9 @@ export const navigationItems = [
         icon: Wrench,
       },
       {
-        title: "Files",
-        url: "/dashboard/files",
-        icon: FolderOpen,
+        title: "Knowledge Base",
+        url: "/dashboard/knowledge-base",
+        icon: Brain,
       },
     ],
   },

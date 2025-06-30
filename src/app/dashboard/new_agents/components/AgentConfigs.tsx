@@ -262,7 +262,8 @@ function AgentConfigs({
                 <TransitionEffect>
                   <KnowledgeConfig 
                     agentConfig={agentConfig.knowledge} 
-                    setAgentConfig={(config) => handleAgentConfigChange("knowledge", config)} 
+                    setAgentConfig={(config) => handleAgentConfigChange("knowledge", config)}
+                    agentId={selectedAgent?.id}
                   />
                 </TransitionEffect>
               )}

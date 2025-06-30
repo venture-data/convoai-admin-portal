@@ -93,7 +93,7 @@ export default function NewAgentPage() {
       },
     },
     knowledge: {
-      files: []
+      knowledgeBaseIds: []
     },
   };
 
@@ -181,7 +181,7 @@ export default function NewAgentPage() {
         }
       },
       knowledge: {
-        files: []
+        knowledgeBaseIds: []
       },
     });
   };
@@ -422,7 +422,7 @@ export default function NewAgentPage() {
                 }
               },
               knowledge: {
-                files: []
+                knowledgeBaseIds: []
               }
             };
 
