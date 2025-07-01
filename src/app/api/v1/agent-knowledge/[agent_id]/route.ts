@@ -3,7 +3,7 @@ import { headers } from 'next/headers';
 
 export async function GET(
   request: Request,
-  { params }: { params: { agent_id: string } }
+  { params }: { params: Promise<{ agent_id: string }> }
 ) {
   try {
     const headersList = await headers();
@@ -24,7 +24,7 @@ export async function GET(
       );
     }
 
-    const { agent_id } = params;
+    const { agent_id } = await params;
     const url = `${process.env.BASE_URL}/api/v1/agent-knowledge/${agent_id}`;
 
     const response = await fetch(url, {

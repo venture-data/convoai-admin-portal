@@ -16,7 +16,7 @@ export function InteractionSettings({agentConfig, setAgentConfig}: {agentConfig:
     setAgentConfig(newConfig);
   }
 
-  const onProfileOptionsChange = (key: string, value: any) => {
+  const onProfileOptionsChange = (key: string, value: boolean | string | string[]) => {
     const newConfig = {
       ...agentConfig,
       profile_options: {
@@ -39,7 +39,7 @@ export function InteractionSettings({agentConfig, setAgentConfig}: {agentConfig:
 
   const handleRemovePhrase = (indexToRemove: number) => {
     const currentPhrases = agentConfig.profile_options?.end_call_phrases || [];
-    const newPhrases = currentPhrases.filter((_: any, index: number) => index !== indexToRemove);
+    const newPhrases = currentPhrases.filter((_: string, index: number) => index !== indexToRemove);
     onProfileOptionsChange('end_call_phrases', newPhrases);
   };
   

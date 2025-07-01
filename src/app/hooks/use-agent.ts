@@ -91,9 +91,9 @@ export function useAgent() {
             enabled: agentConfig.voice?.profile_options?.background_audio?.enabled ?? false,
             audio_path: agentConfig.voice?.profile_options?.background_audio?.audio_path || "office-ambience.mp3"
           },
-          end_call_function: (agentConfig.model as any).profile_options?.end_call_function,
-          end_call_message: (agentConfig.model as any).profile_options?.end_call_message,
-          end_call_phrases: (agentConfig.model as any).profile_options?.end_call_phrases
+          end_call_function: agentConfig.model.profile_options?.end_call_function,
+          end_call_message: agentConfig.model.profile_options?.end_call_message,
+          end_call_phrases: agentConfig.model.profile_options?.end_call_phrases
         },
         allow_interruptions: agentConfig.model.allow_interruptions !== false,
         interrupt_speech_duration: Number(agentConfig.model.interrupt_speech_duration || 0.5),

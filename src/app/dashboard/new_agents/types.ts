@@ -130,6 +130,12 @@ export const voiceConfigSchema = z.object({
 
 export const knowledgeConfigSchema = z.object({
     knowledgeBaseIds: z.array(z.string()).optional(),
+    files: z.array(z.union([
+        z.instanceof(File),
+        z.object({
+            file: z.union([z.instanceof(File), z.instanceof(Blob)])
+        })
+    ])).optional(),
 })
 
 export const agentConfigSchema = z.object({

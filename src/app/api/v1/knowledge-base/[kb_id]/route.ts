@@ -3,7 +3,7 @@ import { headers } from 'next/headers';
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { kb_id: string } }
+  { params }: { params: Promise<{ kb_id: string }> }
 ) {
   try {
     const headersList = await headers();
@@ -33,7 +33,7 @@ export async function DELETE(
       );
     }
 
-    const { kb_id } = params;
+    const { kb_id } = await params;
     const url = `${process.env.BASE_URL}/api/v1/knowledge-base/${kb_id}`;
     
     const response = await fetch(url, {
